@@ -7,7 +7,7 @@
 A curated, versioned collection that turns Claude Code into a rigorous research collaborator — from literature review and experiment tracking to statistics, HPC, and getting published.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Skills](https://img.shields.io/badge/skills-9-6E56CF)](#-the-skills)
+[![Skills](https://img.shields.io/badge/skills-10-6E56CF)](#-the-skills)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 [![Made for Claude Code](https://img.shields.io/badge/made%20for-Claude%20Code-D97757)](https://claude.com/claude-code)
 [![GitHub stars](https://img.shields.io/github/stars/anayy09/claude-research-skills?style=social)](https://github.com/anayy09/claude-research-skills/stargazers)
@@ -39,6 +39,7 @@ This repository collects the skills I use for real research work. They share a b
 | :---- | :----------- | :-----: |
 | [`data-engineering`](./data-engineering) | Build, review, and debug data pipelines, SQL, and schemas — stack-agnostic. | `1.0.0` |
 | [`deep-research`](./deep-research) | A 13-agent pipeline for rigorous academic research, from question to cited report. | `2.9.3` |
+| [`evidence-synthesis`](./evidence-synthesis) | Plan, run, appraise, and report systematic and other evidence syntheses (PRISMA, GRADE, RoB). | `1.0.0` |
 | [`experiment-ledger`](./experiment-ledger) | Reproducible ML experiment tracking: config-as-file, hashed manifests, honest baselines. | `1.0.0` |
 | [`hipergator-hpc`](./hipergator-hpc) | SLURM jobs and LLM serving on UF HiPerGator, adaptable to any SLURM cluster. | `1.0.0` |
 | [`humanizer`](./humanizer) | Strip the tells of AI-generated writing, based on Wikipedia's Signs of AI writing. | `1.0.0` |

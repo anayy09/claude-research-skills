@@ -8,7 +8,10 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 ## [Unreleased]
 
 ### Added
-- Nothing yet.
+- `evidence-synthesis` skill — plan, run, appraise, and report systematic and
+  other evidence syntheses (PRISMA-S search reporting, PRISMA 2020 flow, RoB tool
+  selection, GRADE certainty, executable citation/retraction verification, and
+  RAISE-compliant AI-use disclosure).
 
 ## [0.1.0] — 2026-07-25
 
