@@ -7,6 +7,8 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-07-26
+
 ### Added
 - `evidence-synthesis` skill — plan, run, appraise, and report systematic and
   other evidence syntheses (PRISMA-S search reporting, PRISMA 2020 flow, RoB tool
@@ -30,5 +32,6 @@ First public release of the collection.
 - Standardized every skill's frontmatter: added `summary`, semantic `version`,
   `author`, `license`, and a consistent `metadata` block.
 
-[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/anayy09/claude-research-skills/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/anayy09/claude-research-skills/releases/tag/v0.1.0
