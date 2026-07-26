@@ -1,0 +1,20 @@
+{
+  "topic": "Short description of the research question",
+  "generated": "YYYY-MM-DD",
+  "sources": [
+    {
+      "key": "authorYEAR",
+      "type": "journal-article",
+      "authors": ["Surname, G.", "Surname, G."],
+      "year": 2020,
+      "title": "Exact title of the work",
+      "venue": "Journal / publisher / site",
+      "doi": "10.xxxx/xxxxx",
+      "url": "https://doi.org/10.xxxx/xxxxx",
+      "verified": "pending",
+      "verify_method": "",
+      "tier": "",
+      "notes": ""
+    }
+  ]
+}

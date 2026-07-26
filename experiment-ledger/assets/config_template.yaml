@@ -1,0 +1,63 @@
+# Base config. Everything a run needs lives here or in an overlay merged onto it.
+#
+# Rule: no hidden defaults. If a value is read by the code and can change the
+# result, it belongs in this file. A default buried in a Python function is not
+# recorded in the manifest and will not be recoverable in six months.
+#
+# The run_id is a hash of this file after overlays are merged, so any change
+# here produces a new run. That is intentional.
+
+run:
+  name: cpath_triage
+  seed: 0
+  # Set to the number of independent repeats you intend for variance estimation.
+  # One seed is a point estimate, not an effect.
+  n_repeats: 1
+
+data:
+  dataset: NCT-CRC-HE-100K
+  root: /orange/GROUP/datasets/nct-crc-he-100k
+  split_file: splits/patient_holdout_v2.json   # stored file, hashed into the manifest
+  group_key: patient_id                        # the unit of analysis for resampling
+  preprocessing_version: tile-v3               # bump on any preprocessing change
+  patch_size: 224
+  magnification: 20x
+  classes: [ADI, BACK, DEB, LYM, MUC, MUS, NORM, STR, TUM]
+
+model:
+  id: google/medgemma-27b-it
+  revision: null                # fill from the endpoint or hub; null with a note if unavailable
+  serving:
+    stack: vllm
+    endpoint_file: /blue/GROUP/$USER/endpoints/current.json
+  decoding:
+    temperature: 0.0
+    top_p: 1.0
+    max_tokens: 64
+    seed: 0
+
+prompt:
+  template: prompts/base.txt    # a file, not an inline string, so it can be hashed
+  style: minimal
+  n_shots: 0
+
+inference:
+  batch_size: 32
+  concurrency: 64
+  retry:
+    max_attempts: 3
+    on_status: [500, 502, 503, 504]   # never retry 4xx: a malformed prompt loops forever
+
+eval:
+  primary_metric: balanced_accuracy
+  metrics: [balanced_accuracy, macro_f1, ece, aurc]
+  aggregation_unit: patient
+  bootstrap:
+    n_resamples: 10000
+    alpha: 0.05
+    cluster_by: patient_id
+
+output:
+  root: /blue/GROUP/$USER/runs      # ledger writes runs/<run_id>/ under the project;
+                                    # bulk artifacts can live here instead
+  save_predictions: true            # per-item outputs enable any later re-analysis

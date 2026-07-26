@@ -1,0 +1,50 @@
+name: Bug report
+description: Something in a skill behaves incorrectly.
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: skill
+    attributes:
+      label: Which skill?
+      options:
+        - data-engineering
+        - deep-research
+        - experiment-ledger
+        - hipergator-hpc
+        - humanizer
+        - investigating-sources
+        - journal-advisor
+        - ml-eval-statistics
+        - research-paper-writing
+        - (repo tooling / not a specific skill)
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you ask for, and what did the skill do?
+      placeholder: I asked for X; the skill produced Y.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The prompt(s) and any files involved, so we can reproduce it.
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Skill version
+      description: From the skill's SKILL.md frontmatter (`version:`).
+      placeholder: "1.0.0"
+    validations:
+      required: false

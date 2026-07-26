@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or discussion
+    url: https://github.com/anayy09/claude-research-skills/discussions
+    about: Ask a question or share how you use these skills.
+  - name: Claude Code — Skills documentation
+    url: https://docs.claude.com/en/docs/claude-code/skills
+    about: How Agent Skills work in Claude Code.

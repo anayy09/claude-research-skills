@@ -1,0 +1,41 @@
+name: New skill proposal
+description: Suggest a new skill for the collection.
+labels: ["new-skill"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Proposed name
+      description: kebab-case, e.g. bibtex-wrangler
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What research problem does it solve?
+      description: Who is it for and what does it save them?
+    validations:
+      required: true
+  - type: textarea
+    id: triggers
+    attributes:
+      label: When should Claude use it?
+      description: Example prompts / situations that should activate the skill.
+    validations:
+      required: true
+  - type: textarea
+    id: contents
+    attributes:
+      label: What would it contain?
+      description: References, scripts, templates, examples — sketch the folder.
+    validations:
+      required: false
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Fit
+      options:
+        - label: This fits the collection's research / technical-workflow scope.
+          required: true
+        - label: I'd be willing to help build it.
+          required: false
