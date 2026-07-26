@@ -73,12 +73,16 @@ def discover_skills() -> list[dict]:
         if not skill_md.exists():
             continue
         fm = parse_frontmatter(skill_md)
+        meta = fm.get("metadata") or {}
         skills.append(
             {
                 "dir": child.name,
                 "name": fm.get("name", child.name),
                 "summary": fm.get("summary") or first_sentence(fm.get("description", "")),
                 "version": str(fm.get("version", "—")),
+                "status": meta.get("status") or "active",
+                "replaced_by": meta.get("replaced_by") or [],
+                "deprecated_since": meta.get("deprecated_since"),
             }
         )
     return skills
@@ -95,14 +99,35 @@ def build_table(skills: list[dict]) -> str:
     return "\n".join(rows)
 
 
+def build_deprecated_table(skills: list[dict]) -> str:
+    rows = [
+        "| Skill | Replaced by | Since |",
+        "| :---- | :---------- | :---: |",
+    ]
+    for s in skills:
+        replaced = ", ".join(f"[`{r}`](./{r})" for r in s["replaced_by"]) or "—"
+        since = str(s.get("deprecated_since") or "—")
+        rows.append(f"| ~~[`{s['name']}`](./{s['dir']})~~ | {replaced} | {since} |")
+    return "\n".join(rows)
+
+
 def render(readme_text: str, skills: list[dict]) -> str:
-    table = build_table(skills)
+    active = [s for s in skills if s["status"] != "deprecated"]
+    deprecated = [s for s in skills if s["status"] == "deprecated"]
+
+    table = build_table(active)
+    if deprecated:
+        table += (
+            "\n\n**Deprecated** — retained during a transition period; prefer the "
+            "replacements.\n\n" + build_deprecated_table(deprecated)
+        )
+
     pattern = re.compile(re.escape(TABLE_START) + r".*?" + re.escape(TABLE_END), re.DOTALL)
     if not pattern.search(readme_text):
         raise ValueError(f"Could not find the {TABLE_START} / {TABLE_END} markers in README.md")
     updated = pattern.sub(f"{TABLE_START}\n{table}\n{TABLE_END}", readme_text)
-    # Keep the skills-count badge honest.
-    updated = re.sub(r"(badge/skills-)\d+", rf"\g<1>{len(skills)}", updated)
+    # Keep the skills-count badge honest (active skills only).
+    updated = re.sub(r"(badge/skills-)\d+", rf"\g<1>{len(active)}", updated)
     return updated
 
 
@@ -118,18 +143,22 @@ def main() -> int:
     original = README.read_text(encoding="utf-8")
     updated = render(original, skills)
 
+    active = sum(1 for s in skills if s["status"] != "deprecated")
+    deprecated = len(skills) - active
+    label = f"{active} active" + (f", {deprecated} deprecated" if deprecated else "")
+
     if args.check:
         if updated != original:
             print("README.md is out of date. Run: python scripts/generate_catalog.py", file=sys.stderr)
             return 1
-        print(f"README.md is up to date ({len(skills)} skills).")
+        print(f"README.md is up to date ({label}).")
         return 0
 
     if updated != original:
         README.write_text(updated, encoding="utf-8", newline="\n")
-        print(f"Updated README.md catalog with {len(skills)} skills.")
+        print(f"Updated README.md catalog ({label}).")
     else:
-        print(f"README.md already up to date ({len(skills)} skills).")
+        print(f"README.md already up to date ({label}).")
     return 0
 
 

@@ -71,9 +71,9 @@ degrades gracefully offline — network-dependent checks are marked *skipped*, n
 silently passed. Live lookups need `requests` (`pip install requests`).
 
 > **Related skills:** [`investigating-sources`](../investigating-sources) for
-> general citation-honest research, and [`deep-research`](../deep-research) for its
-> multi-agent systematic-review mode. Reach for **evidence-synthesis** when the
-> deliverable is a formal, reporting-standard-compliant review.
+> general citation-honest research and fact-checking. **evidence-synthesis**
+> supersedes the deprecated `deep-research` skill for systematic reviews — reach
+> for it whenever the deliverable is a formal, reporting-standard-compliant review.
 
 ## Changelog
 

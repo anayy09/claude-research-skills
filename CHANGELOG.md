@@ -7,6 +7,11 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+### Deprecated
+- `deep-research` (2.9.3 → 2.10.0) is deprecated in favor of `evidence-synthesis`
+  (formal reviews) and `investigating-sources` (citation-honest research). It
+  still works during a transition period but will receive no further updates.
+
 ## [0.2.0] — 2026-07-26
 
 ### Added

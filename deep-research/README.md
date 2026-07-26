@@ -2,10 +2,25 @@
 
 > A 13-agent pipeline for rigorous academic research, from question to cited report.
 
-[![Version](https://img.shields.io/badge/version-2.9.3-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.10.0-6E56CF)](../CHANGELOG.md)
+[![Status: deprecated](https://img.shields.io/badge/status-deprecated-critical)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
+
+> [!WARNING]
+> ## ⚠️ Deprecated
+>
+> **This skill is being gracefully discontinued as of v2.10.0.** More focused,
+> better-maintained replacements are now available:
+>
+> - **[evidence-synthesis](../evidence-synthesis)** — formal systematic, scoping,
+>   and other reviews with PRISMA, GRADE, and risk-of-bias appraisal.
+> - **[investigating-sources](../investigating-sources)** — citation-honest
+>   research, fact-checking, and source verification.
+>
+> Deep Research still works during the transition, but will receive **no further
+> updates**. New work should start from the replacements above.
 
 ## What it does
 
@@ -62,7 +77,11 @@ with [`systematic_review.md`](./examples/systematic_review.md) or
 
 ## Changelog
 
-- **2.9.3** — Current release. See [`references/changelog.md`](./references/changelog.md) for the skill's detailed history.
+- **2.10.0** — **Deprecated.** Discontinued in favor of
+  [`evidence-synthesis`](../evidence-synthesis) and
+  [`investigating-sources`](../investigating-sources). Still functional; no
+  further updates planned.
+- **2.9.3** — Prior release. See [`references/changelog.md`](./references/changelog.md) for the skill's detailed history.
 
 ---
 

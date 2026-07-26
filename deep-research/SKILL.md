@@ -1,13 +1,17 @@
 ---
 name: deep-research
-description: "Universal deep research agent team. 13-agent pipeline for rigorous academic research on any topic. 7 modes: full research, quick brief, paper review, lit-review, fact-check, Socratic guided research dialogue, and systematic review with optional meta-analysis. Covers research question formulation, Socratic mentoring, methodology design, systematic literature search, source verification, cross-source synthesis, risk of bias assessment, meta-analysis, APA 7.0 report compilation, editorial review, devil's advocate challenges, ethics review, and post-research literature monitoring. Triggers on: research, deep research, literature review, systematic review, meta-analysis, PRISMA, evidence synthesis, fact-check, guide my research, help me think through, 研究, 深度研究, 文獻回顧, 文獻探討, 系統性回顧, 後設分析, 事實查核, 引導我的研究, 幫我釐清, 幫我想想, 我不確定要研究什麼, 研究方向, 研究主題."
+description: "[DEPRECATED - prefer evidence-synthesis or investigating-sources] Universal deep research agent team. 13-agent pipeline for rigorous academic research on any topic. 7 modes: full research, quick brief, paper review, lit-review, fact-check, Socratic guided research dialogue, and systematic review with optional meta-analysis. Covers research question formulation, Socratic mentoring, methodology design, systematic literature search, source verification, cross-source synthesis, risk of bias assessment, meta-analysis, APA 7.0 report compilation, editorial review, devil's advocate challenges, ethics review, and post-research literature monitoring. Triggers on: research, deep research, literature review, systematic review, meta-analysis, PRISMA, evidence synthesis, fact-check, guide my research, help me think through, 研究, 深度研究, 文獻回顧, 文獻探討, 系統性回顧, 後設分析, 事實查核, 引導我的研究, 幫我釐清, 幫我想想, 我不確定要研究什麼, 研究方向, 研究主題."
 summary: "A 13-agent pipeline for rigorous academic research, from question to cited report."
-version: "2.9.3"
+version: "2.10.0"
 author: anayy09
 license: MIT
 metadata:
-  last_updated: "2026-04-30"
-  status: active
+  last_updated: "2026-07-26"
+  status: deprecated
+  deprecated_since: "2026-07-26"
+  replaced_by:
+    - evidence-synthesis
+    - investigating-sources
   data_access_level: raw
   task_type: open-ended
   related_skills:
@@ -16,6 +20,13 @@ metadata:
 ---
 
 # Deep Research — Universal Academic Research Agent Team
+
+> [!WARNING]
+> **Deprecated as of v2.10.0 — this skill is being gracefully discontinued.**
+> Prefer **evidence-synthesis** for formal reviews and evidence synthesis, and
+> **investigating-sources** for citation-honest research and fact-checking. Deep
+> Research still works during the transition but will receive no further updates;
+> new work should start from the replacements.
 
 Universal deep research tool — a domain-agnostic 13-agent team for rigorous academic research on any topic.
 

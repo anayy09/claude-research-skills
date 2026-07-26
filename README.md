@@ -7,7 +7,7 @@
 A curated, versioned collection that turns Claude Code into a rigorous research collaborator — from literature review and experiment tracking to statistics, HPC, and getting published.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Skills](https://img.shields.io/badge/skills-10-6E56CF)](#-the-skills)
+[![Skills](https://img.shields.io/badge/skills-9-6E56CF)](#-the-skills)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 [![Made for Claude Code](https://img.shields.io/badge/made%20for-Claude%20Code-D97757)](https://claude.com/claude-code)
 [![GitHub stars](https://img.shields.io/github/stars/anayy09/claude-research-skills?style=social)](https://github.com/anayy09/claude-research-skills/stargazers)
@@ -38,7 +38,6 @@ This repository collects the skills I use for real research work. They share a b
 | Skill | What it does | Version |
 | :---- | :----------- | :-----: |
 | [`data-engineering`](./data-engineering) | Build, review, and debug data pipelines, SQL, and schemas — stack-agnostic. | `1.0.0` |
-| [`deep-research`](./deep-research) | A 13-agent pipeline for rigorous academic research, from question to cited report. | `2.9.3` |
 | [`evidence-synthesis`](./evidence-synthesis) | Plan, run, appraise, and report systematic and other evidence syntheses (PRISMA, GRADE, RoB). | `1.0.0` |
 | [`experiment-ledger`](./experiment-ledger) | Reproducible ML experiment tracking: config-as-file, hashed manifests, honest baselines. | `1.0.0` |
 | [`hipergator-hpc`](./hipergator-hpc) | SLURM jobs and LLM serving on UF HiPerGator, adaptable to any SLURM cluster. | `1.0.0` |
@@ -47,6 +46,12 @@ This repository collects the skills I use for real research work. They share a b
 | [`journal-advisor`](./journal-advisor) | Match a manuscript to the right journal, with desk-reject risk, from five publisher catalogs. | `1.0.0` |
 | [`ml-eval-statistics`](./ml-eval-statistics) | The right statistics for model evaluation: significance, CIs, calibration, selective prediction. | `1.0.0` |
 | [`research-paper-writing`](./research-paper-writing) | Scholarly prose that reads like a working researcher wrote it. | `2.0.0` |
+
+**Deprecated** — retained during a transition period; prefer the replacements.
+
+| Skill | Replaced by | Since |
+| :---- | :---------- | :---: |
+| ~~[`deep-research`](./deep-research)~~ | [`evidence-synthesis`](./evidence-synthesis), [`investigating-sources`](./investigating-sources) | 2026-07-26 |
 <!-- SKILLS:END -->
 
 Each skill has its own README with triggers, layout, and usage. Click a name above.
@@ -60,7 +65,7 @@ Claude Code discovers **personal skills** in `~/.claude/skills/`. Install a skil
 ```bash
 git clone https://github.com/anayy09/claude-research-skills.git
 # Install one skill:
-cp -r claude-research-skills/deep-research ~/.claude/skills/
+cp -r claude-research-skills/evidence-synthesis ~/.claude/skills/
 # ...or install them all:
 for d in claude-research-skills/*/; do
   [ -f "$d/SKILL.md" ] && cp -r "$d" ~/.claude/skills/
@@ -72,7 +77,7 @@ done
 ```powershell
 git clone https://github.com/anayy09/claude-research-skills.git
 # Install one skill:
-Copy-Item -Recurse claude-research-skills\deep-research "$env:USERPROFILE\.claude\skills\"
+Copy-Item -Recurse claude-research-skills\evidence-synthesis "$env:USERPROFILE\.claude\skills\"
 # ...or install them all:
 Get-ChildItem claude-research-skills -Directory |
   Where-Object { Test-Path (Join-Path $_.FullName 'SKILL.md') } |
@@ -87,7 +92,7 @@ Start (or restart) Claude Code and the skills are live. Prefer to hack on them i
 
 You don't invoke a skill manually. Describe your task and Claude Code loads the matching skill on its own:
 
-> *"Run a systematic review on X and give me a PRISMA-style report."* → `deep-research`
+> *"Run a systematic review on X and give me a PRISMA-style report."* → `evidence-synthesis`
 > *"Is the accuracy gap between these two models significant?"* → `ml-eval-statistics`
 > *"Where should I submit this manuscript?"* → `journal-advisor`
 > *"Make this related-work section sound less like AI wrote it."* → `humanizer`
