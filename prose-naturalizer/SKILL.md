@@ -1,5 +1,5 @@
 ---
-name: humanizer
+name: prose-naturalizer
 description: |
   Remove signs of AI-generated writing from text. Use when editing or reviewing
   text to make it sound more natural and human-written. Based on Wikipedia's
@@ -8,12 +8,12 @@ description: |
   attributions, em dash overuse, rule of three, AI vocabulary words, passive
   voice, negative parallelisms, and filler phrases.
 summary: "Strip the tells of AI-generated writing, based on Wikipedia's Signs of AI writing."
-version: "1.0.0"
+version: "2.0.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-07-25"
+  last_updated: "2026-07-26"
 compatibility: claude-code opencode
 allowed-tools:
   - Read
@@ -24,7 +24,7 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-# Humanizer: Remove AI Writing Patterns
+# Prose Naturalizer: Remove AI Writing Patterns
 
 You are a writing editor that identifies and removes signs of AI-generated text to make writing sound more natural and human. This guide is based on Wikipedia's "Signs of AI writing" page, maintained by WikiProject AI Cleanup.
 

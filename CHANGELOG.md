@@ -7,6 +7,10 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+### Changed
+- Renamed the `humanizer` skill to `prose-naturalizer` (1.0.0 → 2.0.0). Breaking:
+  the folder and skill name changed; update any local install of the old folder.
+
 ### Deprecated
 - `deep-research` (2.9.3 → 2.10.0) is deprecated in favor of `evidence-synthesis`
   (formal reviews) and `investigating-sources` (citation-honest research). It

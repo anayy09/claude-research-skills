@@ -9,12 +9,13 @@ body:
       options:
         - data-engineering
         - deep-research
+        - evidence-synthesis
         - experiment-ledger
         - hipergator-hpc
-        - humanizer
         - investigating-sources
         - journal-advisor
         - ml-eval-statistics
+        - prose-naturalizer
         - research-paper-writing
         - (repo tooling / not a specific skill)
     validations:

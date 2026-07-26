@@ -41,10 +41,10 @@ This repository collects the skills I use for real research work. They share a b
 | [`evidence-synthesis`](./evidence-synthesis) | Plan, run, appraise, and report systematic and other evidence syntheses (PRISMA, GRADE, RoB). | `1.0.0` |
 | [`experiment-ledger`](./experiment-ledger) | Reproducible ML experiment tracking: config-as-file, hashed manifests, honest baselines. | `1.0.0` |
 | [`hipergator-hpc`](./hipergator-hpc) | SLURM jobs and LLM serving on UF HiPerGator, adaptable to any SLURM cluster. | `1.0.0` |
-| [`humanizer`](./humanizer) | Strip the tells of AI-generated writing, based on Wikipedia's Signs of AI writing. | `1.0.0` |
 | [`investigating-sources`](./investigating-sources) | Citation-honest research where every claim traces to a real, verified source. | `1.0.0` |
 | [`journal-advisor`](./journal-advisor) | Match a manuscript to the right journal, with desk-reject risk, from five publisher catalogs. | `1.0.0` |
 | [`ml-eval-statistics`](./ml-eval-statistics) | The right statistics for model evaluation: significance, CIs, calibration, selective prediction. | `1.0.0` |
+| [`prose-naturalizer`](./prose-naturalizer) | Strip the tells of AI-generated writing, based on Wikipedia's Signs of AI writing. | `2.0.0` |
 | [`research-paper-writing`](./research-paper-writing) | Scholarly prose that reads like a working researcher wrote it. | `2.0.0` |
 
 **Deprecated** — retained during a transition period; prefer the replacements.
@@ -95,7 +95,7 @@ You don't invoke a skill manually. Describe your task and Claude Code loads the 
 > *"Run a systematic review on X and give me a PRISMA-style report."* → `evidence-synthesis`
 > *"Is the accuracy gap between these two models significant?"* → `ml-eval-statistics`
 > *"Where should I submit this manuscript?"* → `journal-advisor`
-> *"Make this related-work section sound less like AI wrote it."* → `humanizer`
+> *"Make this related-work section sound less like AI wrote it."* → `prose-naturalizer`
 
 Each skill's README shows the exact triggers and worked examples.
 

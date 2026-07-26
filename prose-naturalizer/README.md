@@ -1,8 +1,10 @@
-# humanizer
+# prose-naturalizer
 
 > Strip the tells of AI-generated writing, based on Wikipedia's Signs of AI writing.
 
-[![Version](https://img.shields.io/badge/version-1.0.0-6E56CF)](../CHANGELOG.md)
+<sub>Formerly `humanizer`.</sub>
+
+[![Version](https://img.shields.io/badge/version-2.0.0-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -28,7 +30,7 @@ nameable tells rather than vibes:
 ## What's inside
 
 ```
-humanizer/
+prose-naturalizer/
 └── SKILL.md    a single, self-contained skill (the pattern catalog + editing rules)
 ```
 
@@ -38,6 +40,8 @@ needs to read and edit text.
 
 ## Changelog
 
+- **2.0.0** — Renamed from `humanizer` to `prose-naturalizer` (breaking: the
+  skill's folder and name changed). No behavior change.
 - **1.0.0** — Initial release.
 
 ---

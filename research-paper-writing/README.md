@@ -24,7 +24,7 @@ for casual summaries, blog posts, marketing copy, slide text, or code.
 - Drafting a rebuttal or response-to-reviewers letter
 - Extending or restructuring a thesis chapter
 
-> **Tip:** pair this with [`humanizer`](../humanizer) to scrub residual AI-tells,
+> **Tip:** pair this with [`prose-naturalizer`](../prose-naturalizer) to scrub residual AI-tells,
 > and [`investigating-sources`](../investigating-sources) to keep every citation
 > honest.
 
