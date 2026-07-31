@@ -7,6 +7,13 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+### Added
+- `submission-reviewer` skill — fair, constructive peer review of a paper or
+  patent submission against a weighted rubric, with a score out of 100 and band,
+  verified-only novelty checks against prior art, authenticity and internal
+  consistency checks, cap rules for blocking flaws, partial scoring for
+  incomplete submissions, and ranked fixes with a projected score.
+
 ### Changed
 - Renamed the `humanizer` skill to `prose-naturalizer` (1.0.0 → 2.0.0). Breaking:
   the folder and skill name changed; update any local install of the old folder.

@@ -7,7 +7,7 @@
 A curated, versioned collection that turns Claude Code into a rigorous research collaborator — from literature review and experiment tracking to statistics, HPC, and getting published.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Skills](https://img.shields.io/badge/skills-9-6E56CF)](#-the-skills)
+[![Skills](https://img.shields.io/badge/skills-10-6E56CF)](#-the-skills)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 [![Made for Claude Code](https://img.shields.io/badge/made%20for-Claude%20Code-D97757)](https://claude.com/claude-code)
 [![GitHub stars](https://img.shields.io/github/stars/anayy09/claude-research-skills?style=social)](https://github.com/anayy09/claude-research-skills/stargazers)
@@ -46,6 +46,7 @@ This repository collects the skills I use for real research work. They share a b
 | [`ml-eval-statistics`](./ml-eval-statistics) | The right statistics for model evaluation: significance, CIs, calibration, selective prediction. | `1.0.0` |
 | [`prose-naturalizer`](./prose-naturalizer) | Strip the tells of AI-generated writing, based on Wikipedia's Signs of AI writing. | `2.0.0` |
 | [`research-paper-writing`](./research-paper-writing) | Scholarly prose that reads like a working researcher wrote it. | `2.0.0` |
+| [`submission-reviewer`](./submission-reviewer) | Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score. | `1.0.0` |
 
 **Deprecated** — retained during a transition period; prefer the replacements.
 
@@ -95,6 +96,7 @@ You don't invoke a skill manually. Describe your task and Claude Code loads the 
 > *"Run a systematic review on X and give me a PRISMA-style report."* → `evidence-synthesis`
 > *"Is the accuracy gap between these two models significant?"* → `ml-eval-statistics`
 > *"Where should I submit this manuscript?"* → `journal-advisor`
+> *"Review this draft and tell me if it's ready to submit."* → `submission-reviewer`
 > *"Make this related-work section sound less like AI wrote it."* → `prose-naturalizer`
 
 Each skill's README shows the exact triggers and worked examples.
