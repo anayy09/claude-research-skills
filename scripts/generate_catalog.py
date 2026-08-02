@@ -36,6 +36,11 @@ except ImportError:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parent.parent
 README = REPO_ROOT / "README.md"
 
+# Release assets are built by .github/workflows/release.yml. This URL always
+# resolves to the newest release, so the table never needs a version bump.
+REPO_SLUG = "anayy09/claude-research-skills"
+DOWNLOAD_URL = f"https://github.com/{REPO_SLUG}/releases/latest/download/{{name}}.zip"
+
 # Top-level directories that are repo infrastructure, not skills.
 NON_SKILL_DIRS = {"scripts", "docs", "assets", ".github", ".git"}
 
@@ -90,12 +95,16 @@ def discover_skills() -> list[dict]:
 
 def build_table(skills: list[dict]) -> str:
     rows = [
-        "| Skill | What it does | Version |",
-        "| :---- | :----------- | :-----: |",
+        "| Skill | What it does | Version | Download |",
+        "| :---- | :----------- | :-----: | :------: |",
     ]
     for s in skills:
         summary = s["summary"].replace("|", "\\|")
-        rows.append(f"| [`{s['name']}`](./{s['dir']}) | {summary} | `{s['version']}` |")
+        zip_url = DOWNLOAD_URL.format(name=s["dir"])
+        rows.append(
+            f"| [`{s['name']}`](./{s['dir']}) | {summary} | `{s['version']}` "
+            f"| [`.zip`]({zip_url}) |"
+        )
     return "\n".join(rows)
 
 
@@ -118,7 +127,7 @@ def render(readme_text: str, skills: list[dict]) -> str:
     table = build_table(active)
     if deprecated:
         table += (
-            "\n\n**Deprecated** — retained during a transition period; prefer the "
+            "\n\n**Deprecated.** Retained during a transition period; prefer the "
             "replacements.\n\n" + build_deprecated_table(deprecated)
         )
 

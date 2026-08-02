@@ -53,9 +53,9 @@ its manifest hash, and query which run produced a given result. Run with
 
 ## Changelog
 
-- **1.0.1** — Replace site-specific example paths in the config template with
+- **1.0.1**: Replace site-specific example paths in the config template with
   `${PROJECT}` and `${SCRATCH}`. No behavior change.
-- **1.0.0** — Initial release.
+- **1.0.0**: Initial release.
 
 ---
 

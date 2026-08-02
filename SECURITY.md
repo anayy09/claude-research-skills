@@ -9,8 +9,8 @@ DOI); these degrade gracefully offline and never transmit your content.
 
 ## Reporting a vulnerability
 
-If you find a security issue — for example a script that could be coerced into
-writing outside its working directory, or a reference that leaks a secret — please
+If you find a security issue, for example a script that could be coerced into
+writing outside its working directory, or a reference that leaks a secret, please
 **do not open a public issue**.
 
 Instead, report it privately through GitHub's

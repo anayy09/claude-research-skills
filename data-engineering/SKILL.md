@@ -10,8 +10,8 @@ description: >-
   slow", "set up ingestion", or any request whose deliverable is moving,
   reshaping, validating, or storing tabular data. Stack-agnostic; adapts to
   whatever engine and language the project already uses.
-summary: "Build, review, and debug data pipelines, SQL, and schemas — stack-agnostic."
-version: "1.0.0"
+summary: "Build, review, and debug data pipelines, SQL, and schemas, whatever the stack."
+version: "1.0.1"
 author: anayy09
 license: MIT
 metadata:

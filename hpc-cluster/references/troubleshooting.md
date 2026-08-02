@@ -22,7 +22,7 @@ written for another cluster.
 The combination of `--gres`, `--mem`, and `--cpus-per-task` exceeds any single
 node in the partition, or the GPU type string is wrong. Check the actual node
 shapes: `sinfo -O partition,gres:40,cpus,memory,statelong`. Asking for
-`gpu:a100:1` on a partition that has a different accelerator produces this too —
+`gpu:a100:1` on a partition that has a different accelerator produces this too;
 drop the type qualifier unless you need a specific one.
 
 **`Job violates accounting/QOS policy`**
@@ -52,7 +52,7 @@ Read the reason field: `squeue -u $USER -o "%.12i %.9P %.8T %.10M %R"`.
 | `PartitionTimeLimit` | requested time exceeds the partition maximum | shorten `--time` and add checkpointing |
 
 `squeue -u $USER --start` gives the scheduler's estimated start time. If it is
-days out, the request is too large — usually the wall clock or the GPU count.
+days out, the request is too large, usually in wall clock or GPU count.
 
 ---
 

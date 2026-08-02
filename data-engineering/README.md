@@ -1,6 +1,6 @@
 # data-engineering
 
-> Build, review, and debug data pipelines, SQL, and schemas — stack-agnostic.
+> Build, review, and debug data pipelines, SQL, and schemas, whatever the stack.
 
 [![Version](https://img.shields.io/badge/version-1.0.0-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
@@ -50,7 +50,7 @@ distributions before designing the load. Run with `--help` for options.
 
 ## Changelog
 
-- **1.0.0** — Initial release.
+- **1.0.0**: Initial release.
 
 ---
 

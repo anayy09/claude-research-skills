@@ -10,7 +10,7 @@ Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/an
 ## What it does
 
 Chooses and computes the correct statistics for evaluating and comparing **your
-own** models — as distinct from meta-analysis of published literature. It covers
+own** models, as distinct from meta-analysis of published literature. It covers
 paired significance tests, clustered and patient-level bootstrap confidence
 intervals, calibration (ECE, reliability curves, temperature scaling), selective
 prediction and triage metrics (risk-coverage, AURC, coverage at fixed risk), and
@@ -54,7 +54,7 @@ subcommands and expected input format.
 
 ## Changelog
 
-- **1.0.0** — Initial release.
+- **1.0.0**: Initial release.
 
 ---
 

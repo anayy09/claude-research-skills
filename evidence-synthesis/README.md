@@ -9,7 +9,7 @@ Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/an
 
 ## What it does
 
-Treats a review as a research design, not a reading exercise — with a protocol, a
+Treats a review as a research design, not a reading exercise: with a protocol, a
 sampling frame (the search), an eligibility rule, a measurement instrument (the
 appraisal tool), an analysis, and a reporting standard. It runs inside one
 conversation with executable checks at the points where reviews usually break, and
@@ -21,7 +21,7 @@ It covers the whole pipeline:
 - **Review-type selection**, protocol, and registration
 - **Concept-block search construction** with PRISMA-S reporting
 - **Screening logs** with a reconciling PRISMA 2020 flow diagram
-- **Risk-of-bias tool selection** — RoB 2, ROBINS-I, QUADAS-2, PROBAST+AI, AMSTAR 2, ROBIS
+- **Risk-of-bias tool selection**: RoB 2, ROBINS-I, QUADAS-2, PROBAST+AI, AMSTAR 2, ROBIS
 - **Synthesis** with or without meta-analysis, and **GRADE** certainty rating
 - **Executable citation verification**, including retraction checking
 - **RAISE-compliant disclosure** of AI use
@@ -29,7 +29,7 @@ It covers the whole pipeline:
 ## When Claude uses it
 
 - "Do a literature review / systematic review / meta-analysis / scoping review"
-- "PRISMA anything" — flow diagram, PRISMA-S search reporting, protocol
+- "PRISMA anything": flow diagram, PRISMA-S search reporting, protocol
 - "What does the evidence say about …?"
 - "Critically appraise this study / this review"
 - "Check whether these references are real" / retraction checking
@@ -67,17 +67,17 @@ python evidence-synthesis/scripts/verify_citations.py --help  # verify + retract
 ```
 
 `verify_citations.py` makes optional, read-only calls to public metadata APIs and
-degrades gracefully offline — network-dependent checks are marked *skipped*, never
+degrades gracefully offline: network-dependent checks are marked *skipped*, never
 silently passed. Live lookups need `requests` (`pip install requests`).
 
 > **Related skills:** [`investigating-sources`](../investigating-sources) for
 > general citation-honest research and fact-checking. **evidence-synthesis**
-> supersedes the deprecated `deep-research` skill for systematic reviews — reach
+> supersedes the deprecated `deep-research` skill for systematic reviews. Reach
 > for it whenever the deliverable is a formal, reporting-standard-compliant review.
 
 ## Changelog
 
-- **1.0.0** — Initial release.
+- **1.0.0**: Initial release.
 
 ---
 

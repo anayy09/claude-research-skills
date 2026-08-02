@@ -76,9 +76,10 @@ wait $PID
 ```
 
 The training script must handle `SIGUSR1` by writing `last.ckpt` and exiting.
-Two properties make this work: checkpoints go to a stable filename (atomically —
-write `last.ckpt.tmp`, then `mv`), and the script decides to resume by looking at
-the filesystem rather than by a flag the human must remember to flip.
+Two properties make this work: checkpoints go to a stable filename, written
+atomically as `last.ckpt.tmp` and then renamed, and the script decides to resume
+by looking at the filesystem rather than by a flag the human must remember to
+flip.
 
 Chain the follow-on job at submit time:
 
@@ -155,7 +156,7 @@ The array index is 1-based when indexing lines with `sed -n`, and 0-based in mos
 Python indexing. Pick one convention per project and write it in a job script
 comment.
 
-Check the site's maximum array size before submitting a large range —
+Check the site's maximum array size before submitting a large range, with
 `scontrol show config | grep MaxArraySize`. Exceeding it rejects the whole
 submission, and the default is often 1001.
 
@@ -181,8 +182,8 @@ pending indefinitely when its parent fails.
 
 ## 6. Preemptible jobs
 
-The opportunistic tier — burst, preemptable, scavenger, spot, whatever the site
-calls it — gives more capacity at the cost of being reclaimed mid-run. Only use
+The opportunistic tier, called burst, preemptable, scavenger, or spot depending
+on the site, gives more capacity at the cost of being reclaimed mid-run. Only use
 it for work that is idempotent and checkpointed. Detect preemption after the
 fact:
 

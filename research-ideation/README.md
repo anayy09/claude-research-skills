@@ -10,8 +10,8 @@ Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/an
 ## What it does
 
 Acts as a research strategist rather than a brainstorming partner. It reads what
-you actually have — papers, code, datasets, half-finished runs, results you
-never explained, the experiment that failed — inventories it, and returns a
+you actually have (papers, code, datasets, half-finished runs, results you
+never explained, the experiment that failed), inventories it, and returns a
 small set of candidate *papers*, ranked, each one carrying a falsifiable claim
 and the shortest honest path from today's state to a submission.
 
@@ -35,7 +35,7 @@ Four things separate this from free-form ideation:
   reviewer objections with answers, and a backward schedule against the real
   deadline.
 
-The report ends with what was deliberately *not* recommended and why — usually
+The report ends with what was deliberately *not* recommended and why, usually
 the most useful section for someone who has been circling the same three ideas
 for a month.
 
@@ -43,7 +43,7 @@ for a month.
 
 - "What should I work on next?" / "where do I take this project?"
 - "Can I get a paper out of these results?" / "is this novel enough to publish?"
-- "This experiment failed — is there anything salvageable?"
+- "This experiment failed. Is there anything salvageable?"
 - "Attack this idea and tell me where it breaks."
 - "Plan my thesis chapters" / "what's the next paper before the deadline?"
 - Sharing a repo, a results table, or a set of open questions and asking for direction
@@ -74,11 +74,11 @@ a workable one on enthusiasm.
 
 | Composite | Band |
 | :-------: | :--- |
-| 80–100 | Lead candidate — real delta, evidence largely in hand, finishable in the window |
-| 65–79 | Strong contender — one open dependency, usually an experiment or a data access |
-| 50–64 | Viable, gap to close — publishable, but needs a sharper claim or comparison |
-| 35–49 | Needs reframing — the asset is interesting, the claim is not yet a paper |
-| < 35 | Not a paper yet — said plainly, with what would change it |
+| 80-100 | Lead candidate: real delta, evidence largely in hand, finishable in the window |
+| 65-79 | Strong contender: one open dependency, usually an experiment or a data access |
+| 50-64 | Viable, gap to close: publishable, but needs a sharper claim or comparison |
+| 35-49 | Needs reframing: the asset is interesting, the claim is not yet a paper |
+| < 35 | Not a paper yet: said plainly, with what would change it |
 
 Calibration matters more than the scale: a competent, well-supported incremental
 extension of your own prior work is a 60, not an 85.
@@ -105,7 +105,7 @@ research-ideation/
 
 ## Scripts
 
-Standard library only — no dependencies, no network, no filesystem writes.
+Standard library only. No dependencies, no network, no filesystem writes.
 
 ```bash
 # dimensions, weights, cap rules, and the ideas.json schema
@@ -140,7 +140,7 @@ the plan specifies, [`hpc-cluster`](../hpc-cluster) for execution,
 
 ## Changelog
 
-- **1.0.0** — Initial release.
+- **1.0.0**: Initial release.
 
 ---
 

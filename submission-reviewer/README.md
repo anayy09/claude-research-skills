@@ -19,13 +19,13 @@ Two rubrics, picked automatically from the artifact:
 
 | Submission | Dimensions (weight) |
 | :--------- | :------------------ |
-| **Paper** — journal, conference, preprint, thesis chapter, technical report | novelty (25) · rigor (25) · readiness (20) · application (15) · integrity (15) |
-| **Patent** — disclosure, provisional or complete specification, claim set | novelty (25) · inventive step (20) · claims (20) · enablement (15) · application (12) · eligibility (8) |
+| **Paper**: journal, conference, preprint, thesis chapter, technical report | novelty (25) · rigor (25) · readiness (20) · application (15) · integrity (15) |
+| **Patent**: disclosure, provisional or complete specification, claim set | novelty (25) · inventive step (20) · claims (20) · enablement (15) · application (12) · eligibility (8) |
 
 Three things keep the number honest:
 
-- **Cap rules.** A blocking flaw — train/test leakage, a claim anticipated by a
-  found reference, a missing required baseline — caps the total regardless of
+- **Cap rules.** A blocking flaw (train/test leakage, a claim anticipated by a
+  found reference, a missing required baseline) caps the total regardless of
   the rubric arithmetic, and the cap reason is printed alongside the score.
 - **Verified novelty only.** Novelty is scored against prior art that was
   actually found and can be cited with venue and year. No search tool available
@@ -51,7 +51,7 @@ Hands off afterwards: [`journal-advisor`](../journal-advisor) for venue choice,
 [`research-paper-writing`](../research-paper-writing) for drafting and rebuttals,
 [`prose-naturalizer`](../prose-naturalizer) for de-AI-ing text, and
 [`ml-eval-statistics`](../ml-eval-statistics) when a fix needs a significance
-test or a confidence interval. It does not give legal advice — patent review
+test or a confidence interval. It does not give legal advice; patent review
 here is a technical appraisal, and the report says so once.
 
 ## What's inside
@@ -70,7 +70,7 @@ submission-reviewer/
 
 ## Scripts
 
-`scripts/score.py` is standard library only — no dependencies, no network, no
+`scripts/score.py` is standard library only: no dependencies, no network, no
 filesystem writes.
 
 ```bash
@@ -114,7 +114,7 @@ an 85.
 
 ## Changelog
 
-- **1.0.0** — Initial release.
+- **1.0.0**: Initial release.
 
 ---
 

@@ -10,7 +10,7 @@ Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/an
 ## What it does
 
 Writes, rewrites, edits, and extends academic research prose that reads as if a
-working researcher wrote it — not a language model. It handles full paper sections
+working researcher wrote it, not a language model. It handles full paper sections
 (introduction, related work, method, results, discussion, conclusion), thesis
 chapters, rebuttals and response letters, conference and journal submissions, and
 technical reports. It is for scholarly writing specifically, and deliberately not
@@ -37,7 +37,7 @@ research-paper-writing/
 
 ## Changelog
 
-- **2.0.0** — Current release.
+- **2.0.0**: Current release.
 
 ---
 

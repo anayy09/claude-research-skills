@@ -13,7 +13,7 @@ Contents:
 
 ## 1. Choosing a filesystem
 
-Sites name their filesystems differently — `/scratch`, `/work`, `/projects`,
+Sites name their filesystems differently: `/scratch`, `/work`, `/projects`,
 `/lustre`, `/gpfs`, `/nobackup`, or a group path under a local mount. The names
 vary; the roles do not. Identify which local path plays each role once, assign it
 to a variable, and write job scripts against the variable.
@@ -114,7 +114,7 @@ Stage once per job, not once per epoch. If the copy takes longer than the
 compute, the job is too small to be worth a separate submission and should be
 merged into an array task with more work per task.
 
-For a multi-node job, every node needs its own copy — stage inside `srun` with
+For a multi-node job, every node needs its own copy, so stage inside `srun` with
 `--ntasks-per-node=1` rather than once in the batch script, or the ranks on other
 nodes will find an empty directory.
 
@@ -192,7 +192,7 @@ even with space elsewhere.
 
 ## 6. Purge policies
 
-Fast scratch is usually purged on file age — 30, 60, or 90 days since last
+Fast scratch is usually purged on file age: 30, 60, or 90 days since last
 access, applied without warning and without a backup. Two consequences:
 
 - Anything you would be upset to lose belongs on the project or archive
@@ -207,8 +207,8 @@ job in a dependency chain rather than something you remember to do later.
 
 ## 7. Data that must not move
 
-Restricted data — human subjects data, clinical extracts, data under a DUA, an
-IRB-scoped cohort, export-controlled material — has an approved storage location
+Restricted data (human subjects data, clinical extracts, data under a DUA, an
+IRB-scoped cohort, export-controlled material) has an approved storage location
 and an approved processing boundary. Before copying it to node-local scratch, to
 a personal directory, or off the cluster, confirm the destination is inside that
 boundary. Node-local scratch is generally inside it; a laptop, a personal cloud

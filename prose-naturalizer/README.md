@@ -35,14 +35,14 @@ prose-naturalizer/
 ```
 
 The skill declares `compatibility: claude-code opencode` and a minimal
-`allowed-tools` set (Read, Write, Edit, Grep, Glob, AskUserQuestion) — it only
+`allowed-tools` set (Read, Write, Edit, Grep, Glob, AskUserQuestion), so it only
 needs to read and edit text.
 
 ## Changelog
 
-- **2.0.0** — Renamed from `humanizer` to `prose-naturalizer` (breaking: the
+- **2.0.0**: Renamed from `humanizer` to `prose-naturalizer` (breaking: the
   skill's folder and name changed). No behavior change.
-- **1.0.0** — Initial release.
+- **1.0.0**: Initial release.
 
 ---
 

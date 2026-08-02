@@ -30,6 +30,10 @@ env/
 *.egg-info/
 .ipynb_checkpoints/
 
+# --- Build output (release assets are built by CI, not committed) ---
+dist/
+build/
+
 # --- Local / secret material (never commit) ---
 .env
 .env.*

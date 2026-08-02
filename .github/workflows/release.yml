@@ -1,0 +1,58 @@
+name: release
+
+# Builds one uploadable zip per skill and attaches them to the GitHub Release,
+# so users can download a single skill instead of cloning and zipping by hand.
+# Each archive is rooted at the skill folder, which is what claude.ai requires.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build assets for (e.g. v0.3.0)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Validate before publishing
+        run: |
+          python scripts/validate_skills.py
+          python scripts/generate_catalog.py --check
+
+      - name: Build skill archives
+        run: python scripts/package_skills.py --out dist
+
+      - name: Checksums
+        run: |
+          cd dist
+          sha256sum *.zip > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Attach archives to the release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          files: |
+            dist/*.zip
+            dist/SHA256SUMS.txt
+          generate_release_notes: true
+          fail_on_unmatched_files: true

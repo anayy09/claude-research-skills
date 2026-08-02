@@ -14,9 +14,9 @@ Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/an
 > **This skill is being gracefully discontinued as of v2.10.0.** More focused,
 > better-maintained replacements are now available:
 >
-> - **[evidence-synthesis](../evidence-synthesis)** — formal systematic, scoping,
+> - **[evidence-synthesis](../evidence-synthesis)** for formal systematic, scoping,
 >   and other reviews with PRISMA, GRADE, and risk-of-bias appraisal.
-> - **[investigating-sources](../investigating-sources)** — citation-honest
+> - **[investigating-sources](../investigating-sources)** for citation-honest
 >   research, fact-checking, and source verification.
 >
 > Deep Research still works during the transition, but will receive **no further
@@ -34,7 +34,7 @@ reasoning you can inspect.
 
 ## Seven modes
 
-Pick the depth the task needs — see [`references/mode_selection_guide.md`](./references/mode_selection_guide.md).
+Pick the depth the task needs; see [`references/mode_selection_guide.md`](./references/mode_selection_guide.md).
 
 | Mode | For |
 | :--- | :-- |
@@ -71,17 +71,17 @@ deep-research/
 
 ## Examples
 
-Every mode ships an end-to-end walkthrough in [`examples/`](./examples) — start
+Every mode ships an end-to-end walkthrough in [`examples/`](./examples). Start
 with [`systematic_review.md`](./examples/systematic_review.md) or
 [`socratic_guided_research.md`](./examples/socratic_guided_research.md).
 
 ## Changelog
 
-- **2.10.0** — **Deprecated.** Discontinued in favor of
+- **2.10.0**: **Deprecated.** Discontinued in favor of
   [`evidence-synthesis`](../evidence-synthesis) and
   [`investigating-sources`](../investigating-sources). Still functional; no
   further updates planned.
-- **2.9.3** — Prior release. See [`references/changelog.md`](./references/changelog.md) for the skill's detailed history.
+- **2.9.3**: Prior release. See [`references/changelog.md`](./references/changelog.md) for the skill's detailed history.
 
 ---
 

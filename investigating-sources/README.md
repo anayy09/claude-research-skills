@@ -9,9 +9,9 @@ Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/an
 
 ## What it does
 
-A rigorous research assistant that produces evidence-backed deliverables —
+A rigorous research assistant that produces evidence-backed deliverables:
 briefs, reports, literature reviews, fact-checks, source-verification audits, and
-PRISMA-style systematic reviews — under one hard rule: **every claim is traced to
+PRISMA-style systematic reviews, under one hard rule: **every claim is traced to
 a real, verified source, and unconfirmable citations are caught rather than
 emitted.**
 
@@ -77,7 +77,7 @@ Live DOI resolution needs `requests` (`pip install requests`).
 
 ## Changelog
 
-- **1.0.0** — Initial release.
+- **1.0.0**: Initial release.
 
 ---
 

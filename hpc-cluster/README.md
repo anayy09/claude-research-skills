@@ -15,7 +15,7 @@ whole loop: discovering what the site actually offers, placing data on the right
 filesystem, writing the script, sharding the work into an array, standing up an
 inference server on the allocated node, and reading the post-mortem afterwards.
 
-Cluster work fails in a small number of predictable ways — wrong account or
+Cluster work fails in a small number of predictable ways: wrong account or
 queue, data on the wrong filesystem, a job that dies at hour 71 of a 72 hour wall
 clock with no checkpoint, permissions on a shared group directory. Every recipe
 here exists to make one of those failures either impossible or cheap.
@@ -33,8 +33,8 @@ Two rules run through all of it:
 
 Nothing here is tied to one cluster. Filesystems are addressed by role
 (`$HOME`, `$SCRATCH`, `$PROJECT`, `$TMPDIR`) so a script moves between sites by
-changing one line. Priority tiers are described by behavior — guaranteed versus
-preemptible — rather than by any one site's naming. Local wrapper commands are
+changing one line. Priority tiers are described by behavior, guaranteed versus
+preemptible, rather than by any one site's naming. Local wrapper commands are
 treated as something to discover, not to assume.
 
 SLURM is the worked-out default because it runs most academic and national-lab
@@ -47,7 +47,7 @@ on others.
 ## When Claude uses it
 
 - Writing, submitting, or debugging a job script
-- `sbatch`, `srun`, `squeue`, `sacct`, `seff` — or `qsub`, `qstat`, `bsub`
+- `sbatch`, `srun`, `squeue`, `sacct`, `seff`, or `qsub`, `qstat`, `bsub`
 - GPU allocation, account or QoS errors, "my job is pending forever"
 - A job that was killed, ran out of memory, or hit the wall clock
 - Scratch, project, and archive filesystems; group permissions and ACLs
@@ -80,7 +80,7 @@ hpc-cluster/
 
 ## Scripts
 
-Standard library only. Neither script talks to a scheduler — they print, you
+Standard library only. Neither script talks to a scheduler: they print, you
 review, you submit.
 
 ```bash
@@ -102,7 +102,7 @@ python hpc-cluster/scripts/gpu_hours.py --items 412000 --throughput 6.2 \
 ```
 
 Every generated script carries `set -euo pipefail`, caches redirected off
-`$HOME`, a per-job output directory, and — for arrays — a skip-if-complete guard
+`$HOME`, a per-job output directory, and (for arrays) a skip-if-complete guard
 with write-to-`.tmp`-then-`mv`, so a resubmission after preemption reruns only
 the missing work and a killed task never leaves a truncated file that looks
 finished.
@@ -117,16 +117,14 @@ place.
 
 ## Changelog
 
-- **2.0.0** — Generalized to any HPC cluster. Breaking: the skill was renamed
-  from `hipergator-hpc` to `hpc-cluster`, so remove the old folder from your
-  skills directory. Site-specific paths, accounts, QoS names, and wrapper
+- **2.0.0**: Generalized to any HPC cluster. Site-specific paths, accounts, QoS names, and wrapper
   commands are replaced by filesystem roles and discovery steps;
   `storage-and-permissions.md` is now `storage-and-scratch.md`; added
   `scheduler-portability.md` for PBS/Torque, LSF, and SGE, plus new material on
   containers, purge policies, accounting units, and offline weight staging.
   `gen_sbatch.py` gains `--module` and `--activate` and no longer assumes conda
   or a fixed filesystem layout.
-- **1.0.0** — Initial release.
+- **1.0.0**: Initial release.
 
 ---
 

@@ -1,7 +1,7 @@
 # Scheduler portability: SLURM, PBS/Torque, LSF, SGE
 
 The rest of this skill is written for SLURM because it runs most academic and
-national-lab clusters. The reasoning transfers unchanged to other schedulers —
+national-lab clusters. The reasoning transfers unchanged to other schedulers;
 only the syntax differs. This file is the translation layer.
 
 Two cautions before using any table here:

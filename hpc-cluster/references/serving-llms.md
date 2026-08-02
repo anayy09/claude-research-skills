@@ -215,4 +215,4 @@ parameter count is what drives per-token compute.
 
 Confirm the data handling terms of a shared endpoint before sending sensitive
 data through it. On-premises hosting is a necessary condition for that, not a
-sufficient one — ask who can read the request logs and how long they are kept.
+sufficient one. Ask who can read the request logs and how long they are kept.

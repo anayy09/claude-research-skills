@@ -36,7 +36,7 @@ confirm it produces one correct output file, then scale. A five minute smoke tes
 routinely saves a day of queue time.
 
 Examples use SLURM, which runs most academic and national-lab clusters. On
-PBS/Torque, LSF, or SGE the concepts are identical and the commands are not —
+PBS/Torque, LSF, or SGE the concepts are identical and the commands are not.
 `references/scheduler-portability.md` maps every directive, command, and
 environment variable used in this skill.
 
@@ -199,8 +199,8 @@ per-user running-job cap it is what keeps the submission legal.
 
 Loading a large model once per batch is the dominant cost in a prompt ablation.
 Start one inference server on the allocated node, run every ablation arm against
-it, then tear it down. Full recipe — port selection, health check polling, SSH
-tunneling from a login node, and the client config — in
+it, then tear it down. The full recipe (port selection, health check polling,
+SSH tunneling from a login node, and the client config) is in
 `references/serving-llms.md`.
 
 Key points: bind to `0.0.0.0` on a port chosen at runtime, write the resolved
@@ -237,7 +237,7 @@ python scripts/gpu_hours.py --items 412000 --throughput 6.2 --arms 5 --overhead 
 Measure `throughput` (items per second) from the smoke test rather than guessing.
 Ask for wall clock roughly 1.5x the estimate: too short kills the job, too long
 delays scheduling and can exceed the queue's time limit. Convert the result into
-the site's own accounting unit before reporting a cost — a job billed per node
+the site's own accounting unit before reporting a cost. A job billed per node
 behaves very differently from one billed per GPU.
 
 ## Shared group directories
@@ -263,13 +263,13 @@ in `references/storage-and-scratch.md`.
 
 ## Reference files
 
-- `references/slurm-recipes.md` — job script variants: interactive, multi-GPU
+- `references/slurm-recipes.md`: job script variants: interactive, multi-GPU
   single node, checkpoint and resume, dependency chains, array driven by a
   manifest, preemptible jobs, conditional requeue.
-- `references/storage-and-scratch.md` — filesystem selection, the small-file
+- `references/storage-and-scratch.md`: filesystem selection, the small-file
   problem, node-local staging, ACLs, quota and inode diagnosis, restricted data.
-- `references/serving-llms.md` — an inference server on a compute node,
+- `references/serving-llms.md`: an inference server on a compute node,
   OpenAI-compatible clients, tunneling, concurrency, determinism for ablations.
-- `references/troubleshooting.md` — symptom to cause to fix table.
-- `references/scheduler-portability.md` — SLURM to PBS/Torque, LSF, and SGE:
+- `references/troubleshooting.md`: symptom to cause to fix table.
+- `references/scheduler-portability.md`: SLURM to PBS/Torque, LSF, and SGE:
   directives, commands, environment variables, arrays, and dependencies.

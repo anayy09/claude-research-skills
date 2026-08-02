@@ -9,7 +9,7 @@ Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/an
 
 ## What it does
 
-Recommends where to submit a manuscript using five bundled publisher catalogs —
+Recommends where to submit a manuscript using five bundled publisher catalogs:
 **IEEE, Springer Nature, Elsevier, ACM, and Taylor & Francis**. It reads your
 title, abstract, keywords, and full text, then returns one overall best pick plus
 a ranked shortlist of three to five journals per publisher. Each candidate comes
@@ -57,7 +57,7 @@ python journal-advisor/scripts/find_journals.py --help   # rank venues for a pap
 
 ## Changelog
 
-- **1.0.0** — Initial release.
+- **1.0.0**: Initial release.
 
 ---
 
