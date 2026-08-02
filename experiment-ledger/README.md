@@ -2,7 +2,7 @@
 
 > Reproducible ML experiment tracking: config-as-file, hashed manifests, honest baselines.
 
-[![Version](https://img.shields.io/badge/version-1.0.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.1-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -53,6 +53,8 @@ its manifest hash, and query which run produced a given result. Run with
 
 ## Changelog
 
+- **1.0.1** — Replace site-specific example paths in the config template with
+  `${PROJECT}` and `${SCRATCH}`. No behavior change.
 - **1.0.0** — Initial release.
 
 ---

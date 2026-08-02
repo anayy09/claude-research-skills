@@ -202,7 +202,7 @@ Handoffs once the direction is chosen:
   exist are the standard route to an irreproducible results table.
 - `ml-eval-statistics` for the intervals, paired tests, clustered resampling,
   calibration, and multiplicity control specified in the evidence set.
-- `hipergator-hpc` for job scripts and allocation planning.
+- `hpc-cluster` for job scripts and allocation planning.
 - `evidence-synthesis` or `investigating-sources` when the direction needs a
   full literature base rather than the targeted prior-art check.
 - `journal-advisor` once the claim and evidence set are fixed, for venue choice.

@@ -11,6 +11,11 @@ Example
 
 Prints a per-arm and total estimate, a recommended --time request with headroom,
 and an array shape that keeps each task inside a target wall clock.
+
+The GPU-hour figure is a physical quantity, not a bill. Sites charge in
+core-hours, GPU-hours, or node-hours, and some charge for a whole node however
+much of it you requested. Convert to the site's own accounting unit before
+reporting a cost against an allocation.
 """
 
 from __future__ import annotations
@@ -33,7 +38,7 @@ def main() -> None:
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--items", type=float, required=True,
-                   help="work units per arm (patches, slides, samples)")
+                   help="work units per arm (samples, records, shards, steps)")
     p.add_argument("--throughput", type=float, required=True,
                    help="items per second per task, measured not guessed")
     p.add_argument("--arms", type=int, default=1,

@@ -16,7 +16,7 @@ run:
 
 data:
   dataset: NCT-CRC-HE-100K
-  root: /orange/GROUP/datasets/nct-crc-he-100k
+  root: ${PROJECT}/datasets/nct-crc-he-100k   # site path; see the hpc-cluster skill
   split_file: splits/patient_holdout_v2.json   # stored file, hashed into the manifest
   group_key: patient_id                        # the unit of analysis for resampling
   preprocessing_version: tile-v3               # bump on any preprocessing change
@@ -29,7 +29,7 @@ model:
   revision: null                # fill from the endpoint or hub; null with a note if unavailable
   serving:
     stack: vllm
-    endpoint_file: /blue/GROUP/$USER/endpoints/current.json
+    endpoint_file: ${SCRATCH}/endpoints/current.json
   decoding:
     temperature: 0.0
     top_p: 1.0
@@ -58,6 +58,6 @@ eval:
     cluster_by: patient_id
 
 output:
-  root: /blue/GROUP/$USER/runs      # ledger writes runs/<run_id>/ under the project;
+  root: ${SCRATCH}/runs             # ledger writes runs/<run_id>/ under the project;
                                     # bulk artifacts can live here instead
   save_predictions: true            # per-item outputs enable any later re-analysis

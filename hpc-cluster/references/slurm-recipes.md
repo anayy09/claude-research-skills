@@ -1,13 +1,25 @@
 # SLURM recipes
 
+Every recipe assumes `WORK` is set to a writable path on a fast filesystem, as
+in the canonical script in `SKILL.md`:
+
+```bash
+WORK=${SCRATCH:-/scratch/$USER}/myproject
+```
+
+Substitute your site's account, partition, and QoS. For PBS/Torque, LSF, or SGE,
+translate the directives with `scheduler-portability.md`; the logic of each
+recipe is unchanged.
+
 Contents:
 1. Interactive session for debugging
 2. Checkpoint and resume for long training
 3. Multi-GPU single node
 4. Array driven by a manifest file
 5. Dependency chains
-6. Preemptible burst jobs
-7. Requeue on failure
+6. Preemptible jobs
+7. Requeue on transient failure
+8. Containers
 
 ---
 
@@ -17,19 +29,23 @@ Never debug by submitting batch jobs. The feedback loop is minutes instead of
 seconds and you burn allocation on failed imports.
 
 ```bash
-srun --account=GROUP --qos=GROUP --partition=PARTITION \
-     --cpus-per-task=4 --mem=32gb --gres=gpu:a100:1 --time=02:00:00 \
+srun --account=ACCOUNT --partition=PARTITION --qos=QOS \
+     --cpus-per-task=4 --mem=32gb --gres=gpu:1 --time=02:00:00 \
      --pty bash -i
 ```
 
-Inside: `module load conda && conda activate ENV`, then run the script directly.
-When it works end to end on a small input, copy the exact commands into the
-batch script. Anything that only works interactively usually depends on a shell
-init file that batch jobs do not source.
+Some sites wrap this (`salloc`, or a local `interactive` command) and some
+restrict interactive work to a dedicated partition. Check before assuming
+`srun --pty` is allowed.
 
-For a longer interactive session that survives disconnection, run it inside
-`tmux` on the login node before calling `srun`, or use OnDemand's Jupyter or
-desktop app at the RC OnDemand portal.
+Inside, load the environment exactly the way the batch script will, then run the
+script directly. When it works end to end on a small input, copy those commands
+into the batch script. Anything that only works interactively usually depends on
+a shell init file that batch jobs do not source.
+
+For a session that survives disconnection, start `tmux` on the login node before
+allocating. Many sites also run a web portal (Open OnDemand is the common one)
+with Jupyter and remote desktop apps that hold the allocation for you.
 
 ---
 
@@ -41,7 +57,7 @@ The wall clock limit will eventually kill a training job. Design for it.
 #SBATCH --time=72:00:00
 #SBATCH --signal=B:USR1@600      # send USR1 to the batch shell 10 min before the kill
 
-CKPT_DIR=/blue/GROUP/$USER/ckpt/$SLURM_JOB_NAME
+CKPT_DIR="$WORK/ckpt/$SLURM_JOB_NAME"
 mkdir -p "$CKPT_DIR"
 
 # Resume automatically if a checkpoint exists.
@@ -60,10 +76,9 @@ wait $PID
 ```
 
 The training script must handle `SIGUSR1` by writing `last.ckpt` and exiting.
-Two properties make this work: checkpoints are written to a stable filename
-(atomically: write `last.ckpt.tmp`, then `mv`), and the script decides to resume
-by looking at the filesystem rather than by a flag the human must remember to
-flip.
+Two properties make this work: checkpoints go to a stable filename (atomically —
+write `last.ckpt.tmp`, then `mv`), and the script decides to resume by looking at
+the filesystem rather than by a flag the human must remember to flip.
 
 Chain the follow-on job at submit time:
 
@@ -89,7 +104,7 @@ for a speedup that a larger batch often makes unnecessary.
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=32
-#SBATCH --gres=gpu:a100:4
+#SBATCH --gres=gpu:4
 #SBATCH --mem=200gb
 
 export MASTER_ADDR=$(hostname)
@@ -97,7 +112,7 @@ export MASTER_PORT=$((20000 + RANDOM % 20000))
 srun torchrun --standalone --nproc_per_node=4 train.py --config configs/base.yaml
 ```
 
-Random `MASTER_PORT` avoids collisions when two of your jobs land on the same
+A random `MASTER_PORT` avoids collisions when two of your jobs land on the same
 node. `--standalone` is correct for single node; do not carry multi-node
 rendezvous flags into it.
 
@@ -115,28 +130,34 @@ the data.
 ```bash
 #SBATCH --array=1-500%20
 
-MANIFEST=/blue/GROUP/$USER/manifests/slides.txt
+MANIFEST="$WORK/manifests/items.txt"
 LINE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" "$MANIFEST")
 [[ -z "$LINE" ]] && { echo "no work for task $SLURM_ARRAY_TASK_ID"; exit 0; }
 
-SLIDE_ID=$(basename "$LINE" .svs)
-OUT=/blue/GROUP/$USER/runs/$SLURM_ARRAY_JOB_ID/${SLIDE_ID}.parquet
-[[ -f "$OUT" ]] && { echo "done: $SLIDE_ID"; exit 0; }
+ITEM=$(basename "$LINE" | sed 's/\.[^.]*$//')
+OUT="$WORK/runs/$SLURM_ARRAY_JOB_ID/${ITEM}.parquet"
+[[ -f "$OUT" ]] && { echo "done: $ITEM"; exit 0; }
 
-srun python -u tile_and_infer.py --slide "$LINE" --out "${OUT}.tmp"
+srun python -u process.py --input "$LINE" --out "${OUT}.tmp"
 mv "${OUT}.tmp" "$OUT"
 ```
 
-To rerun only failures, regenerate the manifest from the outputs that are
-missing rather than reading the logs:
+To rerun only the failures, regenerate the manifest from the outputs that are
+missing rather than by reading the logs:
 
 ```bash
-comm -23 <(sort all_slides.txt) <(ls runs/$JOBID/*.parquet | xargs -n1 basename | sed 's/.parquet//' | sort) > retry.txt
+comm -23 <(sort all_items.txt) \
+         <(ls "$WORK/runs/$JOBID"/*.parquet | xargs -n1 basename | sed 's/.parquet//' | sort) \
+  > retry.txt
 ```
 
-Note the array index is 1-based when indexing lines with `sed -n`, and 0-based
-in most Python indexing. Pick one convention per project and write it in the
-job script comment.
+The array index is 1-based when indexing lines with `sed -n`, and 0-based in most
+Python indexing. Pick one convention per project and write it in a job script
+comment.
+
+Check the site's maximum array size before submitting a large range —
+`scontrol show config | grep MaxArraySize`. Exceeding it rejects the whole
+submission, and the default is often 1001.
 
 ---
 
@@ -148,31 +169,36 @@ INFER=$(sbatch --parsable --dependency=afterok:$PREP infer_array.sbatch)
 AGG=$(sbatch --parsable --dependency=afterok:$INFER aggregate.sbatch)
 ```
 
-`afterok:<array job id>` waits for every array task to succeed, which is what
-you want for an aggregation step. If one task legitimately has no work and you
+`afterok:<array job id>` waits for every array task to succeed, which is what you
+want for an aggregation step. If one task legitimately has no work and you
 `exit 0`, the dependency is satisfied; `exit 1` for "no work" would stall the
 chain.
 
+Add `--kill-on-invalid-dep=yes` so a dependent job is cancelled rather than left
+pending indefinitely when its parent fails.
+
 ---
 
-## 6. Preemptible burst jobs
+## 6. Preemptible jobs
 
-Burst QoS gives more capacity at the cost of preemption. Only use it for work
-that is idempotent and checkpointed. Detect preemption after the fact:
+The opportunistic tier — burst, preemptable, scavenger, spot, whatever the site
+calls it — gives more capacity at the cost of being reclaimed mid-run. Only use
+it for work that is idempotent and checkpointed. Detect preemption after the
+fact:
 
 ```bash
 sacct -j <jobid> --format=JobID,State%20,ExitCode,Elapsed
-# State PREEMPTED or CANCELLED with a short Elapsed means it was reclaimed
+# State PREEMPTED, or CANCELLED with a short Elapsed, means it was reclaimed
 ```
 
-Combine with `--requeue` so SLURM resubmits automatically:
+Combine with `--requeue` so the scheduler resubmits automatically:
 
 ```bash
-#SBATCH --qos=GROUP-b
+#SBATCH --qos=OPPORTUNISTIC_QOS      # or --partition=, depending on the site
 #SBATCH --requeue
 ```
 
-With `--requeue`, the job may start more than once. This is safe only if the
+With `--requeue` the job may start more than once. That is safe only if the
 script skips completed outputs, which is the same guard the array recipe uses.
 
 ---
@@ -180,7 +206,7 @@ script skips completed outputs, which is the same guard the array recipe uses.
 ## 7. Requeue on transient failure
 
 Node-level failures (a bad GPU, a filesystem hiccup) are worth one automatic
-retry, application bugs are not. Distinguish them by exit code:
+retry; application bugs are not. Distinguish them by exit code:
 
 ```bash
 srun python -u run.py "$@"
@@ -188,12 +214,41 @@ RC=$?
 if [[ $RC -eq 0 ]]; then exit 0; fi
 if [[ $RC -eq 42 ]]; then    # reserve 42 in your script for "transient, retry"
   echo "transient failure, requeueing"
-  scontrol requeue $SLURM_JOB_ID
+  scontrol requeue "$SLURM_JOB_ID"
   exit 0
 fi
 echo "permanent failure rc=$RC"
 exit $RC
 ```
 
-Blind unconditional requeue turns one bug into an infinite loop that consumes
-the group allocation overnight.
+Blind unconditional requeue turns one bug into an infinite loop that consumes the
+group allocation overnight.
+
+---
+
+## 8. Containers
+
+Docker is almost never available on a shared cluster, because it needs root.
+Apptainer (formerly Singularity) is the usual substitute and runs as the calling
+user. Build the image somewhere you have root, or convert an existing Docker
+image, then run it from the job script:
+
+```bash
+module load apptainer                       # or singularity, per site
+
+apptainer exec --nv \
+  --bind "$WORK":/work \
+  --bind "${TMPDIR:-/tmp}":/tmp \
+  "$WORK/images/env.sif" \
+  python -u /work/run.py --config /work/configs/base.yaml
+```
+
+- `--nv` exposes the NVIDIA driver. Without it the container sees no GPU.
+- Bind only the paths the job needs. Host `$HOME` is bound by default in many
+  builds, which silently reintroduces the home-quota problem and lets a stray
+  `~/.local` shadow the container's packages. Use `--no-home` when the container
+  carries its own environment.
+- Keep the `.sif` on a fast filesystem, not in `$HOME`; images run to several
+  gigabytes.
+- Record the image path and its checksum in the run manifest. "The container" is
+  not a reproducible description of an environment.

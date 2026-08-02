@@ -133,7 +133,7 @@ phase, and marks which phases are the honest place to take time from.
 evidence base rather than a targeted prior-art check,
 [`experiment-ledger`](../experiment-ledger) for run tracking once a direction is
 chosen, [`ml-eval-statistics`](../ml-eval-statistics) for the tests and intervals
-the plan specifies, [`hipergator-hpc`](../hipergator-hpc) for execution,
+the plan specifies, [`hpc-cluster`](../hpc-cluster) for execution,
 [`journal-advisor`](../journal-advisor) for venue choice,
 [`research-paper-writing`](../research-paper-writing) for drafting, and
 [`submission-reviewer`](../submission-reviewer) before you send it out.

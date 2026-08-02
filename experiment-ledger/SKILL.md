@@ -14,12 +14,12 @@ description: >-
   whichever runs happen to exist. Prefer this over ad hoc directories and
   spreadsheet tracking.
 summary: "Reproducible ML experiment tracking: config-as-file, hashed manifests, honest baselines."
-version: "1.0.0"
+version: "1.0.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-07-25"
+  last_updated: "2026-08-02"
 ---
 
 # Experiment Ledger

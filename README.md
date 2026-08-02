@@ -42,8 +42,8 @@ This repository collects the skills I use for real research work. They share a b
 | :---- | :----------- | :-----: |
 | [`data-engineering`](./data-engineering) | Build, review, and debug data pipelines, SQL, and schemas — stack-agnostic. | `1.0.0` |
 | [`evidence-synthesis`](./evidence-synthesis) | Plan, run, appraise, and report systematic and other evidence syntheses (PRISMA, GRADE, RoB). | `1.0.0` |
-| [`experiment-ledger`](./experiment-ledger) | Reproducible ML experiment tracking: config-as-file, hashed manifests, honest baselines. | `1.0.0` |
-| [`hipergator-hpc`](./hipergator-hpc) | SLURM jobs and LLM serving on UF HiPerGator, adaptable to any SLURM cluster. | `1.0.0` |
+| [`experiment-ledger`](./experiment-ledger) | Reproducible ML experiment tracking: config-as-file, hashed manifests, honest baselines. | `1.0.1` |
+| [`hpc-cluster`](./hpc-cluster) | Write, debug, and monitor cluster batch jobs, and serve models on compute nodes. | `2.0.0` |
 | [`investigating-sources`](./investigating-sources) | Citation-honest research where every claim traces to a real, verified source. | `1.0.0` |
 | [`journal-advisor`](./journal-advisor) | Match a manuscript to the right journal, with desk-reject risk, from five publisher catalogs. | `1.0.0` |
 | [`ml-eval-statistics`](./ml-eval-statistics) | The right statistics for model evaluation: significance, CIs, calibration, selective prediction. | `1.0.0` |

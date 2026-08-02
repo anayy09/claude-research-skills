@@ -11,7 +11,7 @@ body:
         - deep-research
         - evidence-synthesis
         - experiment-ledger
-        - hipergator-hpc
+        - hpc-cluster
         - investigating-sources
         - journal-advisor
         - ml-eval-statistics

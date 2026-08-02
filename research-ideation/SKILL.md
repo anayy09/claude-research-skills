@@ -52,7 +52,7 @@ not:
   off to `ml-eval-statistics`.
 - Write the paper. Hand off to `research-paper-writing`.
 - Design the run tracking. Hand off to `experiment-ledger` once the experiment
-  plan is agreed, and to `hipergator-hpc` for cluster execution.
+  plan is agreed, and to `hpc-cluster` for cluster execution.
 
 ## Workflow
 
