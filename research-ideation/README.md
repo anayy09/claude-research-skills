@@ -146,5 +146,3 @@ the plan specifies, [`hipergator-hpc`](../hipergator-hpc) for execution,
 
 Part of the **[claude-research-skills](../)** collection.
 [Report an issue »](https://github.com/anayy09/claude-research-skills/issues/new/choose)
-</content>
-</invoke>
