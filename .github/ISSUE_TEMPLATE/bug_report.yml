@@ -16,7 +16,9 @@ body:
         - journal-advisor
         - ml-eval-statistics
         - prose-naturalizer
+        - research-ideation
         - research-paper-writing
+        - submission-reviewer
         - (repo tooling / not a specific skill)
     validations:
       required: true

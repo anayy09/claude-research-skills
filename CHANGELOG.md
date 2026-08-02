@@ -8,6 +8,12 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 ## [Unreleased]
 
 ### Added
+- `research-ideation` skill — a research strategist that inventories the user's
+  existing assets, generates candidate directions from a catalog of 23 ideation
+  operators, verifies the novelty delta against real prior work, scores and ranks
+  on six weighted dimensions with cap rules, and produces a per-direction path to
+  submission (gap ledger, headline table, minimum evidence set, kill experiment,
+  reviewer objections, and a backward schedule against the deadline).
 - `submission-reviewer` skill — fair, constructive peer review of a paper or
   patent submission against a weighted rubric, with a score out of 100 and band,
   verified-only novelty checks against prior art, authenticity and internal
