@@ -21,6 +21,10 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
   incomplete submissions, and ranked fixes with a projected score.
 
 ### Changed
+- Rewrote the repository README so it is not scoped to Claude Code. Agent Skills
+  is an open format, so installation is now documented per surface — filesystem
+  agents, the Claude apps, and the Claude API — with the caveat that skills do
+  not sync between them, and a note on which scripts need network access.
 - Renamed the `humanizer` skill to `prose-naturalizer` (1.0.0 → 2.0.0). Breaking:
   the folder and skill name changed; update any local install of the old folder.
 

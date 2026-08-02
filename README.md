@@ -2,14 +2,14 @@
 
 # 🔬 claude-research-skills
 
-**Production-grade [Claude Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) for researchers, ML scientists, and technical writers.**
+**Production-grade [Agent Skills](https://agentskills.io) for researchers, ML scientists, and technical writers.**
 
-A curated, versioned collection that turns Claude Code into a rigorous research collaborator — from literature review and experiment tracking to statistics, HPC, and getting published.
+A curated, versioned collection that turns an AI agent into a rigorous research collaborator — from literature review and experiment tracking to statistics, HPC, and getting published.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Skills](https://img.shields.io/badge/skills-11-6E56CF)](#-the-skills)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
-[![Made for Claude Code](https://img.shields.io/badge/made%20for-Claude%20Code-D97757)](https://claude.com/claude-code)
+[![Format: Agent Skills](https://img.shields.io/badge/format-Agent%20Skills-D97757)](https://agentskills.io)
 [![GitHub stars](https://img.shields.io/github/stars/anayy09/claude-research-skills?style=social)](https://github.com/anayy09/claude-research-skills/stargazers)
 
 [The skills](#-the-skills) · [Install](#-installation) · [Usage](#-usage) · [Versioning](#-versioning) · [Contributing](#-contributing)
@@ -20,7 +20,9 @@ A curated, versioned collection that turns Claude Code into a rigorous research 
 
 ## What is this?
 
-**Agent Skills** are self-contained folders that teach Claude Code how to do a specialized job well. Each is a `SKILL.md` of instructions plus the references, scripts, and templates it needs. Claude loads a skill automatically when your request matches what it is for — you don't call an API or wire anything up.
+**Agent Skills** are self-contained folders that teach an agent how to do a specialized job well. Each is a `SKILL.md` of instructions plus the references, scripts, and templates it needs. The agent reads only the name and description until your request matches, then loads the rest — so a large library costs almost nothing until it is used.
+
+The format is an [open standard](https://agentskills.io): a folder, a `SKILL.md`, YAML frontmatter with `name` and `description`. It originated at Anthropic and is now read by a range of agents and IDEs, so these skills are not tied to one product. They are written and tested against Claude, and the install steps below cover the surfaces where that is a one-step operation; [any other Agent Skills client](https://agentskills.io/clients) reads the same folders.
 
 This repository collects the skills I use for real research work. They share a bias: **be rigorous, be honest, and show your work.** Every claim traceable to a source, every result reported with an interval, every experiment reproducible from a config.
 
@@ -30,6 +32,7 @@ This repository collects the skills I use for real research work. They share a b
 - **Scripts that actually run.** Many skills ship Python helpers that degrade gracefully offline and never silently pass a check they couldn't perform.
 - **Honest by construction.** The research skills refuse fabricated citations; the stats skill refuses a point estimate without an interval; the experiment skill refuses a baseline chosen after the fact.
 - **Consistent and versioned.** Every skill follows the same structure, carries a semantic version, and is documented the same way — so the tenth skill is as easy to trust as the first.
+- **Plain Markdown and standard-library Python.** No framework, no runtime, no lock-in. A skill you stop using is a folder you delete.
 
 ## 📚 The skills
 
@@ -60,54 +63,91 @@ Each skill has its own README with triggers, layout, and usage. Click a name abo
 
 ## 🚀 Installation
 
-Claude Code discovers **personal skills** in `~/.claude/skills/`. Install a skill by putting its folder there.
-
-**macOS / Linux**
+Start by cloning the collection:
 
 ```bash
 git clone https://github.com/anayy09/claude-research-skills.git
-# Install one skill:
+```
+
+Then follow the section for where you work. Skills do **not** sync between surfaces — installing into Claude Code does not make a skill available on claude.ai or the API, so set up each one you use.
+
+<details open>
+<summary><b>Claude Code, and other agents that read a skills directory</b></summary>
+
+Copy a skill folder into `~/.claude/skills/` for personal use, or into `.claude/skills/` inside a repository to share it with everyone working on that project.
+
+```bash
+# one skill
 cp -r claude-research-skills/evidence-synthesis ~/.claude/skills/
-# ...or install them all:
+
+# all of them
 for d in claude-research-skills/*/; do
   [ -f "$d/SKILL.md" ] && cp -r "$d" ~/.claude/skills/
 done
 ```
 
-**Windows (PowerShell)**
-
 ```powershell
-git clone https://github.com/anayy09/claude-research-skills.git
-# Install one skill:
+# Windows PowerShell
 Copy-Item -Recurse claude-research-skills\evidence-synthesis "$env:USERPROFILE\.claude\skills\"
-# ...or install them all:
+
 Get-ChildItem claude-research-skills -Directory |
   Where-Object { Test-Path (Join-Path $_.FullName 'SKILL.md') } |
   ForEach-Object { Copy-Item -Recurse $_.FullName "$env:USERPROFILE\.claude\skills\" }
 ```
 
-Start (or restart) Claude Code and the skills are live. Prefer to hack on them in place? Symlink a folder into `~/.claude/skills/` instead of copying.
+Restart the agent and the skills are live. To hack on one in place, symlink the folder instead of copying it.
 
-> **Note:** some skills bundle Python scripts. Install their dependencies only if you use them — for example `pip install pyyaml requests`. Each skill's README lists what it needs.
+Other Agent Skills clients — Cursor, VS Code, GitHub Copilot, Codex, Gemini CLI, Goose, OpenCode and others — use the same folder format but each has its own discovery path. Check that tool's skills documentation for where to put the folder; the folder itself needs no changes.
+
+</details>
+
+<details>
+<summary><b>Claude apps (claude.ai, desktop, mobile)</b></summary>
+
+Custom skills are uploaded as a `.zip` of the skill folder under **Settings → Features → Skills**. Available on Pro, Max, Team, and Enterprise plans with code execution enabled, and scoped to your own account rather than the organization.
+
+```bash
+cd claude-research-skills && zip -r evidence-synthesis.zip evidence-synthesis
+```
+
+```powershell
+Compress-Archive -Path claude-research-skills\evidence-synthesis -DestinationPath evidence-synthesis.zip
+```
+
+Upload one zip per skill.
+
+</details>
+
+<details>
+<summary><b>Claude API and Agent SDK</b></summary>
+
+Upload a skill through the [`/v1/skills` endpoints](https://platform.claude.com/docs/en/build-with-claude/skills-guide) with the `skills-2025-10-02` beta header, then reference the returned `skill_id` in the `container` parameter alongside the code execution tool. Uploaded skills are shared workspace-wide.
+
+The API sandbox has **no network access and no runtime package installation**, which matters for two skills here: the citation verification scripts in `evidence-synthesis` and `investigating-sources` reach Crossref and PubMed. They fail closed — a reference that could not be checked is reported as unverified, never as clean — but for real verification, run those scripts on a surface with network access.
+
+</details>
+
+> **Dependencies:** most bundled scripts are standard library only. The few that aren't need `pyyaml` or `requests`; install them only if you use those scripts. Each skill's README says what it needs.
 
 ## 🧭 Usage
 
-You don't invoke a skill manually. Describe your task and Claude Code loads the matching skill on its own:
+Most of the time you don't invoke a skill by name. Describe the task, and the agent loads the matching skill on its own:
 
 > *"Run a systematic review on X and give me a PRISMA-style report."* → `evidence-synthesis`
 > *"Is the accuracy gap between these two models significant?"* → `ml-eval-statistics`
+> *"I have these results and a November deadline — what's the paper?"* → `research-ideation`
 > *"Where should I submit this manuscript?"* → `journal-advisor`
 > *"Review this draft and tell me if it's ready to submit."* → `submission-reviewer`
 > *"Make this related-work section sound less like AI wrote it."* → `prose-naturalizer`
 
-Each skill's README shows the exact triggers and worked examples.
+In Claude Code you can also call one directly as `/skill-name` when you want to force it. Each skill's README shows the exact triggers and worked examples.
 
 ## 🗂 Repository layout
 
 ```
 claude-research-skills/
 ├── <skill>/                 one folder per skill
-│   ├── SKILL.md             the instructions Claude loads (name, description, version…)
+│   ├── SKILL.md             the instructions the agent loads (name, description, version…)
 │   ├── README.md            human-facing docs for that skill
 │   ├── references/          knowledge loaded on demand
 │   ├── scripts/             runnable helpers
