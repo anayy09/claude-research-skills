@@ -9,6 +9,7 @@ description: |
   voice, negative parallelisms, and filler phrases.
 summary: "Strip the tells of AI-generated writing, based on Wikipedia's Signs of AI writing."
 version: "2.0.0"
+author: anayy09
 license: MIT
 metadata:
   status: active
