@@ -7,7 +7,42 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+- `submission-formatter` (1.0.0 to 1.1.0): recovers document structure from Word
+  files that use custom style names instead of Word's built-in ones. Pandoc only
+  promotes `Heading N`, so a manuscript built on a publisher template arrived
+  with its outline collapsed and its reference list invisible; a second pass with
+  `python-docx` reads the real style names and restores headings, which in turn
+  makes the reference section findable. Numbered Word headings, which reach
+  markdown as ordered-list items, are handled too.
+- For LaTeX input, structural counts are now taken from the `.tex` itself and
+  compared against the extraction, so anything the pandoc round-trip failed to
+  reproduce is reported rather than silently undercounted.
+
+### Fixed
+All found by running `submission-formatter` end to end against two real
+manuscripts: a 61 KB LaTeX paper reformatted into Springer Nature `sn-jnl`, and a
+DOCX review paper converted to IEEE Access.
+- Figure captions were taken from Word's machine-written alt text, which put
+  invented sentences ("A diagram of a process flow AI-generated content may be
+  incorrect") into manuscript captions. The author's caption paragraph now wins.
+- Grid tables were truncated to their first row, and the remaining rows leaked
+  into the body as loose text, because the rule pattern rejected the alignment
+  colons pandoc emits (`+====:+`). A 10-table paper extracted as 9, three of them
+  single-row fragments.
+- Figures never resolved: pandoc resolved relative image paths against the
+  working directory rather than the manuscript, so `--extract-media` produced
+  nothing and emitted placeholder spans that then vanished from the inventory. A
+  figure whose file still cannot be found is now reported instead of dropped.
+- `latexmk` was never told to run BibTeX, so a first build shipped with every
+  citation undefined, and the passes that resolve citations and cross-references
+  after BibTeX were not run either. The final log, not the accumulated output of
+  earlier passes, is now what gets reported.
+- `fidelity_check` fell back to a crude regex LaTeX reader without saying so,
+  turning its own reader failure into a 24% "missing content" report. It now
+  declares the fallback and frames the drift as an upper bound.
+- All three scripts decoded subprocess output with the locale codec, crashing on
+  Windows on the first non-ASCII byte pandoc emitted.
 
 ## [0.4.0] - 2026-08-04
 

@@ -71,6 +71,9 @@ def unescape(text: str) -> str:
     return re.sub(r"(?<!\\)\\([%&$#_{}\[\]*`~^<>])", r"\1", text)
 
 
+READER_NOTES: list = []
+
+
 def read_text(path: Path) -> str:
     """Get plain text out of whatever this file is."""
     ext = path.suffix.lower()
@@ -82,7 +85,8 @@ def read_text(path: Path) -> str:
     if ext == ".pdf":
         if have("pdftotext"):
             p = subprocess.run(["pdftotext", "-nopgbrk", str(path), "-"],
-                               capture_output=True, text=True)
+                               capture_output=True, text=True,
+                           encoding="utf-8", errors="replace")
             if p.returncode == 0 and p.stdout.strip():
                 return dehyphenate(p.stdout)
         try:
@@ -106,14 +110,26 @@ def read_text(path: Path) -> str:
         # writer drops them, which would look like catastrophic content loss
         p = subprocess.run(["pandoc", "-f", fmt, "-t", "markdown", "--wrap=none",
                             "--standalone", str(path)],
-                           capture_output=True, text=True)
+                           capture_output=True, text=True,
+                           encoding="utf-8", errors="replace")
         if p.returncode == 0:
             return unescape(strip_yaml_keys(p.stdout))
         p = subprocess.run(["pandoc", "-f", fmt, "-t", "plain", "--wrap=none", str(path)],
-                           capture_output=True, text=True)
+                           capture_output=True, text=True,
+                           encoding="utf-8", errors="replace")
         if p.returncode == 0:
             return unescape(p.stdout)
     if ext == ".tex":
+        # A regex stripper is not a LaTeX parser: it loses environments the
+        # class defines and anything the reader would have routed into
+        # metadata. Drift measured against it is a floor, so say so rather than
+        # letting a reader failure surface as missing content.
+        READER_NOTES.append(
+            "%s was read with the fallback LaTeX stripper because pandoc could "
+            "not parse it. Abstract text, custom environments, and macro-heavy "
+            "passages may be absent from this side of the comparison, so treat "
+            "reported drift as an upper bound and verify against the file."
+            % path.name)
         return unescape(strip_latex(path.read_text(encoding="utf-8", errors="replace")))
     raise SystemExit("no reader available for %s (install pandoc)" % path)
 
@@ -360,6 +376,8 @@ def main() -> int:
                                        encoding="utf-8")
 
     print("fidelity check: %s -> %s" % (src_path.name, out_path.name))
+    for note in READER_NOTES:
+        print("  READER      %s" % note)
     print("  words       %d -> %d (%+0.2f%%)" % (s_words, o_words, report["words"]["delta_pct"]))
     print("  content     missing %d word tokens, added %d"
           % (sum(tok_missing.values()), sum(tok_added.values())))

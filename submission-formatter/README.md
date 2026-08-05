@@ -2,7 +2,7 @@
 
 > Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word.
 
-[![Version](https://img.shields.io/badge/version-1.0.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.1.0-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -104,6 +104,11 @@ python submission-formatter/scripts/fidelity_check.py \
 only `.md`, `.txt`, and `.pdf` input can be read. A missing `.cls` is not a
 problem, see below.
 
+For Word input, install `python-docx` too. Pandoc only recognizes Word's
+built-in `Heading N` styles, and manuscripts built on a publisher template
+usually carry custom names (`heading1`, `referenceitem`). Without that second
+pass the section outline collapses and the reference list stops being findable.
+
 ## Two things that surprise people
 
 **A local compile failure is usually not a defect.** Publisher classes are rarely
@@ -136,6 +141,23 @@ required declaration sections.
 
 ## Changelog
 
+- **1.1.0**: Recover headings, reference lists, and figure captions from Word
+  files that use custom style names, and fix extraction and build defects found
+  by running the skill against two real manuscripts (a LaTeX paper into
+  `sn-jnl`, a DOCX paper into IEEE Access).
+  - Figure captions come from the author's caption paragraph, never from Word's
+    machine-written alt text.
+  - Grid tables whose rules carry alignment colons are no longer truncated to
+    their first row.
+  - Figures resolve relative to the manuscript, so media actually extracts.
+  - LaTeX input is counted from the `.tex` itself, and any structure the pandoc
+    round-trip failed to reproduce is reported instead of silently undercounted.
+  - `latexmk` is told to run BibTeX, and the passes after it are run, so a first
+    build no longer ships with every citation undefined.
+  - `fidelity_check` says when it fell back to its crude LaTeX reader, rather
+    than reporting the shortfall as missing content.
+  - All three scripts decode subprocess output as UTF-8, fixing a crash on
+    Windows consoles for any manuscript containing non-ASCII characters.
 - **1.0.0**: Initial release.
 
 ---

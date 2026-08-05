@@ -50,7 +50,7 @@ This repository collects the skills I use for real research work. They share a b
 | [`prose-naturalizer`](./prose-naturalizer) | Strip the tells of AI-generated writing, based on Wikipedia's Signs of AI writing. | `2.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/prose-naturalizer.zip) |
 | [`research-ideation`](./research-ideation) | Turn existing research assets into ranked, publishable directions with a plan to submission. | `1.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/research-ideation.zip) |
 | [`research-paper-writing`](./research-paper-writing) | Scholarly prose that reads like a working researcher wrote it. | `2.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/research-paper-writing.zip) |
-| [`submission-formatter`](./submission-formatter) | Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word. | `1.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/submission-formatter.zip) |
+| [`submission-formatter`](./submission-formatter) | Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word. | `1.1.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/submission-formatter.zip) |
 | [`submission-reviewer`](./submission-reviewer) | Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score. | `1.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/submission-reviewer.zip) |
 
 **Deprecated.** Retained during a transition period; prefer the replacements.

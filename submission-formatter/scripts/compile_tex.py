@@ -61,7 +61,8 @@ def class_available(name: str, src_dir: Path) -> bool:
         return True
     if not have("kpsewhich"):
         return False
-    p = subprocess.run(["kpsewhich", name + ".cls"], capture_output=True, text=True)
+    p = subprocess.run(["kpsewhich", name + ".cls"], capture_output=True, text=True,
+                              encoding="utf-8", errors="replace")
     return p.returncode == 0 and bool(p.stdout.strip())
 
 
@@ -153,26 +154,60 @@ def main() -> int:
         outdir.mkdir(parents=True, exist_ok=True)
         if have("latexmk") and not args.passes:
             flag = {"pdflatex": "-pdf", "xelatex": "-xelatex", "lualatex": "-lualatex"}[engine]
-            cmd = ["latexmk", flag, "-interaction=nonstopmode", "-file-line-error",
-                   "-outdir=" + str(outdir), main_tex.name]
+            # -bibtex forces the bibliography pass. Without it latexmk defaults
+            # to running bibtex only when a .bbl is already present, so a first
+            # build of a manuscript with a .bib silently yields undefined
+            # citations everywhere.
+            cmd = ["latexmk", flag, "-bibtex", "-interaction=nonstopmode",
+                   "-file-line-error", "-outdir=" + str(outdir), main_tex.name]
         else:
             cmd = None
         if cmd:
-            proc = subprocess.run(cmd, cwd=main_tex.parent, capture_output=True, text=True)
+            proc = subprocess.run(cmd, cwd=main_tex.parent, capture_output=True, text=True,
+                              encoding="utf-8", errors="replace")
             rc = proc.returncode
             log_text = proc.stdout + proc.stderr
         else:
             rc = 0
-            for _ in range(max(args.passes, 3)):
+            aux = outdir / (main_tex.stem + ".aux")
+            for k in range(max(args.passes, 3)):
                 proc = subprocess.run(
                     [engine, "-interaction=nonstopmode", "-file-line-error",
                      "-output-directory", str(outdir), main_tex.name],
-                    cwd=main_tex.parent, capture_output=True, text=True)
+                    cwd=main_tex.parent, capture_output=True, text=True,
+                              encoding="utf-8", errors="replace")
                 log_text += proc.stdout
                 rc = proc.returncode
+                # bibtex after the first pass, once the .aux lists the citations
+                if k == 0 and have("bibtex") and aux.exists() and \
+                        "\\bibdata" in aux.read_text(encoding="utf-8", errors="replace"):
+                    bib = subprocess.run(["bibtex", main_tex.stem], cwd=outdir,
+                                         capture_output=True, text=True,
+                              encoding="utf-8", errors="replace")
+                    log_text += bib.stdout + bib.stderr
         log_file = outdir / (main_tex.stem + ".log")
+
+        # latexmk does not reliably finish the bibliography loop: it can stop
+        # after running bibtex, leaving the .bbl on disk but every \cite and the
+        # cross-references that follow them unresolved in the PDF it just built.
+        # Two more passes settle both, and cost nothing when nothing is pending.
+        pending = re.compile(r"(?:Citation|Reference) .*? undefined")
+        for _ in range(2):
+            current = (log_file.read_text(encoding="utf-8", errors="replace")
+                       if log_file.exists() else "")
+            if not pending.search(current):
+                break
+            proc = subprocess.run(
+                [engine, "-interaction=nonstopmode", "-file-line-error",
+                 "-output-directory", str(outdir), main_tex.name],
+                cwd=main_tex.parent, capture_output=True, text=True,
+                              encoding="utf-8", errors="replace")
+            log_text += proc.stdout
+
         if log_file.exists():
-            log_text += log_file.read_text(encoding="utf-8", errors="replace")
+            # the final log is the authority on what is still unresolved; the
+            # accumulated stdout carries stale warnings from the earlier passes
+            log_text = log_file.read_text(encoding="utf-8", errors="replace")
         pdf = outdir / (main_tex.stem + ".pdf")
         status = "built" if pdf.exists() else "failed"
 

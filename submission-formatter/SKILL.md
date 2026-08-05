@@ -16,12 +16,12 @@ description: >-
   Never rewrites, condenses, paraphrases, or invents content: missing items are
   marked for the author, never filled in.
 summary: "Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word."
-version: "1.0.0"
+version: "1.1.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-08-04"
+  last_updated: "2026-08-05"
 ---
 
 # Submission Formatter

@@ -60,11 +60,118 @@ HEADING_WORDS = {
 
 CITE_PATTERNS = [
     re.compile(r"\\cite[a-zA-Z]*\s*(?:\[[^\]]*\])*\{([^}]*)\}"),
-    re.compile(r"\[(\d+(?:\s*[-,–]\s*\d+)*)\]"),
+    # pandoc rewrites \cite{a,b} to [@a; @b] on the way to markdown
+    re.compile(r"\[(@[^\]]+)\]"),
+    # a bracketed number, but not "[2](#sec:related)", which is pandoc's
+    # rendering of a \ref cross-reference and is not a citation at all
+    re.compile(r"\[(\d+(?:\s*[-,–]\s*\d+)*)\](?!\()"),
     re.compile(r"\(([A-Z][A-Za-z\-']+(?:\s+et\s+al\.)?(?:\s*,\s*|\s+)\d{4}[a-z]?)\)"),
 ]
 
 NUM_RE = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?(?:\s*[eE][-+]?\d+)?%?")
+
+# Pandoc's LaTeX reader silently flattens some floats into plain text, so for a
+# .tex input the source itself is the authority on how many there should be.
+LATEX_COUNTS = {
+    "tables": re.compile(r"\\begin\{table\*?\}"),
+    "figures": re.compile(r"\\begin\{figure\*?\}"),
+    "equations": re.compile(
+        r"\\begin\{(?:equation|align|gather|eqnarray|multline|flalign)\*?\}"),
+}
+
+
+DOCX_HEADING_STYLE = re.compile(r"^heading\s*([1-6])$", re.I)
+
+
+def docx_style_headings(path: Path, warnings: list) -> dict:
+    """Map paragraph text to a heading level using the DOCX's own style names.
+
+    Pandoc only promotes Word's built-in "Heading N" styles. A manuscript built
+    on a publisher's Word template usually carries custom style names instead
+    ("heading1", "papertitle", "referenceitem"), and every one of those headings
+    otherwise arrives as an ordinary paragraph: the section outline collapses and
+    the reference list stops being findable.
+    """
+    try:
+        import docx  # type: ignore
+    except ImportError:
+        warn(warnings, "python-docx is not installed, so custom Word heading "
+                       "styles could not be recovered; the section outline may "
+                       "be incomplete")
+        return {}
+    try:
+        document = docx.Document(str(path))
+    except Exception as exc:  # pragma: no cover - unreadable file
+        warn(warnings, "could not read Word styles (%s)" % exc)
+        return {}
+
+    levels = {}
+    for para in document.paragraphs:
+        text = " ".join(para.text.split())
+        if not text:
+            continue
+        m = DOCX_HEADING_STYLE.match((para.style.name or "").strip())
+        if m:
+            levels.setdefault(text, int(m.group(1)))
+    return levels
+
+
+def promote_styled_headings(blocks: list, levels: dict) -> tuple:
+    """Turn content that Word styled as a heading back into a heading.
+
+    A numbered Word heading reaches markdown as an ordered list item ("1.
+    Introduction"), not as a paragraph, so both shapes have to be handled. A list
+    that mixes headings and real list items is split rather than collapsed.
+    """
+    def norm(s: str) -> str:
+        return " ".join((s or "").split())
+
+    out, promoted, seq = [], 0, [0]
+
+    def bid(base: str) -> str:
+        seq[0] += 1
+        return "%s-p%d" % (base, seq[0])
+
+    for b in blocks:
+        if b["type"] == "paragraph" and norm(b.get("text")) in levels:
+            text = norm(b.get("text"))
+            out.append(dict(id=b["id"], type="heading", level=levels[text], text=text))
+            promoted += 1
+            continue
+
+        if b["type"] == "list" and any(norm(it) in levels for it in b.get("items") or []):
+            buf = []
+            for item in b["items"]:
+                text = norm(item)
+                if text in levels:
+                    if buf:
+                        out.append(dict(id=bid(b["id"]), type="list",
+                                        ordered=b.get("ordered", False), items=buf))
+                        buf = []
+                    out.append(dict(id=bid(b["id"]), type="heading",
+                                    level=levels[text], text=text))
+                    promoted += 1
+                else:
+                    buf.append(item)
+            if buf:
+                out.append(dict(id=bid(b["id"]), type="list",
+                                ordered=b.get("ordered", False), items=buf))
+            continue
+
+        out.append(b)
+    return out, promoted
+
+
+def latex_source_counts(text: str) -> dict:
+    counts = {k: len(p.findall(text)) for k, p in LATEX_COUNTS.items()}
+    keys: list = []
+    for m in CITE_PATTERNS[0].finditer(text):
+        for key in m.group(1).split(","):
+            key = key.strip()
+            if key and key not in keys:
+                keys.append(key)
+    counts["distinct_citation_markers"] = len(keys)
+    return counts
 
 
 def warn(warnings: list, msg: str) -> None:
@@ -77,6 +184,11 @@ def have(tool: str) -> bool:
 
 
 def run(cmd: list, **kw) -> subprocess.CompletedProcess:
+    # text=True alone decodes with the locale codec, which on a Windows console
+    # is cp1252 and raises on the first non-ASCII byte pandoc emits. Manuscripts
+    # are full of en dashes, so the encoding has to be explicit.
+    kw.setdefault("encoding", "utf-8")
+    kw.setdefault("errors", "replace")
     return subprocess.run(cmd, capture_output=True, text=True, **kw)
 
 
@@ -102,9 +214,13 @@ def to_markdown(src: Path, fmt: str, media_dir: Path, warnings: list) -> str:
 
     # --standalone matters: pandoc routes \title, \author, and the abstract
     # environment into document metadata, and without it they are dropped
+    # Without --resource-path, pandoc resolves a relative \includegraphics path
+    # against the working directory rather than the manuscript, silently emits a
+    # placeholder span instead of an image, and extracts no media at all.
     cmd = [
         "pandoc", "-f", fmt, "-t", "markdown-smart-simple_tables-multiline_tables",
         "--wrap=none", "--markdown-headings=atx", "--standalone",
+        "--resource-path", str(src.parent.resolve()),
         "--extract-media", str(media_dir), str(src),
     ]
     proc = run(cmd)
@@ -271,6 +387,20 @@ def split_front_matter(md: str):
 ATTR_RE = re.compile(r"\{[#.][^}]*\}\s*$")
 DIV_RE = re.compile(r"^:::+")
 IMG_RE = re.compile(r"!\[(?P<cap>.*?)\]\((?P<src>[^)\s]+)(?:\s+\"[^\"]*\")?\)")
+# A grid-table rule carries alignment colons ("+====:+-----:+"), so the colon
+# has to be in the class or the table is cut off at its first row.
+GRID_RULE_RE = re.compile(r"^\+[-=+:]+\+$")
+# pandoc falls back to raw HTML for a float that carries a label or a width,
+# which is the common case for a figure in a real manuscript
+HTML_IMG_RE = re.compile(r"<img[^>]*\bsrc=\"([^\"]+)\"")
+# what pandoc leaves behind when it cannot find the image file it was asked to
+# embed: the figure still exists in the manuscript, so it must not disappear
+HTML_PLACEHOLDER_RE = re.compile(
+    r"<span class=\"image placeholder\"[^>]*data-original-image-src=\"([^\"]+)\"")
+HTML_CAP_RE = re.compile(r"<figcaption>(.*?)</figcaption>", re.S)
+TAG_RE = re.compile(r"<[^>]+>")
+# tolerate the emphasis Word carries into markdown: "**Fig. 1.** Schematic ..."
+CAPTION_RE = re.compile(r"^[*_\s]*(Fig(ure)?\.?\s*\d|:)", re.I)
 # Pandoc escapes a literal "[" as "\[", which collides with the display-math
 # opener. A reference entry or citation ("\[1\] Smith, J.") holds only words and
 # light punctuation, so anything with a control sequence or an operator in it is
@@ -331,10 +461,10 @@ def parse_markdown(md: str) -> list:
             continue
 
         # tables: pipe or grid
-        if stripped.startswith("|") or re.match(r"^\+[-=+]+\+$", stripped):
+        if stripped.startswith("|") or GRID_RULE_RE.match(stripped):
             j, body = i, []
             while j < n and (lines[j].strip().startswith("|")
-                             or re.match(r"^\+[-=+]+\+$", lines[j].strip())):
+                             or GRID_RULE_RE.match(lines[j].strip())):
                 body.append(lines[j])
                 j += 1
             grid = parse_table(body)
@@ -349,17 +479,40 @@ def parse_markdown(md: str) -> list:
             i = j
             continue
 
+        # figure emitted as raw HTML
+        if stripped.startswith("<figure") or stripped.startswith("<img"):
+            j, body = i, []
+            while j < n:
+                body.append(lines[j])
+                if "</figure>" in lines[j] or (j == i and stripped.startswith("<img")):
+                    break
+                j += 1
+            chunk = "\n".join(body)
+            m_src = HTML_IMG_RE.search(chunk)
+            m_ph = None if m_src else HTML_PLACEHOLDER_RE.search(chunk)
+            if m_src or m_ph:
+                m_cap = HTML_CAP_RE.search(chunk)
+                cap = clean_inline(TAG_RE.sub("", m_cap.group(1))) if m_cap else ""
+                add("figure", caption=cap, file=(m_src or m_ph).group(1),
+                    unresolved=bool(m_ph))
+                i = j + 1
+                continue
+            # no image in the block: fall through and treat it as text
+
         # standalone figure
         img = IMG_RE.search(stripped)
         if img and stripped.startswith(("![", "[!", "!")):
             cap = clean_inline(img.group("cap"))
-            if not cap:
-                k = i + 1
-                while k < n and not lines[k].strip():
-                    k += 1
-                if k < n and re.match(r"^\s*(Fig(ure)?\.?\s*\d|:)", lines[k], re.I):
-                    cap = clean_inline(lines[k].strip().lstrip(":").strip())
-                    i = k
+            # A real caption paragraph beats the alt text. Word fills alt text
+            # with machine-written descriptions ("A diagram of a process flow
+            # AI-generated content may be incorrect"), and letting that reach the
+            # manuscript would put invented words in the author's figure captions.
+            k = i + 1
+            while k < n and not lines[k].strip():
+                k += 1
+            if k < n and CAPTION_RE.match(lines[k].strip()):
+                cap = clean_inline(lines[k].strip().lstrip(":").strip())
+                i = k
             add("figure", caption=cap, file=img.group("src"))
             i += 1
             continue
@@ -421,7 +574,8 @@ def find_citations(text: str) -> list:
     for pat in CITE_PATTERNS:
         for m in pat.finditer(text):
             for key in re.split(r"[;,]", m.group(1)):
-                key = key.strip()
+                # "[@a; @b]" leaves the sigil on every key after the split
+                key = key.strip().lstrip("@").strip()
                 if key and key not in found:
                     found.append(key)
     return found
@@ -505,7 +659,7 @@ def build_ir(src: Path, fmt: str, blocks: list, warnings: list,
             # tolerate markdown emphasis around the label, e.g. "**Keywords:**"
             probe = b["text"].lstrip("*_ ")
             if re.match(r"^(keywords|key words|index terms)\b[*_ ]*\s*[:\-]", probe, re.I):
-                tail = re.split(r"[:\-]", probe, 1)[1].lstrip("*_ ")
+                tail = re.split(r"[:\-]", probe, maxsplit=1)[1].lstrip("*_ ")
                 front["keywords"] = [k.strip() for k in re.split(r"[;,]", tail) if k.strip()]
                 break
 
@@ -548,6 +702,12 @@ def build_ir(src: Path, fmt: str, blocks: list, warnings: list,
 
     if stats["figures"] == 0:
         warn(warnings, "no figures detected; confirm the source really has none")
+    unresolved = [b["file"] for b in blocks
+                  if b["type"] == "figure" and b.get("unresolved")]
+    if unresolved:
+        warn(warnings, "%d figure file(s) could not be located, so no image data "
+                       "was extracted: %s. Supply the originals before assembly."
+                       % (len(unresolved), ", ".join(unresolved)))
     if stats["references"] == 0:
         warn(warnings, "no reference list detected; check the heading name used")
 
@@ -633,8 +793,27 @@ def main() -> int:
     (outdir / "extracted.md").write_text(md, encoding="utf-8")
     meta, body = split_front_matter(md)
     blocks = parse_markdown(body)
+
+    if fmt == "docx":
+        levels = docx_style_headings(src, warnings)
+        blocks, promoted = promote_styled_headings(blocks, levels)
+        if promoted:
+            warn(warnings, "recovered %d heading(s) from custom Word styles that "
+                           "pandoc had flattened into body paragraphs" % promoted)
     ir = build_ir(src, fmt, blocks, warnings, meta)
     ir["source"]["metadata"] = meta
+
+    if fmt == "latex":
+        truth = latex_source_counts(src.read_text(encoding="utf-8", errors="replace"))
+        ir["source"]["latex_source_counts"] = truth
+        drift = {k: (truth[k], ir["stats"][k])
+                 for k in truth if truth[k] != ir["stats"].get(k)}
+        if drift:
+            warn(warnings, "the pandoc round-trip did not reproduce every structure "
+                           "in the .tex, so these IR counts are a floor, not the "
+                           "truth: " + "; ".join(
+                               "%s %d in source vs %d extracted" % (k, a, b)
+                               for k, (a, b) in sorted(drift.items())))
 
     assets = []
     if media.exists():
