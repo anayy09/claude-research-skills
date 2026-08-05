@@ -7,7 +7,7 @@
 A curated, versioned collection that turns an AI agent into a rigorous research collaborator: literature review, experiment tracking, statistics, HPC, and getting published.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Skills](https://img.shields.io/badge/skills-11-6E56CF)](#-the-skills)
+[![Skills](https://img.shields.io/badge/skills-12-6E56CF)](#-the-skills)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 [![Format: Agent Skills](https://img.shields.io/badge/format-Agent%20Skills-D97757)](https://agentskills.io)
 [![GitHub stars](https://img.shields.io/github/stars/anayy09/claude-research-skills?style=social)](https://github.com/anayy09/claude-research-skills/stargazers)
@@ -45,12 +45,13 @@ This repository collects the skills I use for real research work. They share a b
 | [`experiment-ledger`](./experiment-ledger) | Reproducible ML experiment tracking: config-as-file, hashed manifests, honest baselines. | `1.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/experiment-ledger.zip) |
 | [`hpc-cluster`](./hpc-cluster) | Write, debug, and monitor cluster batch jobs, and serve models on compute nodes. | `2.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/hpc-cluster.zip) |
 | [`investigating-sources`](./investigating-sources) | Citation-honest research where every claim traces to a real, verified source. | `1.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/investigating-sources.zip) |
-| [`journal-advisor`](./journal-advisor) | Match a manuscript to the right journal, with desk-reject risk, from five publisher catalogs. | `1.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/journal-advisor.zip) |
+| [`journal-advisor`](./journal-advisor) | Match a manuscript to the right journal, with desk-reject risk, from five publisher catalogs. | `1.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/journal-advisor.zip) |
 | [`ml-eval-statistics`](./ml-eval-statistics) | The right statistics for model evaluation: significance, CIs, calibration, selective prediction. | `1.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/ml-eval-statistics.zip) |
 | [`prose-naturalizer`](./prose-naturalizer) | Strip the tells of AI-generated writing, based on Wikipedia's Signs of AI writing. | `2.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/prose-naturalizer.zip) |
-| [`research-ideation`](./research-ideation) | Turn existing research assets into ranked, publishable directions with a plan to submission. | `1.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/research-ideation.zip) |
+| [`research-ideation`](./research-ideation) | Turn existing research assets into ranked, publishable directions with a plan to submission. | `1.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/research-ideation.zip) |
 | [`research-paper-writing`](./research-paper-writing) | Scholarly prose that reads like a working researcher wrote it. | `2.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/research-paper-writing.zip) |
-| [`submission-reviewer`](./submission-reviewer) | Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score. | `1.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/submission-reviewer.zip) |
+| [`submission-formatter`](./submission-formatter) | Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word. | `1.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/submission-formatter.zip) |
+| [`submission-reviewer`](./submission-reviewer) | Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score. | `1.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/submission-reviewer.zip) |
 
 **Deprecated.** Retained during a transition period; prefer the replacements.
 
@@ -108,12 +109,12 @@ Cursor, VS Code, GitHub Copilot, Codex, Gemini CLI, Goose, OpenCode and other cl
 
 Upload a skill through the [`/v1/skills` endpoints](https://platform.claude.com/docs/en/build-with-claude/skills-guide) with the `skills-2025-10-02` beta header, then reference the returned `skill_id` in the `container` parameter alongside the code execution tool. Uploaded skills are shared workspace-wide.
 
-The API sandbox has **no network access and no runtime package installation**. That matters for two skills here: the citation verification scripts in `evidence-synthesis` and `investigating-sources` reach Crossref and PubMed. They fail closed, so a reference that could not be checked is reported as unverified rather than clean, but real verification needs a surface with network access.
+The API sandbox has **no network access and no runtime package installation**. That matters for three skills here. The citation verification scripts in `evidence-synthesis` and `investigating-sources` reach Crossref and PubMed; they fail closed, so a reference that could not be checked is reported as unverified rather than clean, but real verification needs a surface with network access. `submission-formatter` downloads publisher templates and shells out to `pandoc` and `latexmk`, so on a sandboxed surface you need to supply the template yourself and expect the build step to be unavailable.
 
 ### Notes that apply everywhere
 
 - **Skills do not sync between surfaces.** Installing into Claude Code does not make a skill available on claude.ai or the API. Set up each surface you actually use.
-- **Dependencies.** Most bundled scripts are standard library only. The few that aren't need `pyyaml` or `requests`, and only if you run them. Each skill's README says what it needs.
+- **Dependencies.** Most bundled scripts are standard library only. The few that aren't need `pyyaml` or `requests`, and only if you run them. `submission-formatter` is the one skill that wants external tools (`pandoc` above all, plus `latexmk` to compile locally). Each skill's README says what it needs.
 - **Building the archives yourself.** `python scripts/package_skills.py` writes the same zips to `dist/`, one per skill plus a combined bundle. CI runs it on every tag and attaches the output to the release.
 
 ## 🧭 Usage
@@ -125,6 +126,7 @@ Most of the time you don't invoke a skill by name. Describe the task, and the ag
 > *"I have these results and a November deadline. What's the paper?"* → `research-ideation`
 > *"Where should I submit this manuscript?"* → `journal-advisor`
 > *"Review this draft and tell me if it's ready to submit."* → `submission-reviewer`
+> *"Format this for IEEE Access and build the submission package."* → `submission-formatter`
 > *"Make this related-work section sound less like AI wrote it."* → `prose-naturalizer`
 
 In Claude Code you can also call one directly as `/skill-name` when you want to force it. Each skill's README shows the exact triggers and worked examples.

@@ -16,12 +16,12 @@ description: >-
   is supplied with a question about placement. Never recommend a journal outside
   the bundled lists.
 summary: "Match a manuscript to the right journal, with desk-reject risk, from five publisher catalogs."
-version: "1.0.0"
+version: "1.0.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-07-25"
+  last_updated: "2026-08-04"
 ---
 
 # Journal Advisor
@@ -151,6 +151,13 @@ journals per publisher, then a short tradeoff note.
   say that. Three weak recommendations presented as strong ones waste a
   submission cycle, which costs months.
 - **No preference between publishers** beyond what the evidence supports.
+
+## Handing off
+
+The recommendation ends this skill's job. Once a venue is chosen,
+`submission-formatter` builds the submission in that publisher's template, and
+`submission-reviewer` scores the manuscript before it goes up. Name the next step
+in one line rather than starting it here.
 
 ## Tone
 

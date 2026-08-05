@@ -207,7 +207,7 @@ Handoffs once the direction is chosen:
   full literature base rather than the targeted prior-art check.
 - `journal-advisor` once the claim and evidence set are fixed, for venue choice.
 - `research-paper-writing` for drafting, then `submission-reviewer` before
-  submission.
+  submission, then `submission-formatter` for the venue's template.
 
 Use `scripts/plan_timeline.py` to lay the phases against the deadline and see
 the slack. If slack is negative, cut a non-blocking requirement from the gap

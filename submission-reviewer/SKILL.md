@@ -15,12 +15,12 @@ description: >-
   journal, conference, or review committee. Judge honestly, including a blocking
   flaw when there is one, but never give a verdict without a repair path.
 summary: "Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score."
-version: "1.0.0"
+version: "1.0.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-07-31"
+  last_updated: "2026-08-04"
 ---
 
 # Submission Reviewer
@@ -43,6 +43,8 @@ This skill scores and reviews. It does not:
   after the review and pass it the score and the fixed-version outlook.
 - Rewrite prose. Hand off to `research-paper-writing` for section drafting or
   rebuttals, and `prose-naturalizer` for de-AI-ing text.
+- Put the manuscript into the venue's template. Hand off to
+  `submission-formatter` once the fixes are in.
 - Compute statistics on the author's own experiments. Hand off to
   `ml-eval-statistics` when a fix requires a significance test, a confidence
   interval, or a calibration analysis.

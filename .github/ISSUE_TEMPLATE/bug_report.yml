@@ -18,6 +18,7 @@ body:
         - prose-naturalizer
         - research-ideation
         - research-paper-writing
+        - submission-formatter
         - submission-reviewer
         - (repo tooling / not a specific skill)
     validations:

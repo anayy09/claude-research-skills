@@ -9,6 +9,39 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 Nothing yet.
 
+## [0.4.0] - 2026-08-04
+
+Twelve active skills, one deprecated. The submission chain is now complete: pick a
+venue, review the manuscript, then format it for that venue.
+
+### Added
+- `submission-formatter` skill: reformats a finished manuscript into a specific
+  journal or conference template, in LaTeX or Word, without changing what it says.
+  Ingests PDF, DOCX, LaTeX, Markdown, ODT, and RTF into a structured intermediate
+  representation; asks once for the publisher template and otherwise locates the
+  official one; inspects the template into an explicit requirements sheet; maps
+  sections with merges applied automatically and splits proposed for confirmation;
+  and ends with a mechanical fidelity check over the sentence stream, the numeric
+  token multiset, citation markers, and structural counts. A seven-rule fidelity
+  contract governs the whole pipeline: content is copied rather than regenerated,
+  numbers are immutable, missing items become `TODO(author)` markers instead of
+  plausible text, nothing is deleted to fit a length limit, and every deviation
+  lands in `FORMAT_REPORT.md`. Template locations, class names, and quirks are
+  mapped for IEEE, Elsevier, Springer Nature, Springer LNCS, MDPI, Wiley, Taylor &
+  Francis, ACM, PLOS, Frontiers, IOP, APS/AIP, Oxford, SAGE, and Cambridge.
+
+### Changed
+- `journal-advisor`, `submission-reviewer`, and `research-ideation` (1.0.0 to
+  1.0.1): each now hands off to `submission-formatter` at the point where the
+  manuscript has to go into a venue's template.
+- The README's API-surface note covers `submission-formatter`, which needs network
+  access to fetch templates and shells out to `pandoc` and `latexmk`, so a
+  sandboxed surface needs the template supplied and cannot run the build step.
+
+### Fixed
+- `scripts/validate_skills.py` no longer crashes on its own success message on a
+  Windows console, where cp1252 cannot encode the status glyphs.
+
 ## [0.3.0] - 2026-08-02
 
 Eleven active skills, one deprecated. Two skills were renamed in this release, so
@@ -85,7 +118,8 @@ First public release of the collection.
 - Standardized every skill's frontmatter: added `summary`, semantic `version`,
   `author`, `license`, and a consistent `metadata` block.
 
-[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/anayy09/claude-research-skills/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/anayy09/claude-research-skills/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/anayy09/claude-research-skills/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/anayy09/claude-research-skills/releases/tag/v0.1.0

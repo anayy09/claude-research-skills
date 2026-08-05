@@ -16,12 +16,12 @@ description: >-
   Prefer this over free-form brainstorming: ideas must be grounded in the user's
   real assets and checked against real prior work.
 summary: "Turn existing research assets into ranked, publishable directions with a plan to submission."
-version: "1.0.0"
+version: "1.0.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-08-02"
+  last_updated: "2026-08-04"
 ---
 
 # Research Ideation
@@ -50,7 +50,8 @@ not:
 - Score a finished manuscript. That is `submission-reviewer`.
 - Compute the statistics. Specify what test or interval is required, then hand
   off to `ml-eval-statistics`.
-- Write the paper. Hand off to `research-paper-writing`.
+- Write the paper. Hand off to `research-paper-writing`, then
+  `submission-formatter` for the venue's template.
 - Design the run tracking. Hand off to `experiment-ledger` once the experiment
   plan is agreed, and to `hpc-cluster` for cluster execution.
 

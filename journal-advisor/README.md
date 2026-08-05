@@ -2,7 +2,7 @@
 
 > Match a manuscript to the right journal, with desk-reject risk, from five publisher catalogs.
 
-[![Version](https://img.shields.io/badge/version-1.0.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.1-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -27,6 +27,10 @@ outside the bundled lists.
 - "Which journal fits this manuscript?"
 - "Is venue X a good match?" / "what's my desk-reject risk?"
 - "Shortlist some venues" / "compare these candidate journals"
+
+Once a venue is picked, [`submission-formatter`](../submission-formatter) puts the
+manuscript into that publisher's template, and
+[`submission-reviewer`](../submission-reviewer) scores it before you upload.
 
 ## What's inside
 
@@ -57,6 +61,7 @@ python journal-advisor/scripts/find_journals.py --help   # rank venues for a pap
 
 ## Changelog
 
+- **1.0.1**: Point to `submission-formatter` for the venue template step.
 - **1.0.0**: Initial release.
 
 ---

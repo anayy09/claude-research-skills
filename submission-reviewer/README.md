@@ -2,7 +2,7 @@
 
 > Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score.
 
-[![Version](https://img.shields.io/badge/version-1.0.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.1-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -49,9 +49,11 @@ rather than being buried in the minor comments.
 
 Hands off afterwards: [`journal-advisor`](../journal-advisor) for venue choice,
 [`research-paper-writing`](../research-paper-writing) for drafting and rebuttals,
-[`prose-naturalizer`](../prose-naturalizer) for de-AI-ing text, and
+[`prose-naturalizer`](../prose-naturalizer) for de-AI-ing text,
 [`ml-eval-statistics`](../ml-eval-statistics) when a fix needs a significance
-test or a confidence interval. It does not give legal advice; patent review
+test or a confidence interval, and
+[`submission-formatter`](../submission-formatter) to put the revised manuscript
+into the venue's template. It does not give legal advice; patent review
 here is a technical appraisal, and the report says so once.
 
 ## What's inside
@@ -114,6 +116,7 @@ an 85.
 
 ## Changelog
 
+- **1.0.1**: Point to `submission-formatter` for the venue template step.
 - **1.0.0**: Initial release.
 
 ---
