@@ -82,6 +82,14 @@ def main() -> int:
     if not skill_dirs:
         sys.exit("No skills found. Are you running this from the repository root?")
 
+    # A Windows console defaults to cp1252, which cannot encode the status
+    # glyphs below, so the script would fail on its own success message.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, OSError):  # pragma: no cover - non-standard stream
+            pass
+
     all_errors: list[str] = []
     for d in skill_dirs:
         all_errors.extend(validate_skill(d))
