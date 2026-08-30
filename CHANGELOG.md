@@ -7,6 +7,29 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-08-30
+
+### Changed
+- `manuscript-figures` (1.0.0 to 1.1.0): generated figures may now carry their
+  own text. The old rule banned text in generated images outright and required
+  every label to be overlaid in vector afterward, on the assumption that models
+  garble type. Current image models do not, and the ban was costing real
+  capability, so the guidance now asks for the exact strings in the prompt plus
+  a typographic instruction, and adds a proofread-every-glyph step to the
+  inspection pass. Vector overlay remains the recommendation for labels that
+  must stay editable after review or match the manuscript's typeface exactly.
+
+### Fixed
+- `manuscript-figures`: `figstyle.apply_style()` set `mathtext.fontset` to
+  `dejavusans` while the rest of the figure used Arial, so any label containing
+  `$...$` silently embedded a second typeface and broke the one-font rule the
+  skill enforces everywhere else. Mathtext is now mapped onto whichever family
+  actually resolves, with `resolve_family()` exposed for callers.
+- `manuscript-figures`: the Codex CLI route is documented as it actually works.
+  It needs `--sandbox workspace-write` to write the PNG at all, takes the prompt
+  on stdin, and cannot fall back to the Images API, because a ChatGPT
+  subscription login yields no credentials `api.openai.com` accepts.
+
 ## [0.5.0] - 2026-08-30
 
 Thirteen active skills, one deprecated. The gap this closes is the one between
@@ -180,7 +203,8 @@ First public release of the collection.
 - Standardized every skill's frontmatter: added `summary`, semantic `version`,
   `author`, `license`, and a consistent `metadata` block.
 
-[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/anayy09/claude-research-skills/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/anayy09/claude-research-skills/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/anayy09/claude-research-skills/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/anayy09/claude-research-skills/compare/v0.2.0...v0.3.0

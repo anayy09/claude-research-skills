@@ -85,12 +85,24 @@ python manuscript-figures/scripts/check_figure.py fig3.tif --width 183 --min-dpi
 - SVG→PDF conversion uses whichever of `rsvg-convert`, `inkscape`, or
   `cairosvg` is installed; the skill degrades gracefully and tells you the
   command if none is.
-- Generative path: `OPENAI_API_KEY` in the environment, or an authenticated
-  local [Codex CLI](https://github.com/openai/codex). Optional; everything
-  else works without it.
+- Generative path: an authenticated local
+  [Codex CLI](https://github.com/openai/codex), which needs no API key of its
+  own, or `OPENAI_API_KEY` in the environment for the direct Images API route.
+  Optional; everything else works without either.
 
 ## Changelog
 
+- **1.1.0**: Generated figures may now carry their own text. Current image
+  models set short strings accurately, so the guidance is to quote the exact
+  labels in the prompt and proofread every glyph at inspection, instead of
+  banning text outright and overlaying all of it in vector. Vector overlay
+  stays the recommendation only where a label must remain editable after
+  review or match the manuscript's typeface exactly. The Codex CLI route is
+  documented as actually invoked (`codex exec --sandbox workspace-write`,
+  prompt piped on stdin) and no longer claims a subscription login can fall
+  back to the Images API, which it cannot. `figstyle.apply_style()` now keeps
+  mathtext on the figure's own font family, so a `$...$` in a label no longer
+  embeds a second typeface into the PDF.
 - **1.0.0**: Initial release.
 
 ---

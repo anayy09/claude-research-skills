@@ -5,9 +5,9 @@ useful for graphical abstracts and illustrative figures.
 
 ## Invocation
 
-Two routes, in order of preference. Both need `OPENAI_API_KEY` in the
-environment (or Codex authenticated); never ask the user to paste a key into
-chat, and never echo it.
+Two routes, in order of preference. Route B needs only an authenticated
+Codex; Route A needs `OPENAI_API_KEY` in the environment. Never ask the user
+to paste a key into chat, and never echo one.
 
 ### Route A: OpenAI Images API directly
 
@@ -36,31 +36,50 @@ the API offers; more pixels means more headroom for the 300 DPI floor.
 
 ### Route B: local Codex CLI (Recommended)
 
-When the user works through Codex (its subscription auth covers the API), run
-it non-interactively and delegate the API call to it:
+Codex ships its own image-generation tool, and its subscription auth covers
+it, so this route needs no `OPENAI_API_KEY` at all. Run it non-interactively,
+piping the prompt on stdin to avoid quoting problems:
 
 ```bash
 command -v codex >/dev/null || { echo "codex CLI not found"; }
-codex exec "Generate an image with OpenAI image generation (the
-current image model). Prompt: '<prompt>'. Largest available size, high
-quality. Save the PNG to $(pwd)/figures/raw/concept_v1.png and print the path.
-If direct image generation is unavailable, write and run a minimal script
-calling the OpenAI Images API with the environment's credentials."
+mkdir -p figures/raw
+codex exec --sandbox workspace-write --skip-git-repo-check <<'PROMPT'
+Generate an image with OpenAI image generation (the current image model).
+
+Prompt: "<prompt built per the section below>"
+
+Requirements:
+- Largest available size, high quality, landscape.
+- Save the PNG to figures/raw/concept_v1.png relative to your working
+  directory and print the absolute path.
+- If a direct image-generation tool is unavailable to you, print exactly
+  UNAVAILABLE: <reason>. Do not substitute a hand-drawn SVG, a matplotlib
+  render, or a placeholder image.
+PROMPT
 test -s figures/raw/concept_v1.png && echo OK || echo "generation failed"
 ```
 
-Codex flags and capabilities vary by version (`codex --help`; some versions
-want an approval/sandbox flag such as `--full-auto` for non-interactive
-writes). Treat Codex as a subcontractor: give it the prompt, the exact output
-path, and the size requirement; verify the file exists and is non-trivial
-afterward. Never claim the image was generated without having verified the
-file.
+`--sandbox workspace-write` is what permits the write; the default run is
+read-only and the file never lands. `--skip-git-repo-check` is only needed
+outside a git repo.
+
+That last requirement is not boilerplate. Told to produce an image with no
+image tool available, a coding agent will cheerfully draw a matplotlib
+approximation and report success. Name the failure mode, then verify the file
+yourself: exists, non-trivial size, and correct pixel dimensions. Never claim
+an image was generated without having looked at it.
+
+Codex flags drift between versions (`codex --help`). If image generation is
+genuinely unavailable, fall back to Route A, which needs a real
+`OPENAI_API_KEY`: a ChatGPT-subscription Codex login does **not** yield
+credentials that `api.openai.com` accepts, so there is no bridge between the
+two routes.
 
 ## Prompt craft for figure-grade output
 
-Generated images fail as figures for predictable reasons: garbled text, busy
-backgrounds, style mismatch with the rest of the manuscript. The prompt
-patterns below target each.
+Generated images fail as figures for predictable reasons: busy backgrounds,
+style mismatch with the rest of the manuscript, and concepts described in the
+abstract rather than as objects. The prompt patterns below target each.
 
 **Always specify:**
 
@@ -71,9 +90,19 @@ patterns below target each.
   else fights the manuscript).
 - **Palette**: give the manuscript's hexes: "restricted palette: #0072B2
   blue, #D55E00 orange accents, light grays".
-- **NO TEXT**: "no text, no labels, no letters, no numbers, no watermarks".
-  Models still typo text in images; all wording gets overlaid in vector
-  afterward, which also keeps labels editable and crisp.
+- **Text**: current image models set short text accurately, so use it rather
+  than designing around it. Quote the exact strings in the prompt and say
+  where each one goes: *the left block is labelled "Encoder", the arrow above
+  it reads "x12"*. Keep the strings short, and give a typographic instruction
+  alongside them: *labels in a clean sans-serif, sentence case, small and
+  unobtrusive, no drop shadows*. You proofread every glyph at the inspection
+  step below, which is where a wrong one gets caught.
+  Two things still argue for keeping specific labels out and overlaying them
+  in vector afterward, and both are production decisions rather than distrust
+  of the model: labels that must survive a reviewer asking for a rename
+  without a re-roll, and labels that must match the manuscript's typeface
+  exactly. Decide which you want before generating. Half the labels baked in
+  and half overlaid in a different face is what actually looks amateur.
 - **Composition**: aspect and reading direction: "wide 3:2 composition, main
   subject center-left, negative space on the right for labels".
 - **Content, concretely**: name the objects and their relationships, not the
@@ -86,13 +115,15 @@ patterns below target each.
 
 > Flat vector-style scientific illustration, plain white background, wide 3:2
 > composition. Left: a stylized human torso silhouette with a small sensor
-> patch, emitting a smooth glucose waveform. Center: the waveform enters a
-> minimal geometric controller block rendered as nested translucent layers
-> suggesting a predictive model, with a soft cone of uncertainty fanning out
-> ahead of the curve. Right: an insulin pump icon receiving a control signal.
-> Restricted palette: #0072B2 blue, #D55E00 orange for the uncertainty cone,
-> light grays. Clean, minimal, generous negative space. No text, no labels,
-> no letters, no watermarks.
+> patch labelled "CGM", emitting a smooth glucose waveform. Center: the
+> waveform enters a minimal geometric controller block rendered as nested
+> translucent layers suggesting a predictive model, labelled "Forecast", with
+> a soft cone of uncertainty fanning out ahead of the curve, labelled "95%
+> interval". Right: an insulin pump icon receiving a control signal, labelled
+> "Pump". All four labels in a clean sans-serif, sentence case, small and
+> unobtrusive, no drop shadows, placed clear of the artwork. Restricted
+> palette: #0072B2 blue, #D55E00 orange for the uncertainty cone, light grays.
+> Clean, minimal, generous negative space. No watermarks, no logos.
 
 Generate 2–4 candidates (vary seed/wording, one variable at a time), show the
 user, iterate on the winner. Edits/inpainting endpoints, where available,
@@ -100,13 +131,15 @@ preserve a good composition better than re-rolling from scratch.
 
 ## Post-processing to figure quality
 
-1. **Inspect** for artifacts: mangled geometry, accidental text-like glyphs,
-   extra limbs on anything organic. Artifacts that would embarrass in print
-   mean regenerate, not retouch.
-2. **Compose in vector.** Place the PNG inside an SVG at final mm size and
-   add all text, arrows, and panel labels as vector elements per
-   `svg-diagrams.md`. Convert to PDF. This yields sharp text over the raster
-   and one editable master.
+1. **Inspect** for artifacts: mangled geometry, extra limbs on anything
+   organic, and every rendered string proofread character by character
+   against what you asked for, including the ones you did not ask for.
+   Artifacts that would embarrass in print mean regenerate, not retouch.
+2. **Compose at final size.** Place the PNG inside an SVG (or a matplotlib
+   canvas) at final mm size and add the labels you deliberately kept out of
+   the generation, plus leader lines and panel labels, as vector elements per
+   `svg-diagrams.md`. Convert to PDF. One editable master, with sharp vector
+   text exactly where you wanted it editable.
 3. **Check resolution honestly.** Effective DPI = pixel width / printed width
    in inches. 1536 px across 89 mm (3.5 in) ≈ 438 DPI: fine. Across 183 mm ≈
    213 DPI: fails the 300 floor; regenerate larger or narrow the slot. Do not
@@ -115,8 +148,13 @@ preserve a good composition better than re-rolling from scratch.
 
 ## Failure modes to name for the user
 
-- No `OPENAI_API_KEY` and no authenticated Codex → stop and ask; there is no
-  key-free path.
+- No authenticated Codex and no `OPENAI_API_KEY` → stop and ask; there is no
+  credential-free path, and the two routes do not share credentials.
+- The image encodes a distinction by color alone (active vs inactive, chosen
+  vs not, on vs off) → it collapses in grayscale print and for colorblind
+  readers. Add the second cue in the vector layer, outlining or annotating the
+  marked elements. That is faster and far more reliable than re-rolling until
+  the model differentiates by shape.
 - Model can't hit the concept after ~4 iterations → hybrid: generate only the
   pictorial element(s) small, build the structure in SVG.
 - The "illustration" is drifting toward looking like data (a fake brain scan,

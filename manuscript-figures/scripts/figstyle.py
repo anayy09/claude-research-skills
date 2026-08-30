@@ -19,6 +19,7 @@ from typing import Iterable, Mapping, Sequence
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from matplotlib import font_manager
 from cycler import cycler
 
 MM_PER_INCH = 25.4
@@ -78,6 +79,18 @@ def fig_size(
     return (width_mm / MM_PER_INCH, h_mm / MM_PER_INCH)
 
 
+def resolve_family(candidates: Iterable[str]) -> str:
+    """First installed family from candidates, else matplotlib's own fallback.
+
+    Used to keep mathtext on the same typeface as the rest of the figure.
+    """
+    available = {f.name for f in font_manager.fontManager.ttflist}
+    for name in candidates:
+        if name in available:
+            return name
+    return "DejaVu Sans"
+
+
 def apply_style(
     base_size: float = 7.0,
     font: Sequence[str] = ("Arial", "Helvetica", "DejaVu Sans"),
@@ -90,6 +103,7 @@ def apply_style(
     (fonttype 42) and SVGs (fonttype 'none').
     """
     small = max(base_size - 1.0, 5.0)
+    family = resolve_family(font)
     mpl.rcParams.update({
         # Typography
         "font.family": "sans-serif",
@@ -102,7 +116,14 @@ def apply_style(
         "legend.fontsize": small,
         "legend.title_fontsize": small,
         "figure.titlesize": base_size,
-        "mathtext.fontset": "dejavusans",
+        # Mathtext rides on the figure's own family. The matplotlib default
+        # ("dejavusans") silently embeds a SECOND typeface the moment a label
+        # contains $...$, which breaks the one-font rule everywhere else in
+        # this skill and shows up in the PDF as a stray DejaVu subset.
+        "mathtext.fontset": "custom",
+        "mathtext.rm": family,
+        "mathtext.it": f"{family}:italic",
+        "mathtext.bf": f"{family}:bold",
         # Geometry
         "axes.linewidth": 0.6,
         "axes.spines.top": False,

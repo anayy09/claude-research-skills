@@ -17,7 +17,7 @@ description: >-
   exploratory plots into final manuscript figures and when reviewing figures
   before submission.
 summary: "Publication-grade figures: styled matplotlib, hand-authored SVG schematics, generative art."
-version: "1.0.0"
+version: "1.1.0"
 author: anayy09
 license: MIT
 metadata:
@@ -169,8 +169,8 @@ to PDF → check → deliver SVG source + PDF.
 **"Make a graphical abstract."** Check the venue's generative-AI policy first
 and tell the user what it says. If prohibited: build it as an SVG composition
 instead. If allowed with disclosure: follow `references/generative-images.md`
-(Codex/API invocation, prompt patterns, vector text overlay, disclosure line
-for the manuscript).
+(Codex/API invocation, prompt patterns, in-image versus overlaid text,
+disclosure line for the manuscript).
 
 **"Why did the journal bounce my figures?"** Run `check_figure.py` on each
 file, map the failures to the venue's requirements in
