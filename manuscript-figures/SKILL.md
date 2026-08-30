@@ -17,7 +17,7 @@ description: >-
   exploratory plots into final manuscript figures and when reviewing figures
   before submission.
 summary: "Publication-grade figures: styled matplotlib, hand-authored SVG schematics, generative art."
-version: "1.1.0"
+version: "1.1.1"
 author: anayy09
 license: MIT
 metadata:

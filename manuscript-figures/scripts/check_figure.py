@@ -161,7 +161,11 @@ def inspect_pdf(data: bytes) -> dict:
         x0, y0, x1, y1 = (float(v) for v in m.groups())
         out["width_mm"] = abs(x1 - x0) / PT_PER_INCH * MM_PER_INCH
         out["height_mm"] = abs(y1 - y0) / PT_PER_INCH * MM_PER_INCH
-    out["has_font"] = b"/Font" in blob or b"/BaseFont" in blob
+    # /Font alone is only a resource-dictionary key, and writers emit it even
+    # when the dictionary is empty: matplotlib does this for figures carrying
+    # no text at all, which made text-free PDFs fail as "fonts referenced but
+    # not embedded". /BaseFont is what actually names a font object.
+    out["has_font"] = b"/BaseFont" in blob
     out["fonts_embedded"] = any(k in blob for k in
                                 (b"/FontFile", b"/FontFile2", b"/FontFile3"))
     out["has_image_xobject"] = bool(

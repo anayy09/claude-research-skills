@@ -94,9 +94,11 @@ abstract rather than as objects. The prompt patterns below target each.
   than designing around it. Quote the exact strings in the prompt and say
   where each one goes: *the left block is labelled "Encoder", the arrow above
   it reads "x12"*. Keep the strings short, and give a typographic instruction
-  alongside them: *labels in a clean sans-serif, sentence case, small and
-  unobtrusive, no drop shadows*. You proofread every glyph at the inspection
-  step below, which is where a wrong one gets caught.
+  alongside them, and ask for the labels **large**: *labels in a clean
+  sans-serif, sentence case, large and prominent rather than fine print, no
+  drop shadows*. Size matters more than it looks, for the arithmetic reason in
+  step 4 of post-processing. You proofread every glyph at the inspection step
+  below, which is where a wrong one gets caught.
   Two things still argue for keeping specific labels out and overlaying them
   in vector afterward, and both are production decisions rather than distrust
   of the model: labels that must survive a reviewer asking for a rename
@@ -144,7 +146,24 @@ preserve a good composition better than re-rolling from scratch.
    in inches. 1536 px across 89 mm (3.5 in) ≈ 438 DPI: fine. Across 183 mm ≈
    213 DPI: fails the 300 floor; regenerate larger or narrow the slot. Do not
    upscale.
-4. **Verify**: `python scripts/check_figure.py abstract.pdf --width single`.
+4. **If the model set the labels, check they can actually be printed.** Label
+   size and DPI are locked together, because both scale with the printed
+   width. Measure the cap height of the rendered labels in pixels, and:
+
+       label_pt × effective_DPI = 100 × cap_height_px
+
+   That product is fixed at generation time; widening the figure trades DPI
+   for point size one for one and never improves the pair. Clearing 6 pt at
+   300 DPI therefore needs a cap height of at least 18 px, whatever the
+   canvas. Labels prompted as "small and unobtrusive" land around 17 px and
+   have **no** legal printed width; asking for "LARGE, prominent labels, not
+   fine print" moves it to roughly 25 px, which is printable from about
+   106 mm to 148 mm. Ask for large labels, then measure before choosing the
+   slot.
+5. **Verify**: `python scripts/check_figure.py abstract.pdf --width single`.
+   A figure whose labels are all in the raster carries no fonts at all, so the
+   checker reports font embedding as UNVERIFIED rather than PASS. That is
+   correct, not a failure: confirm by eye that the labels render.
 
 ## Failure modes to name for the user
 
@@ -157,5 +176,10 @@ preserve a good composition better than re-rolling from scratch.
   the model differentiates by shape.
 - Model can't hit the concept after ~4 iterations → hybrid: generate only the
   pictorial element(s) small, build the structure in SVG.
+- Hexes given in the prompt come back approximated, not matched (measured
+  ΔE of 5 to 22 against Okabe-Ito on a flat schematic), which breaks palette
+  consistency with the other figures. On flat artwork, snap the fills after
+  the fact: translate every saturated pixel by the constant offset to its
+  nearest target color, which preserves shading and anti-aliased edges.
 - The "illustration" is drifting toward looking like data (a fake brain scan,
   a fake pathology slide) → stop; that fails the gate regardless of intent.

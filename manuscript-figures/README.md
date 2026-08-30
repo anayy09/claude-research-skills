@@ -92,6 +92,17 @@ python manuscript-figures/scripts/check_figure.py fig3.tif --width 183 --min-dpi
 
 ## Changelog
 
+- **1.1.1**: `check_figure.py` no longer fails a PDF that contains no text.
+  It treated the string `/Font` as proof that fonts were referenced, but that
+  is only a resource-dictionary key and matplotlib emits it even when the
+  dictionary is empty, so a figure whose labels all live in an embedded raster
+  was reported as "fonts referenced but no embedded FontFile". Detection now
+  keys on `/BaseFont`, which actually names a font object, and the no-text case
+  falls through to UNVERIFIED as the fail-closed design intends. Also records
+  the legibility arithmetic for model-rendered labels
+  (`label_pt x DPI = 100 x cap_height_px`, so 6 pt at 300 DPI needs a cap
+  height of at least 18 px) and the measured palette drift when hexes are
+  specified in a prompt.
 - **1.1.0**: Generated figures may now carry their own text. Current image
   models set short strings accurately, so the guidance is to quote the exact
   labels in the prompt and proofread every glyph at inspection, instead of

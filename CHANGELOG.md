@@ -7,6 +7,32 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+## [0.5.2] - 2026-08-30
+
+### Fixed
+- `manuscript-figures` (1.1.0 to 1.1.1): `check_figure.py` failed any PDF that
+  contains no text. It read the string `/Font` as evidence that fonts were
+  referenced, but `/Font` is only a resource-dictionary key and matplotlib
+  writes it even when the dictionary is empty, so a figure whose labels all
+  live in an embedded raster was reported as "fonts referenced but no embedded
+  FontFile found". Detection now keys on `/BaseFont`, which actually names a
+  font object; the no-text case falls through to UNVERIFIED, as the tool's
+  fail-closed design intends. The 1.1.0 change made this reachable in normal
+  use, because letting the model render the labels is what produces a
+  text-free PDF.
+
+### Added
+- `manuscript-figures`: the legibility arithmetic for model-rendered labels.
+  Label size and effective DPI are locked together, since both scale with the
+  printed width, so `label_pt x DPI = 100 x cap_height_px` is fixed at
+  generation time and widening the figure never improves the pair. Clearing
+  6 pt at 300 DPI needs a rendered cap height of at least 18 px, which is why
+  the prompt guidance now asks for large labels rather than unobtrusive ones.
+- `manuscript-figures`: two generative failure modes observed in practice.
+  Hexes given in a prompt come back approximated rather than matched, with a
+  recipe for snapping flat fills back to the exact palette; and artwork that
+  encodes a distinction by color alone collapses in grayscale.
+
 ## [0.5.1] - 2026-08-30
 
 ### Changed
@@ -203,7 +229,8 @@ First public release of the collection.
 - Standardized every skill's frontmatter: added `summary`, semantic `version`,
   `author`, `license`, and a consistent `metadata` block.
 
-[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.5.2...HEAD
+[0.5.2]: https://github.com/anayy09/claude-research-skills/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/anayy09/claude-research-skills/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/anayy09/claude-research-skills/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/anayy09/claude-research-skills/compare/v0.3.0...v0.4.0
