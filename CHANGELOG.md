@@ -7,7 +7,27 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-08-30
+
+Thirteen active skills, one deprecated. The gap this closes is the one between
+having results and having something a journal will print: figures built at final
+size, in vector, with legible type and colorblind-safe color, checked
+mechanically before they go up.
+
 ### Added
+- `manuscript-figures` skill: produces publication-quality, journal-compliant
+  figures and teaches the production discipline behind them. Three routed paths:
+  data figures through a bundled matplotlib house-style module (`figstyle.py`)
+  with mm-exact column sizing for Nature, Elsevier, Springer, IEEE, Science,
+  NeurIPS and ICML, the Okabe-Ito cycle, panel labeling, and export helpers;
+  schematics authored directly as SVG on a mm-true grid and converted to PDF;
+  and conceptual art through OpenAI image generation via a local Codex CLI or
+  the Images API, gated on the venue's own AI policy. `check_figure.py` is a
+  standard-library checker that verifies physical dimensions against the target
+  column, raster DPI, and PDF font embedding across PDF, EPS, SVG, PNG and TIFF,
+  and fails closed: what it cannot verify is reported as UNVERIFIED rather than
+  passed. The same style ships as `assets/manuscript.mplstyle` for anyone who
+  prefers `plt.style.use()`.
 - `submission-formatter` (1.0.0 to 1.1.0): recovers document structure from Word
   files that use custom style names instead of Word's built-in ones. Pandoc only
   promotes `Heading N`, so a manuscript built on a publisher template arrived
@@ -18,6 +38,13 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 - For LaTeX input, structural counts are now taken from the `.tex` itself and
   compared against the extraction, so anything the pandoc round-trip failed to
   reproduce is reported rather than silently undercounted.
+
+### Changed
+- `submission-formatter` (1.1.0 to 1.1.1), `submission-reviewer` (1.0.1 to
+  1.0.2), `ml-eval-statistics` (1.0.0 to 1.0.1), `research-paper-writing` (2.0.0
+  to 2.0.1), and `research-ideation` (1.0.1 to 1.0.2): each now hands off to
+  `manuscript-figures` at the point where the artwork, rather than the prose,
+  the numbers, or the template, is what needs work.
 
 ### Fixed
 All found by running `submission-formatter` end to end against two real
@@ -153,7 +180,8 @@ First public release of the collection.
 - Standardized every skill's frontmatter: added `summary`, semantic `version`,
   `author`, `license`, and a consistent `metadata` block.
 
-[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/anayy09/claude-research-skills/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/anayy09/claude-research-skills/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/anayy09/claude-research-skills/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/anayy09/claude-research-skills/compare/v0.1.0...v0.2.0
