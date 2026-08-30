@@ -2,7 +2,7 @@
 
 > Turn existing research assets into ranked, publishable directions with a plan to submission.
 
-[![Version](https://img.shields.io/badge/version-1.0.1-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.2-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -136,12 +136,14 @@ chosen, [`ml-eval-statistics`](../ml-eval-statistics) for the tests and interval
 the plan specifies, [`hpc-cluster`](../hpc-cluster) for execution,
 [`journal-advisor`](../journal-advisor) for venue choice,
 [`research-paper-writing`](../research-paper-writing) for drafting,
-[`submission-reviewer`](../submission-reviewer) before you send it out, and
-[`submission-formatter`](../submission-formatter) to put it in the venue's
+[`manuscript-figures`](../manuscript-figures) for the figures the evidence set
+needs, [`submission-reviewer`](../submission-reviewer) before you send it out,
+and [`submission-formatter`](../submission-formatter) to put it in the venue's
 template.
 
 ## Changelog
 
+- **1.0.2**: Name `manuscript-figures` in the path from an evidence set to a paper.
 - **1.0.1**: Point to `submission-formatter` for the venue template step.
 - **1.0.0**: Initial release.
 

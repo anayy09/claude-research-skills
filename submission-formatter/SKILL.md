@@ -16,12 +16,12 @@ description: >-
   Never rewrites, condenses, paraphrases, or invents content: missing items are
   marked for the author, never filled in.
 summary: "Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word."
-version: "1.1.0"
+version: "1.1.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-08-05"
+  last_updated: "2026-08-30"
 ---
 
 # Submission Formatter
@@ -48,6 +48,9 @@ This skill converts and typesets. It does not:
   required section (data availability, author contributions) does not exist yet,
   report it and hand off to `research-paper-writing`. Do not compose it here.
 - Fix statistics or regenerate tables. Hand off to `ml-eval-statistics`.
+- Rebuild artwork that misses the venue's figure specs. Report the mismatch
+  (wrong width, too few DPI, raster where vector is required) and hand off to
+  `manuscript-figures`. Figures are re-embedded here, never re-rendered.
 
 The line is simple: this skill moves existing content into a new container. The
 moment a task requires producing sentences the author has not written, it stops

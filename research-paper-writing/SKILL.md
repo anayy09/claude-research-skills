@@ -11,12 +11,12 @@ description: >
   working researcher wrote it. Do not use for casual summaries, blog posts,
   marketing copy, slide bullet text, or code generation.
 summary: "Scholarly prose that reads like a working researcher wrote it."
-version: "2.0.0"
+version: "2.0.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-07-25"
+  last_updated: "2026-08-30"
 ---
 
 # Research Paper Writing
@@ -165,7 +165,9 @@ reader trying to reproduce or build on the work.
 
 **Results.** Lead with what the numbers mean, then the numbers. Name the
 baseline, name the gap, interpret the gap. Include failure cases and edge
-conditions; their absence undermines credibility.
+conditions; their absence undermines credibility. Write the text that cites a
+figure here; hand off to `manuscript-figures` to produce the figure itself, and
+to `ml-eval-statistics` when a claimed gap still needs an interval.
 
 **Discussion.** Interpret and extend; do not restate results. This is where
 tentative explanation is allowed, but flag it: "one likely explanation is",

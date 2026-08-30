@@ -2,7 +2,7 @@
 
 > Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word.
 
-[![Version](https://img.shields.io/badge/version-1.1.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.1.1-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -55,10 +55,11 @@ Hands off elsewhere: [`journal-advisor`](../journal-advisor) when the venue is n
 chosen yet, [`submission-reviewer`](../submission-reviewer) for a quality read,
 [`research-paper-writing`](../research-paper-writing) when the template requires a
 section that has to be written, [`prose-naturalizer`](../prose-naturalizer) for
-de-AI-ing text, and [`ml-eval-statistics`](../ml-eval-statistics) when a table has
-to be regenerated rather than moved. This skill moves existing content into a new
-container. The moment a task needs sentences the author has not written, it stops
-and says so.
+de-AI-ing text, [`ml-eval-statistics`](../ml-eval-statistics) when a table has
+to be regenerated rather than moved, and
+[`manuscript-figures`](../manuscript-figures) when the artwork misses the venue's
+figure specs. This skill moves existing content into a new container. The moment
+a task needs sentences the author has not written, it stops and says so.
 
 ## What's inside
 
@@ -141,6 +142,8 @@ required declaration sections.
 
 ## Changelog
 
+- **1.1.1**: Hand off to `manuscript-figures` when artwork misses the venue's
+  figure specs, rather than trying to rebuild it during the conversion.
 - **1.1.0**: Recover headings, reference lists, and figure captions from Word
   files that use custom style names, and fix extraction and build defects found
   by running the skill against two real manuscripts (a LaTeX paper into

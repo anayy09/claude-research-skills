@@ -2,7 +2,7 @@
 
 > Scholarly prose that reads like a working researcher wrote it.
 
-[![Version](https://img.shields.io/badge/version-2.0.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.0.1-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -37,6 +37,8 @@ research-paper-writing/
 
 ## Changelog
 
+- **2.0.1**: Hand off to `manuscript-figures` for the figure a results paragraph
+  cites, and to `ml-eval-statistics` when a claimed gap still needs an interval.
 - **2.0.0**: Current release.
 
 ---

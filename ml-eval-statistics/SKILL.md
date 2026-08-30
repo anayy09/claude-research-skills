@@ -15,12 +15,12 @@ description: >-
   Distinct from meta-analysis of published literature: this is for statistics on
   experiments the user ran.
 summary: "The right statistics for model evaluation: significance, CIs, calibration, selective prediction."
-version: "1.0.0"
+version: "1.0.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-07-25"
+  last_updated: "2026-08-30"
 ---
 
 # ML Evaluation Statistics
@@ -129,6 +129,11 @@ not about clinical value.
 `references/reporting-template.md` has sentence-level templates for the methods
 and results sections, and the table footnote that specifies the resampling
 scheme.
+
+Plotting these quantities is a separate job. Compute the reliability diagram,
+the risk-coverage curve, or the interval here, then hand the numbers to
+`manuscript-figures` to draw them at the venue's size and format. Do not let a
+figure's default styling decide how many bins a calibration plot has.
 
 ## Common objections and their pre-emptions
 
