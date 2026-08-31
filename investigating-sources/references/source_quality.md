@@ -7,6 +7,8 @@ tier and note any flags in the source log.
 ## Contents
 
 - Tiers
+- Peer review is a property of the record, not of the publisher
+- Checking peer-review status
 - The evidence hierarchy (for empirical claims)
 - Currency
 - Red flags
@@ -25,8 +27,56 @@ A coarse quality grade that applies across disciplines.
 
 "Peer-reviewed" means formal external peer review, not editorial acceptance
 alone. Conference papers count as peer-reviewed only when the venue actually
-reviews them. Preprints are `tier_3` no matter how prestigious the authors,
-because they have not been reviewed yet.
+reviews them, which in computing usually means yes (IEEE and ACM conferences
+are the reviewed venue of record) and in medicine usually means no (a conference
+abstract is not a reviewed paper). Preprints are `tier_3` no matter how
+prestigious the authors, because they have not been reviewed yet.
+
+**Prefer tier 1 and tier 2 sources, and reach for them first.** A report built
+on `tier_3` and `tier_4` sources when peer-reviewed work exists on the same
+question is a search failure, not a source-availability problem. Search the
+reviewed record first; `search_sources.md` gives the order and the surfaces.
+
+## Peer review is a property of the record, not of the publisher
+
+A rule like "prefer IEEE, Nature, and Elsevier" cannot be applied by matching a
+publisher name or a DOI prefix, because the major publishers also run preprint
+and working-paper servers under their own registrations:
+
+| DOI prefix | Registrant | What it actually is |
+|---|---|---|
+| `10.1109` | IEEE | peer-reviewed journals and proceedings |
+| `10.36227` | IEEE | TechRxiv, a preprint server |
+| `10.1016` | Elsevier | peer-reviewed journals |
+| `10.2139` | Elsevier | SSRN, working papers, not peer reviewed |
+| `10.1038` | Springer Nature | Nature portfolio journals |
+| `10.1101` | Cold Spring Harbor | bioRxiv and medRxiv, preprint servers |
+| `10.20944` | MDPI | Preprints.org, a preprint server |
+| `10.26434` | ACS | ChemRxiv, a preprint server |
+| `10.48550` | arXiv, registered with DataCite | preprints |
+
+Filtering by publisher would admit SSRN and TechRxiv while excluding a
+peer-reviewed society journal with an unfamiliar prefix. Grade on the record
+type and the venue instead.
+
+## Checking peer-review status
+
+`scripts/check_citations.py` does this automatically and writes the result to
+the `peer_reviewed` field of the source log. The signals, all free and keyless:
+
+| Question | Where | Field |
+|---|---|---|
+| Is it a preprint? | Crossref | `type == "posted-content"`, `subtype == "preprint"` |
+| Is it a preprint? | OpenAlex | `type == "preprint"`, or `primary_location.source.type == "repository"` |
+| Is it an arXiv preprint? | DataCite | `types.resourceTypeGeneral == "Preprint"` |
+| Does the journal run peer review? | DOAJ | `bibjson.editorial.review_process` |
+| Is the venue in the curated core? | OpenAlex `/sources/issn:<issn>` | `is_core`, `is_in_doaj` |
+| Is there a published version? | Crossref | `relation["is-preprint-of"]` |
+
+Peer-reviewed status is not a quality verdict. Peer review admits weak studies
+routinely, and a careful preprint can be better than a reviewed paper in a
+marginal journal. The status decides which version you cite and how you label
+it; the evidence hierarchy below decides how much weight it carries.
 
 ## The evidence hierarchy (for empirical claims)
 
@@ -68,18 +118,24 @@ log and flag whether newer work has superseded it.
 Note any of these in the source's `notes` field; some downgrade a source,
 others disqualify it.
 
-- **Predatory venue** — pay-to-publish with no real review, fake or absent
-  editorial board, aggressive solicitation, suspicious metrics. Disqualifying.
-- **Retraction** — check Retraction Watch and the publisher. A retracted paper
-  is not cited as support; it may be cited only to discuss the retraction
-  itself. Disqualifying as evidence.
-- **Conflict of interest** — author or funder has a stake in the result (e.g.,
-  a product's evidence base written by its vendor). Not disqualifying, but cite
-  with the COI disclosed.
-- **Predatory or unmatched metadata** — the DOI resolves but points to a
-  different title or authors than logged. A mashup signal; do not cite until
-  reconciled.
-- **Overreach** — the source's own conclusions exceed its data. Cite only the
+- **Predatory venue**: pay-to-publish with no real review, fake or absent
+  editorial board, aggressive solicitation, suspicious metrics. Check whether
+  the venue is in DOAJ (which records the review process) or carries
+  `is_core: true` in OpenAlex. Disqualifying.
+- **Retraction**: Crossref exposes the Retraction Watch database through
+  `updated-by`, and OpenAlex through `is_retracted`; the checker queries both. A
+  retracted paper is not cited as support; it may be cited only to discuss the
+  retraction itself. Disqualifying as evidence.
+- **Superseded preprint**: the cited preprint has since been peer reviewed and
+  published. Cite the published version and re-read the claim against it,
+  because numbers move during review. Disqualifying as a citation target, though
+  the work itself is fine.
+- **Conflict of interest**: author or funder has a stake in the result, for
+  example a product's evidence base written by its vendor. Not disqualifying,
+  but cite with the COI disclosed.
+- **Unmatched metadata**: the DOI resolves but points to a different title or
+  authors than logged. A mashup signal; do not cite until reconciled.
+- **Overreach**: the source's own conclusions exceed its data. Cite only the
   part its evidence actually supports.
 
 ## How to weight sources in synthesis

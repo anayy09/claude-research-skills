@@ -29,28 +29,38 @@ Before searching, write the protocol:
 - **Question**, in a structured form. For intervention questions, the PICO frame
   is standard: Population, Intervention, Comparison, Outcome. Adapt for other
   question types.
-- **Eligibility criteria** — inclusion and exclusion rules for study design,
-  population, date range, language, publication type.
-- **Search strategy** — which databases/connectors, and the actual search
-  strings (keywords, Boolean structure) for each.
-- **Screening and extraction plan** — how records move from identified to
-  included, and what data is pulled from each included study.
+- **Eligibility criteria**: inclusion and exclusion rules for study design,
+  population, date range, language, and publication type. State the
+  peer-review rule here. Restricting to the peer-reviewed record is the usual
+  and defensible choice, and it is still a restriction that belongs in the
+  protocol rather than applied silently during screening. If preprints are
+  eligible, say so in advance and say how they will be handled.
+- **Search strategy**: which databases and connectors, and the actual search
+  strings (keywords, Boolean structure) for each. Plan at least two federated
+  indexes plus the publisher platforms that hold the literature for the
+  question; `references/search_sources.md` gives the surfaces and the order.
+- **Screening and extraction plan**: how records move from identified to
+  included, and what data is pulled from each included study. Include how
+  preprint-and-published pairs will be merged.
 
 `assets/report_template.md` covers the general structure; the protocol section
 above is specific to this mode.
 
 ## The five stages
 
-1. **Protocol** — write and record the above.
-2. **Search** — execute the documented search across every planned source. Log
+1. **Protocol**: write and record the above.
+2. **Search**: execute the documented search across every planned source. Log
    every query and its yield (see the source log in `references/verification.md`).
-3. **Screening** — remove duplicates, then screen by title/abstract, then by
+3. **Screening**: remove duplicates, then screen by title/abstract, then by
    full text, recording how many records are excluded at each step and the main
-   reasons.
-4. **Extraction and appraisal** — pull the planned data from each included
+   reasons. Merge preprint-and-published pairs here. They are one study, and
+   automated deduplication misses them because the title, author list, and year
+   can all differ between the two versions. Counting both inflates the flow
+   diagram; citing the preprint reports numbers that changed during review.
+4. **Extraction and appraisal**: pull the planned data from each included
    study and assess its risk of bias (design quality, blinding, attrition,
    selective reporting, confounding).
-5. **Synthesis and reporting** — synthesize (narratively or, where studies are
+5. **Synthesis and reporting**: synthesize (narratively or, where studies are
    comparable enough, quantitatively), and state the overall certainty.
 
 ## Reporting real PRISMA counts
@@ -86,7 +96,7 @@ base as a whole, not any single study.
 For quantitative synthesis (meta-analysis): only pool effect sizes when the
 studies are genuinely comparable in population, intervention, and outcome, and
 report heterogeneity honestly. If studies are too heterogeneous to pool, a
-structured narrative synthesis is the correct choice — do not force a pooled
+structured narrative synthesis is the correct choice; do not force a pooled
 number that misrepresents a diverse evidence base. Do not report effect sizes,
 confidence intervals, or heterogeneity statistics that were not computed from
 real extracted data.

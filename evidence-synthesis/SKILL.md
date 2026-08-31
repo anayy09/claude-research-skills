@@ -8,19 +8,20 @@ description: >-
   screening logs with a reconciling PRISMA 2020 flow diagram, risk-of-bias tool
   selection (RoB 2, ROBINS-I, QUADAS-2, PROBAST+AI, AMSTAR 2, ROBIS), synthesis
   with or without meta-analysis, GRADE certainty rating, executable citation
-  verification including retraction checking, and RAISE-compliant disclosure of
-  AI use. Use when the user asks for a literature review, systematic review,
+  verification including retraction and peer-review checking, preferring the
+  peer-reviewed version of record over preprints, and RAISE-compliant disclosure
+  of AI use. Use when the user asks for a literature review, systematic review,
   meta-analysis, scoping review, evidence summary, PRISMA anything, "what does
   the evidence say", critical appraisal of a study or review, help checking
   whether references are real, or how to report a search. Also use when a
   reviewer has raised a methods objection about a review.
 summary: "Plan, run, appraise, and report systematic and other evidence syntheses (PRISMA, GRADE, RoB)."
-version: "1.0.0"
+version: "1.1.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-07-26"
+  last_updated: "2026-08-31"
 ---
 
 # Evidence Synthesis
@@ -34,14 +35,15 @@ This skill is written to be run inside one conversation with executable checks
 at the points where reviews usually break. It does not delegate to subagents and
 does not depend on any other skill.
 
-## Three rules with mechanisms behind them
+## Four rules with mechanisms behind them
 
 **1. A citation you cannot confirm does not go in the document.** Not flagged as
-uncertain, not softened with a hedge. Removed. Two distinct failures need two
-distinct checks: fabrication (the work does not exist, or the DOI points
-somewhere else) and retraction (the work exists but has been withdrawn). A DOI
-that resolves proves only the first. Run `scripts/verify_citations.py` on every
-reference list before it goes anywhere.
+uncertain, not softened with a hedge. Removed. Distinct failures need distinct
+checks: fabrication (the work does not exist, or the DOI points somewhere else),
+retraction (the work exists but has been withdrawn), and supersession (the work
+exists as a preprint that has since been published after review). A DOI that
+resolves proves only that something is there. Run `scripts/verify_citations.py`
+on every reference list before it goes anywhere.
 
 **2. The numbers in the flow diagram must reconcile.** Not approximately.
 Records that vanish between boxes are the single most common arithmetic error in
@@ -49,7 +51,22 @@ published reviews, and it is the first thing a methods reviewer recomputes. Log
 decisions as you screen with `scripts/screening_log.py`, and derive the diagram
 from the log rather than counting by hand at the end.
 
-**3. Disclose AI use where it made or informed a judgment.** Screening,
+**3. Cite the peer-reviewed version of record.** A preprint is something to find
+during searching and, when a published version exists, not something to cite. The
+numbers move during review, so citing the preprint reports figures the authors
+have since revised, and a preprint and its published version are one study that
+must be counted once in the flow diagram. Find the published version before
+extraction with `scripts/verify_citations.py --upgrade-preprints`. Preprints are
+eligible only when the protocol says so in advance, and then they are labelled as
+preprints, versioned, and handled in a sensitivity analysis.
+
+The rule cannot be implemented by publisher name. SSRN sits under Elsevier's DOI
+prefix and TechRxiv under IEEE's, so "prefer IEEE and Elsevier" applied to
+publishers would admit working papers while excluding peer-reviewed society
+journals. Peer-review status is read from the record type, never from the imprint.
+See `references/peer-reviewed-sources.md`.
+
+**4. Disclose AI use where it made or informed a judgment.** Screening,
 extraction, appraisal, and interpretive summarizing all qualify. This is now an
 explicit expectation: Cochrane, the Campbell Collaboration, JBI and the
 Collaboration for Environmental Evidence issued a joint position statement in
@@ -94,12 +111,32 @@ method chosen before the data are seen.
 ```bash
 python scripts/search_builder.py --example > search.yaml   # edit the blocks
 python scripts/search_builder.py --spec search.yaml --prisma-s
+python scripts/search_builder.py --spec search.yaml --peer-reviewed-only
 ```
 
-One concept-block specification renders to PubMed, Scopus, Web of Science, IEEE
-Xplore, Cochrane CENTRAL, and Ovid Embase syntax, plus a PRISMA-S reporting
-record. Hand-translating a strategy per database is where strategies silently
-diverge and become unreproducible.
+One concept-block specification renders to PubMed, Scopus, Web of Science,
+Cochrane CENTRAL, Ovid Embase, and Europe PMC, to the publisher platforms that
+hold the primary literature (IEEE Xplore, SpringerLink and the Nature portfolio,
+Elsevier ScienceDirect, the ACM Digital Library, Wiley Online Library), and to a
+Crossref REST query for scripted supplementary searching, plus a PRISMA-S
+reporting record. Hand-translating a strategy per database is where strategies
+silently diverge and become unreproducible.
+
+Run at least two federated indexes plus the publisher platforms that own the
+literature for the question. For engineering and computer science that means
+IEEE Xplore and the ACM Digital Library as primary sources, not supplements,
+because the conference proceedings there are the peer-reviewed venue of record.
+
+`--peer-reviewed-only` applies each platform's publication-type restriction
+(`NOT preprint[pt]` in PubMed, `DOCTYPE` in Scopus, `DT=` in Web of Science,
+`NOT SRC:PPR` in Europe PMC, `filter=type:journal-article` in Crossref) and, for
+the platforms where the restriction is a UI facet rather than query syntax, says
+which facet to use rather than emitting a filter the platform cannot parse.
+
+The script also warns about the mechanical failures that return a plausible but
+wrong result set: SpringerLink has no truncation operator, ScienceDirect caps
+Boolean connectors per field and will silently reject a systematic strategy, and
+IEEE Xplore command search truncates very long OR-chains.
 
 Two checks worth two minutes each: have a librarian or second reviewer look at
 the strategy (PRESS), and confirm the search retrieves the key papers you
@@ -108,6 +145,8 @@ already know about. A search that misses a known paper is broken.
 `references/search-strategy.md` covers block construction, controlled vocabulary
 versus free text, sensitivity against precision, grey literature, citation
 chasing, and the justification a language restriction requires.
+`references/peer-reviewed-sources.md` covers the publisher platforms, their
+syntax quirks, and Crossref member IDs for publisher-scoped queries.
 
 ## Step 4: screen with a log
 
@@ -125,6 +164,11 @@ Dual independent screening is the standard; where a second human is unavailable,
 say so as a limitation rather than implying it happened. Every full-text
 exclusion needs a specific reason. "Did not meet inclusion criteria" is not a
 reason, and the script flags exclusions with none recorded.
+
+Merge preprint-and-published pairs here, before extraction. They are one study,
+and automated deduplication misses them because the title, author list, and year
+can all differ between the two versions. Keep the published version as the
+record, and state in the PRISMA-S dedup item how the pairs were identified.
 
 ## Step 5: appraise with the right instrument
 
@@ -176,6 +220,8 @@ Report certainty per outcome, not for the review as a whole.
 
 ```bash
 python scripts/verify_citations.py --refs references.md --mailto you@uni.edu
+python scripts/verify_citations.py --refs references.md --mailto you@uni.edu \
+    --upgrade-preprints --require-peer-reviewed
 python scripts/verify_citations.py --self-test    # checks the verifier's logic
 ```
 
@@ -185,6 +231,16 @@ OpenAlex's `is_retracted`. It reports disagreement between the two rather than
 resolving it silently. A reference that could not be checked because the service
 was unreachable is marked UNCHECKED, never FAIL: a firewall is not evidence of
 fabrication.
+
+It falls back to **DataCite** when Crossref returns 404, because arXiv registers
+its DOIs with DataCite. Without that fallback every arXiv citation in a reference
+list is reported as a fabrication, which is a false accusation on a real object.
+
+Peer-review status is reported per reference, separately from the verdict, so
+"real but not reviewed" and "not real" never collapse into the same finding. A
+preprint whose peer-reviewed version exists is a FAIL with the replacement DOI
+attached; `--require-peer-reviewed` escalates any remaining unreviewed source to
+FAIL, for reviews whose protocol restricts them to the published record.
 
 Then report against the guideline for the review type, using
 `templates/evidence-table.md` for the study characteristics table and
@@ -201,6 +257,11 @@ Then report against the guideline for the review type, using
 | A single I-squared threshold as a pooling decision rule | I-squared describes proportion, not magnitude, and depends on precision | inspect tau-squared, prediction intervals, and clinical diversity |
 | Reporting review-level certainty | GRADE is per outcome | rate each outcome separately |
 | "Difficult to verify" as a citation status | unverifiable and fabricated look identical in a reference list | remove it |
+| Citing the preprint when the paper was published | reports numbers the authors revised during review | `--upgrade-preprints`, then extract from the published version |
+| Counting a preprint and its published version as two studies | inflates the flow diagram and double-counts one result | merge the pair at deduplication and count it once |
+| Filtering for quality by publisher name | SSRN is Elsevier, TechRxiv is IEEE; the filter admits working papers and drops society journals | filter on record type and venue |
+| Failing an arXiv DOI because Crossref does not have it | arXiv registers with DataCite; this is a false fabrication verdict | check both registries before failing anything |
+| Treating "peer reviewed" as a quality verdict | peer review admits weak studies routinely | status decides which version you cite; risk of bias decides its weight |
 | Silent AI assistance in screening or extraction | breaches the 2025 joint position statement expectations | disclose per `templates/ai-disclosure.md` |
 | Declaring "no studies found" as a null result | usually a search failure, not an evidence gap | test the search against known papers first |
 
@@ -208,8 +269,9 @@ Then report against the guideline for the review type, using
 
 It will not invent a citation to fill a gap, produce a systematic review from a
 single conversation without the user doing the screening, claim dual independent
-screening that did not happen, or assert an effect size it did not compute from
-reported data. Where a step needs a human or a second reviewer, it says so and
+screening that did not happen, assert an effect size it did not compute from
+reported data, or claim a source is peer reviewed on the strength of the
+publisher's name rather than the record. Where a step needs a human or a second reviewer, it says so and
 the limitation goes in the report.
 
 ## Files
@@ -218,15 +280,16 @@ the limitation goes in the report.
 |---|---|
 | `references/review-types.md` | choosing the review type, effort, claims each supports |
 | `references/search-strategy.md` | block construction, vocabulary, grey literature, PRISMA-S |
+| `references/peer-reviewed-sources.md` | version of record, preprint upgrade, publisher platforms and their quirks |
 | `references/appraisal-tools.md` | tool per design, domains, misapplications |
 | `references/certainty-and-synthesis.md` | pooling decisions, heterogeneity, SWiM, GRADE |
-| `references/verification-protocol.md` | fabrication and retraction checking, what the script does and does not prove |
+| `references/verification-protocol.md` | fabrication, retraction, and peer-review checking; what the script does and does not prove |
 | `references/ai-use-reporting.md` | RAISE, the 2025 joint position statement, disclosure content |
 | `templates/protocol.md` | protocol and registration template |
 | `templates/evidence-table.md` | study characteristics and results extraction table |
 | `templates/ai-disclosure.md` | AI-use statement for methods sections |
-| `scripts/verify_citations.py` | existence, metadata match, retraction status |
-| `scripts/search_builder.py` | one spec, six database syntaxes, PRISMA-S record |
+| `scripts/verify_citations.py` | existence, metadata match, peer-review status, preprint upgrade, retraction status |
+| `scripts/search_builder.py` | one spec, thirteen platform syntaxes, peer-reviewed-only mode, PRISMA-S record |
 | `scripts/screening_log.py` | append-only decisions, reconciling PRISMA flow |
 
 ## Key sources

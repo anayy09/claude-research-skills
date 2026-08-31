@@ -7,6 +7,79 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-31
+
+Both research skills now prefer the peer-reviewed record over preprints, and
+both citation checkers were hardened against the failure modes that made them
+either miss real problems or invent them.
+
+### Added
+- `evidence-synthesis` (1.0.0 to 1.1.0): new reference `peer-reviewed-sources.md`
+  covering the version of record, the mechanical preprint-to-published upgrade,
+  publisher-native search surfaces, and Crossref member IDs for publisher-scoped
+  queries (IEEE 263, Elsevier 78, Springer Nature 297, ACM 320, Wiley 311, all
+  confirmed against the live API).
+- `evidence-synthesis`: `search_builder.py` renders seven more platforms, for
+  thirteen total. Added SpringerLink and the Nature portfolio, Elsevier
+  ScienceDirect, the ACM Digital Library, Wiley Online Library, Europe PMC, and
+  a Crossref REST supplement. A new `--peer-reviewed-only` mode emits each
+  platform's publication-type restriction (`NOT preprint[pt]`, `DOCTYPE`, `DT=`,
+  `NOT SRC:PPR`, `filter=type:journal-article`) and names the UI facet where the
+  platform has no query-syntax equivalent.
+- `evidence-synthesis`: `search_builder.py` warns about the platform quirks that
+  return a plausible but wrong result set rather than an error: SpringerLink has
+  no truncation operator, ScienceDirect caps Boolean connectors per field, and
+  IEEE Xplore command search silently truncates long OR-chains.
+- `evidence-synthesis`: `verify_citations.py` gains `--upgrade-preprints`
+  (Crossref `is-preprint-of`, the bioRxiv/medRxiv API, OpenAlex `locations`),
+  `--require-peer-reviewed`, and a per-reference peer-review status reported
+  separately from the verdict.
+- `investigating-sources` (1.0.0 to 1.1.0): new reference `search_sources.md`
+  giving the search order (domain databases, federated indexes, publisher
+  platforms, preprints last, web last) with query recipes and a table of the
+  keyless APIs a script can actually call.
+- `investigating-sources`: `check_citations.py` gains `--upgrade-preprints`,
+  `--require-peer-reviewed`, `--mailto`, `--write`, `--self-test`, retraction
+  checking against Crossref and OpenAlex, and peer-review classification.
+- `investigating-sources`: `audit_report.py` now hard-fails a cited preprint
+  whose peer-reviewed version exists, and warns when a cited preprint is not
+  described as unreviewed in the paragraph that cites it.
+- Both skills: `--self-test` on every script, covering the verdict ladders, the
+  peer-review classifier, the reference parser, and the platform renderers.
+
+### Fixed
+- Both citation checkers reported **every arXiv DOI as nonexistent**. arXiv
+  registers with DataCite, not Crossref, so a Crossref-only lookup 404s on a
+  real paper and the scripts read that as fabrication. Both now fall back to
+  DataCite before failing anything, and `verify_citations.py` reconstructs the
+  registered DOI from a bare `arXiv:2401.01234` string so those references get
+  checked rather than skipped.
+- `investigating-sources`: the title-comparison used for finding a replacement
+  DOI accepted containment, which matched "Attention Is All You Need" to
+  "Attention is all you need: utilizing attention in AI-enabled drug discovery",
+  a different paper by different authors in a different field. Promoting that
+  would have fabricated a citation while appearing to fix one. Replacement now
+  requires near-identity plus a first-author match; the lenient containment
+  check is kept for verifying a DOI the user already has, where it is correct.
+- Both skills: transient network failures are retried with backoff instead of
+  producing an `UNCHECKED` that reads like a finding. A 404 is never retried,
+  since the server already answered.
+
+### Changed
+- Peer-review status is read from the registry record (`type`, `subtype`,
+  `resourceTypeGeneral`, `primary_location.source.type`), never from the
+  publisher's name. SSRN sits under Elsevier's DOI prefix and TechRxiv under
+  IEEE's, so a publisher filter admits working papers while excluding
+  peer-reviewed society journals.
+- `investigating-sources`: the source-log schema gains `peer_reviewed` and
+  `superseded_by`. Existing logs keep working; the fields are written by the
+  checker.
+- `investigating-sources`: the SEARCH step now specifies an explicit search
+  order rather than "prefer primary and peer-reviewed sources", and the
+  non-negotiables gain "the peer-reviewed record comes first".
+- `evidence-synthesis`: "Three rules" became four, with the version-of-record
+  rule added, and the anti-pattern table gained five entries.
+
 ## [0.5.2] - 2026-08-30
 
 ### Fixed

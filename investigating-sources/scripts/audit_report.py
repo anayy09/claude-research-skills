@@ -12,6 +12,13 @@ source log it was built from:
     weight or a sign a claim was dropped without dropping its source. A warning.
   * Unverified sources - a cited source whose log status is not 'confirmed'.
     Citing a source that failed or was never confirmed is a hard failure.
+  * Superseded preprints - a cited preprint whose peer-reviewed version exists
+    (the log's 'superseded_by' field). Citing the preprint reports numbers the
+    authors revised during review. A hard failure.
+  * Unlabelled preprints - a cited preprint that the prose never identifies as
+    unreviewed. The reader must not have to check the DOI to learn that the
+    evidence has not been peer reviewed. A warning, because the label may be
+    phrased in a way this check does not recognise.
   * Structural checks  - the deliverable must contain a limitations section and
     an AI-assistance note.
 
@@ -42,6 +49,14 @@ KEY_TOKEN = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*\d*[A-Za-z0-9_-]*$")
 # "(". We strip these before scanning so link text is never read as a citation.
 MARKDOWN_LINK = re.compile(r"\[[^\[\]]*\]\([^)]*\)")
 
+# Words that count as telling the reader a source has not been peer reviewed.
+# Checked in the paragraph containing the citation, not document-wide and not in
+# a fixed character window. A fixed window leaks across short markdown
+# paragraphs, so labelling one preprint would silently excuse the next one.
+PREPRINT_LABELS = ("preprint", "pre-print", "not peer reviewed",
+                   "not peer-reviewed", "unreviewed", "not yet peer reviewed",
+                   "not yet peer-reviewed", "awaiting peer review")
+
 # Section-presence checks are lenient: match the concept, not one exact heading.
 LIMITATIONS_HINTS = ("limitation", "caveat", "scope and limits", "what this does not")
 AI_NOTE_HINTS = ("ai-assisted", "ai assisted", "ai-assistance", "assisted research tools",
@@ -60,6 +75,37 @@ def extract_citation_keys(text):
             if token and KEY_TOKEN.match(token):
                 keys.add(token)
     return keys
+
+
+def is_preprint(source):
+    """True if either the log's type or the checker's peer_reviewed field says so."""
+    return (source.get("type") == "preprint"
+            or source.get("peer_reviewed") == "preprint")
+
+
+def preprint_labelled(text, key):
+    """True if every paragraph citing `key` also says the source is unreviewed.
+
+    Every, not any: a preprint labelled in one paragraph and cited bare in
+    another leaves the second reader misinformed, which is the case this exists
+    to catch.
+    """
+    low_key = key.lower()
+    paragraphs = [p for p in re.split(r"\n\s*\n", text) if p.strip()]
+    citing = []
+    for para in paragraphs:
+        low = para.lower()
+        # Match the key inside a bracket group, so [a; bare2025] counts too.
+        for block in CITATION_BLOCK.findall(low):
+            if low_key in [t.strip() for t in re.split(r"[;,]", block)]:
+                citing.append(low)
+                break
+    if not citing:
+        # Cited somewhere this paragraph scan did not reach (a table row, a
+        # figure caption). Fall back to the document-wide check rather than
+        # reporting a label that may well be there.
+        return any(lab in text.lower() for lab in PREPRINT_LABELS)
+    return all(any(lab in para for lab in PREPRINT_LABELS) for para in citing)
 
 
 def section_present(text, hints):
@@ -101,6 +147,15 @@ def main():
         k for k in cited_keys
         if k in sources and sources[k].get("verified") != "confirmed"
     )
+    superseded = sorted(
+        k for k in cited_keys
+        if k in sources and sources[k].get("superseded_by")
+    )
+    cited_preprints = [k for k in cited_keys
+                       if k in sources and is_preprint(sources[k])]
+    unlabelled_preprints = sorted(
+        k for k in cited_preprints if not preprint_labelled(draft, k)
+    )
 
     has_limitations = section_present(draft, LIMITATIONS_HINTS)
     has_ai_note = section_present(draft, AI_NOTE_HINTS)
@@ -132,6 +187,26 @@ def main():
     else:
         print("OK    Every cited source is confirmed")
 
+    if superseded:
+        hard_failures += len(superseded)
+        print(f"FAIL  Superseded preprints ({len(superseded)}): a peer-reviewed "
+              f"version exists")
+        for k in superseded:
+            print(f"        [{k}]  -> cite {sources[k]['superseded_by']} and "
+                  f"re-read the claim against it")
+    elif cited_preprints:
+        print("OK    No cited preprint has a published version")
+
+    if unlabelled_preprints:
+        print(f"WARN  Unlabelled preprints ({len(unlabelled_preprints)}): cited "
+              f"without telling the reader they are unreviewed")
+        for k in unlabelled_preprints:
+            print(f"        [{k}]  -> say 'in a preprint that has not been peer "
+                  f"reviewed, ...' where it is cited")
+    elif cited_preprints:
+        print(f"OK    All {len(cited_preprints)} cited preprint(s) labelled as "
+              f"unreviewed")
+
     if orphan:
         print(f"WARN  Orphan sources ({len(orphan)}): logged but never cited")
         for k in orphan:
@@ -147,9 +222,9 @@ def main():
     print()
     if hard_failures:
         print(f"RESULT: {hard_failures} hard failure(s). Do not deliver until "
-              f"phantom/unverified citations are resolved.")
+              f"phantom, unverified, and superseded citations are resolved.")
         return 1
-    if orphan or not has_limitations or not has_ai_note:
+    if orphan or unlabelled_preprints or not has_limitations or not has_ai_note:
         print("RESULT: No hard failures, but warnings above should be resolved "
               "before delivery.")
         return 0

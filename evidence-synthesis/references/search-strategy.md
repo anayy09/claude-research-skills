@@ -70,6 +70,30 @@ Two checks, both quick, both frequently skipped:
    errors found are mechanical, and mechanical errors silently halve a result
    set.
 
+## Which databases, and in what order
+
+Run at least two federated indexes plus the publisher platforms that own the
+literature for the question. One database is never enough: coverage overlap
+between Scopus, Web of Science, and PubMed is partial, and a single-database
+search is a standard reviewer objection.
+
+| Question is mostly... | Primary indexes | Publisher platforms worth adding |
+|---|---|---|
+| Biomedical, clinical | PubMed, Embase, Cochrane CENTRAL, Europe PMC | Nature portfolio and SpringerLink, Elsevier ScienceDirect, Wiley |
+| Engineering, signal processing, hardware | Scopus, Web of Science, IEEE Xplore | IEEE Xplore is primary here, not supplementary |
+| Computer science, ML | Scopus, Web of Science, IEEE Xplore, ACM Digital Library | ACM DL and IEEE Xplore hold the conference literature that is the primary venue |
+| Applied science, multidisciplinary | Scopus, Web of Science | ScienceDirect (Elsevier), SpringerLink and Nature (Springer Nature) |
+
+`scripts/search_builder.py` renders all of these from one specification. Add
+`--peer-reviewed-only` when the protocol restricts the review to the reviewed
+record; it emits each platform's publication-type restriction and, where the
+restriction is a UI facet rather than query syntax, says which facet to use.
+
+Platform-specific traps that return a plausible but wrong result set (no
+truncation on SpringerLink, a Boolean connector ceiling on ScienceDirect, a term
+ceiling in IEEE Xplore command search) are catalogued in
+`references/peer-reviewed-sources.md` and warned about by the script.
+
 ## Sources beyond bibliographic databases
 
 An exhaustive search is not just databases:
@@ -78,7 +102,10 @@ An exhaustive search is not just databases:
   searching finds unpublished and ongoing work, which is directly relevant to
   publication bias.
 - **Preprint servers**: medRxiv, bioRxiv, arXiv. Decide in the protocol whether
-  preprints are eligible, and if they are, record the version.
+  preprints are eligible, and if they are, record the version. A preprint and
+  its published version are **one study**: find the published version before
+  extraction, extract from it, and count the pair once in the flow diagram. See
+  `references/peer-reviewed-sources.md` for the mechanical upgrade procedure.
 - **Grey literature**: theses, government and agency reports, conference
   abstracts. Standard in scoping and policy-relevant reviews.
 - **Citation chasing**: backward (reference lists of included studies) and
@@ -101,6 +128,11 @@ eligibility criteria with a justification, not silently in the search string:
 - **Publication type.** Excluding conference abstracts is defensible; excluding
   them silently is not, particularly in computer science and engineering where
   the primary venue is often a conference.
+- **Peer-review status.** Restricting to the peer-reviewed record is defensible
+  and usually right, and it is still a restriction. State it as an eligibility
+  criterion, apply it with `--peer-reviewed-only` so the same rule reaches every
+  platform, and report it as a PRISMA-S item. Applying it by deleting preprints
+  during screening without recording the rule is not reproducible.
 
 ## Deduplication
 
@@ -108,6 +140,12 @@ Report the software and settings. Automated deduplication misses records with
 differing metadata and occasionally removes distinct records with similar
 titles. The count before and after deduplication is a PRISMA item and must
 match the flow diagram.
+
+Preprint-and-published pairs are the deduplication case automated tools miss
+most often, because the title, the author list, and sometimes the year all
+differ between the two versions. They are one study. Merge them explicitly,
+keep the published version as the record, and say in the PRISMA-S dedup item
+how the pairs were identified.
 
 ## Updating before submission
 

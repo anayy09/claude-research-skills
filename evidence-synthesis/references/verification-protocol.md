@@ -5,13 +5,38 @@ reference lists pass informal review and fail at proof stage.
 
 | Failure | What it looks like | Caught by |
 |---|---|---|
-| Fabricated | plausible authors, plausible title, plausible journal, no such paper | metadata lookup against Crossref, OpenAlex, or PubMed |
+| Fabricated | plausible authors, plausible title, plausible journal, no such paper | metadata lookup against Crossref, DataCite, OpenAlex, or PubMed |
 | Mashup | real authors, real journal, title assembled from two real papers | title similarity comparison, not existence check |
 | Wrong DOI | the citation is real, the DOI resolves to a different work | comparing the resolved record against the claimed one |
 | Retracted | the paper exists and has been withdrawn | retraction status check |
 | Corrected | the paper exists and has a correction or expression of concern | update notices on the record |
+| Superseded | the citation points at a preprint that has since been peer reviewed and published | record type plus the preprint-to-published relation |
+| Unreviewed | the citation is a preprint, working paper, or dataset presented as a peer-reviewed finding | record type from Crossref, DataCite, or OpenAlex |
 
 A DOI that resolves proves the first only. Everything else needs the comparison.
+
+## Why peer-review status is checked from the record, never from the publisher
+
+A rule like "prefer IEEE, Nature, and Elsevier" cannot be implemented by
+matching a publisher name or a DOI prefix. SSRN publishes working papers under
+Elsevier's registration, and TechRxiv publishes preprints under IEEE's. A filter
+on publisher would admit both and would exclude a peer-reviewed society journal
+with an unfamiliar prefix.
+
+The script reads `type` and `subtype` from the Crossref record,
+`resourceTypeGeneral` from DataCite, and `type` plus
+`primary_location.source.type` from OpenAlex. Full signal table and the list of
+preprint prefixes are in `references/peer-reviewed-sources.md`.
+
+## Why arXiv needs a second registry
+
+arXiv registers its DOIs with **DataCite**, not Crossref. A verifier that
+queries Crossref alone reports every arXiv DOI in a reference list as
+nonexistent, which is a fabrication verdict on a real object and the worst error
+a citation checker can make. `verify_citations.py` falls back to DataCite on a
+Crossref 404 before it will fail anything, and it reconstructs the registered
+DOI from a bare `arXiv:2401.01234` string so those references get checked rather
+than skipped.
 
 ## Why the retraction check is separate
 
@@ -40,6 +65,14 @@ python scripts/verify_citations.py --refs references.md --mailto you@uni.edu
 # BibTeX
 python scripts/verify_citations.py --refs refs.bib --mailto you@uni.edu
 
+# fail anything that is not a peer-reviewed publication
+python scripts/verify_citations.py --refs references.md --mailto you@uni.edu \
+    --require-peer-reviewed
+
+# find the published version of every preprint in the list
+python scripts/verify_citations.py --refs references.md --mailto you@uni.edu \
+    --upgrade-preprints
+
 # spot check a few DOIs
 python scripts/verify_citations.py --doi 10.1136/bmj.n71 --mailto you@uni.edu
 
@@ -50,6 +83,13 @@ python scripts/verify_citations.py --refs references.md --offline
 python scripts/verify_citations.py --self-test
 ```
 
+`--upgrade-preprints` checks the Crossref `is-preprint-of` relation, the
+bioRxiv and medRxiv APIs, and OpenAlex locations, and prints the DOI to cite
+instead. `--require-peer-reviewed` turns "real but unreviewed" from a CHECK into
+a FAIL; use it when the protocol restricts the review to the peer-reviewed
+record, and leave it off when the protocol admits preprints, in which case the
+default CHECK is the reminder to label them.
+
 Provide a real address in `--mailto`. Crossref's polite pool is more reliable
 than the anonymous one, and identifying yourself is the condition on which a
 free public service stays usable.
@@ -58,10 +98,16 @@ free public service stays usable.
 
 | Verdict | Meaning | Action |
 |---|---|---|
-| `VERIFIED` | record found, metadata consistent, no retraction | none |
-| `CHECK` | found but something is off: partial title match, year drift, author not on the record, or a correction notice exists | look at it; usually a citation error, occasionally a mashup |
-| `FAIL` | not found, resolves to a different work, or retracted | remove or fix before the document goes anywhere |
+| `VERIFIED` | record found, metadata consistent, peer reviewed, no retraction | none |
+| `CHECK` | found but something is off: partial title match, year drift, author not on the record, a correction notice, or an unreviewed record type with no published version | look at it; usually a citation error, occasionally a mashup |
+| `FAIL` | not found, resolves to a different work, retracted, or a preprint whose peer-reviewed version exists | remove or fix before the document goes anywhere |
 | `UNCHECKED` | the service could not be reached | rerun with network access; this is not a finding |
+
+Each reference also carries a peer-review status (`peer-reviewed`, `preprint`,
+`not-peer-reviewed`, `unknown`) reported separately from the verdict, so that
+"real but not reviewed" and "not real" never collapse into the same finding. A
+preprint with a published version is a `FAIL` regardless of the flag, because
+the citation points at numbers that changed during review.
 
 Exit status: 0 clean, 1 if anything failed, 2 if anything was unchecked. Suitable
 for a pre-submission gate or a git hook.
@@ -75,7 +121,12 @@ entire genuine bibliography was fabricated. A firewall is not evidence.
 - **That the citation supports the claim.** Existence and correct metadata say
   nothing about whether the paper says what you cite it for. Citation-content
   errors are common and only a human reading the paper catches them.
-- **That the paper is any good.** Verification is not appraisal.
+- **That the paper is any good.** Verification is not appraisal. Peer-reviewed
+  status is a fact about the venue's process, not a quality verdict: peer review
+  admits weak studies routinely, and a rigorous preprint can be better than a
+  reviewed paper in a marginal journal. The status determines which version you
+  cite and how you label it. Risk of bias is what determines how much weight it
+  carries, and that is Step 5, not this script.
 - **That an unretracted paper is reliable.** Retraction is a lagging indicator;
   many flawed papers are never retracted.
 - **That coverage is complete.** Crossref covers works with DOIs. Books, older

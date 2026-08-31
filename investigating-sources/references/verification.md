@@ -46,6 +46,8 @@ of truth that both scripts read. Structure:
       "url": "https://doi.org/10.1234/example.2021.001",
       "verified": "pending",
       "verify_method": "",
+      "peer_reviewed": "",
+      "superseded_by": "",
       "tier": "",
       "notes": ""
     }
@@ -55,16 +57,23 @@ of truth that both scripts read. Structure:
 
 Field notes:
 
-- `key` — short citation handle used inline in the draft as `[smith2021]`. Must
+- `key`: short citation handle used inline in the draft as `[smith2021]`. Must
   be unique across the log. This is what `audit_report.py` matches against.
-- `type` — one of `journal-article`, `preprint`, `book`, `report`,
+- `type`: one of `journal-article`, `preprint`, `book`, `report`,
   `conference-paper`, `dataset`, `webpage`, `news`, `other`.
-- `doi` — bare DOI (`10.xxxx/...`), not a URL. Leave empty if none exists.
-- `verified` — `pending`, `confirmed`, or `fail`. The checker updates this.
-- `verify_method` — how existence was confirmed: `crossref`, `url-fetch`,
-  `mcp:<server>`, `web-search`. Required once `verified` is `confirmed`.
-- `tier` — quality grade from `source_quality.md` (`tier_1` … `tier_4`).
-- `notes` — flags: conflict of interest, retraction, currency caveat, etc.
+- `doi`: bare DOI (`10.xxxx/...`), not a URL. Leave empty if none exists.
+- `verified`: `pending`, `confirmed`, or `fail`. The checker updates this.
+- `verify_method`: how existence was confirmed: `crossref`, `datacite`,
+  `url-fetch`, `mcp:<server>`, `web-search`. Required once `verified` is
+  `confirmed`.
+- `peer_reviewed`: `peer-reviewed`, `preprint`, `not-peer-reviewed`, or
+  `unknown`. Written by the checker from the registry record, never inferred
+  from the publisher's name. Kept separate from `verified` so that "real but
+  unreviewed" and "not real" never collapse into one field.
+- `superseded_by`: the DOI of the peer-reviewed version, when the entry is a
+  preprint that has since been published. Cite that DOI instead.
+- `tier`: quality grade from `source_quality.md` (`tier_1` to `tier_4`).
+- `notes`: flags such as conflict of interest, retraction, or currency caveat.
 
 Only `key`, `type`, `title`, and `year` are strictly required. Everything with a
 DOI should carry it, because that is the strongest automatic check.
@@ -74,9 +83,11 @@ DOI should carry it, because that is the strongest automatic check.
 For each source, resolve `verified` to `confirmed` or `fail`:
 
 1. **Has a DOI?** Run the checker (below). If Crossref resolves it and the
-   metadata roughly matches, set `confirmed` / `crossref`. If it does not
-   resolve, do not immediately fail it — a valid paper can have a DOI the API
-   misses. Try step 2 before failing.
+   metadata roughly matches, set `confirmed` / `crossref`. If Crossref returns
+   404, the checker falls back to **DataCite** before failing anything: arXiv
+   registers its DOIs there, so a Crossref-only check reports every arXiv
+   citation as a fabrication. If neither registry has it, do not immediately
+   fail it. A valid paper can have a DOI the APIs miss. Try step 2 first.
 2. **Fetchable URL or in a connector?** `web_fetch` the page, or locate the item
    through an MCP database (PubMed, bioRxiv, Clinical Trials, etc.). If found and
    it matches, set `confirmed` with the matching method.
@@ -86,8 +97,24 @@ For each source, resolve `verified` to `confirmed` or `fail`:
 4. **None of the above?** Set `fail`. It is removed from the deliverable along
    with any claim that depended only on it.
 
-Confirming existence is separate from grading quality. A confirmed source can
-still be low-tier or flagged; see `source_quality.md`.
+5. **Is it the version of record?** If the record is a preprint, look for the
+   published version before citing it: Crossref's `is-preprint-of` relation, the
+   bioRxiv and medRxiv API's `published` field, and OpenAlex `locations`. The
+   checker does all three with `--upgrade-preprints`. When one is found, log and
+   cite the published DOI and re-read the claim against it; numbers move during
+   review. When none is found, the preprint may be cited as `tier_3`, typed
+   `preprint`, and labelled as unreviewed in the prose.
+
+Confirming existence is separate from grading quality, and both are separate
+from peer-review status. A confirmed source can still be low-tier, unreviewed,
+or flagged; see `source_quality.md`.
+
+One trap worth naming. When a title search is used to find a replacement DOI,
+near-identity is required, not containment. "Attention Is All You Need" is
+contained in "Attention is all you need: utilizing attention in AI-enabled drug
+discovery", which is a different paper by different authors in a different
+field. Accepting that match would fabricate a citation while appearing to fix
+one, so the checker also requires the first author to match.
 
 ## Worked example
 
@@ -109,6 +136,8 @@ Candidate log with three entries in mixed states after checking:
       "url": "https://doi.org/10.1787/b741f39e-en",
       "verified": "confirmed",
       "verify_method": "crossref",
+      "peer_reviewed": "not-peer-reviewed",
+      "superseded_by": "",
       "tier": "tier_3",
       "notes": "Institutional report; high credibility, not peer-reviewed."
     },
@@ -123,8 +152,10 @@ Candidate log with three entries in mixed states after checking:
       "url": "",
       "verified": "fail",
       "verify_method": "",
+      "peer_reviewed": "unknown",
+      "superseded_by": "",
       "tier": "",
-      "notes": "DOI does not resolve; no URL; not found by title search. REMOVE."
+      "notes": "Not in Crossref or DataCite; no URL; not found by title search. REMOVE."
     },
     {
       "key": "wsj2026",
@@ -137,6 +168,8 @@ Candidate log with three entries in mixed states after checking:
       "url": "https://www.wsj.com/example-article",
       "verified": "confirmed",
       "verify_method": "url-fetch",
+      "peer_reviewed": "not-peer-reviewed",
+      "superseded_by": "",
       "tier": "tier_4",
       "notes": "Journalism, not research; use for context only."
     }
@@ -150,15 +183,27 @@ in the final deliverable.
 ## Running the checker
 
 ```bash
-python scripts/check_citations.py sources.json
+python scripts/check_citations.py sources.json --mailto you@institution.edu
+python scripts/check_citations.py sources.json --upgrade-preprints
+python scripts/check_citations.py sources.json --require-peer-reviewed
+python scripts/check_citations.py sources.json --offline
+python scripts/check_citations.py --self-test
 ```
 
-Live, it queries Crossref for each DOI, compares title and first author against
-the log, and updates `verified` / `verify_method`. Offline (no network or
-`--offline`), it validates DOI syntax, required fields, and duplicate keys, and
-marks DOI resolution as skipped rather than passed. `--json` emits a
-machine-readable report; the exit code is non-zero if any entry is `fail`, so it
-can gate delivery in a script.
+Live, it queries Crossref for each DOI, falls back to DataCite when Crossref has
+no record, corroborates retraction status against OpenAlex, compares title and
+first author against the log, and updates `verified`, `verify_method`, and
+`peer_reviewed`. Offline (no network or `--offline`), it validates DOI syntax,
+required fields, and duplicate keys, flags known preprint prefixes as a hint,
+and marks resolution as skipped rather than passed.
+
+`--upgrade-preprints` looks for the peer-reviewed version of every preprint and
+records it in `superseded_by`. `--require-peer-reviewed` turns any unreviewed
+source into a `fail`; use it when the deliverable is restricted to the reviewed
+literature. `--write` saves the updated statuses back to the log. `--json` emits
+a machine-readable report, and `--self-test` checks the checker's own logic
+against fixtures without touching the network. The exit code is non-zero if any
+entry is `fail`, so it can gate delivery in a script.
 
 ## Handling FAIL states
 
@@ -170,3 +215,9 @@ A `fail` is not a warning to note and move past. Before delivering:
 - Re-run the checker until nothing is in `fail`.
 
 "Difficult to verify" collapses to `fail`. There is no third state.
+
+A superseded preprint is the one `fail` that is fixed by swapping rather than
+removing: replace the DOI with the value in `superseded_by`, update the venue
+and year, set `type` to `journal-article`, and re-read the claim against the
+published paper before keeping the sentence. Do not swap the DOI and leave the
+sentence untouched; that is the whole reason the published version matters.
