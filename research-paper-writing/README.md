@@ -2,7 +2,7 @@
 
 > Scholarly prose that reads like a working researcher wrote it.
 
-[![Version](https://img.shields.io/badge/version-2.0.1-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.1.0-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -24,8 +24,12 @@ for casual summaries, blog posts, marketing copy, slide text, or code.
 - Drafting a rebuttal or response-to-reviewers letter
 - Extending or restructuring a thesis chapter
 
-> **Tip:** pair this with [`prose-naturalizer`](../prose-naturalizer) to scrub residual AI-tells,
-> and [`investigating-sources`](../investigating-sources) to keep every citation
+> **Tip:** pair this with [`manuscript-editor`](../manuscript-editor) for any
+> revision round, resubmission, or whole-manuscript check. It decides what
+> belongs in the paper versus the response letter and how much to change, then
+> calls this skill for the sentences. Also pair with
+> [`prose-naturalizer`](../prose-naturalizer) to scrub residual AI-tells, and
+> [`investigating-sources`](../investigating-sources) to keep every citation
 > honest.
 
 ## What's inside
@@ -37,6 +41,13 @@ research-paper-writing/
 
 ## Changelog
 
+- **2.1.0**: Draws the line against `manuscript-editor`. A scope section says
+  this skill owns the prose and not placement, scope of change, or
+  whole-manuscript coherence; the rebuttal section states that the account of
+  what changed lives only in the response letter, never in the revised
+  manuscript; and rewriting now starts by checking whether the manuscript
+  already makes the point somewhere else, since a point stated twice reads as
+  patching and the two copies drift apart in later rounds.
 - **2.0.1**: Hand off to `manuscript-figures` for the figure a results paragraph
   cites, and to `ml-eval-statistics` when a claimed gap still needs an interval.
 - **2.0.0**: Current release.

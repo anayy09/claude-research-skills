@@ -7,7 +7,7 @@
 A curated, versioned collection that turns an AI agent into a rigorous research collaborator: literature review, experiment tracking, statistics, HPC, and getting published.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Skills](https://img.shields.io/badge/skills-13-6E56CF)](#-the-skills)
+[![Skills](https://img.shields.io/badge/skills-14-6E56CF)](#-the-skills)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 [![Format: Agent Skills](https://img.shields.io/badge/format-Agent%20Skills-D97757)](https://agentskills.io)
 [![GitHub stars](https://img.shields.io/github/stars/anayy09/claude-research-skills?style=social)](https://github.com/anayy09/claude-research-skills/stargazers)
@@ -46,13 +46,14 @@ This repository collects the skills I use for real research work. They share a b
 | [`hpc-cluster`](./hpc-cluster) | Write, debug, and monitor cluster batch jobs, and serve models on compute nodes. | `2.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/hpc-cluster.zip) |
 | [`investigating-sources`](./investigating-sources) | Citation-honest research where every claim traces to a real, verified source. | `1.1.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/investigating-sources.zip) |
 | [`journal-advisor`](./journal-advisor) | Match a manuscript to the right journal, with desk-reject risk, from five publisher catalogs. | `1.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/journal-advisor.zip) |
+| [`manuscript-editor`](./manuscript-editor) | Keeps manuscripts coherent through revision: right content in the right document, minimal changes, whole-paper consistency. | `1.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/manuscript-editor.zip) |
 | [`manuscript-figures`](./manuscript-figures) | Publication-grade figures: styled matplotlib, hand-authored SVG schematics, generative art. | `1.1.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/manuscript-figures.zip) |
 | [`ml-eval-statistics`](./ml-eval-statistics) | The right statistics for model evaluation: significance, CIs, calibration, selective prediction. | `1.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/ml-eval-statistics.zip) |
-| [`prose-naturalizer`](./prose-naturalizer) | Strip the tells of AI-generated writing, based on Wikipedia's Signs of AI writing. | `2.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/prose-naturalizer.zip) |
+| [`prose-naturalizer`](./prose-naturalizer) | Strip the tells of AI-generated writing, based on Wikipedia's Signs of AI writing. | `2.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/prose-naturalizer.zip) |
 | [`research-ideation`](./research-ideation) | Turn existing research assets into ranked, publishable directions with a plan to submission. | `1.0.2` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/research-ideation.zip) |
-| [`research-paper-writing`](./research-paper-writing) | Scholarly prose that reads like a working researcher wrote it. | `2.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/research-paper-writing.zip) |
-| [`submission-formatter`](./submission-formatter) | Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word. | `1.1.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/submission-formatter.zip) |
-| [`submission-reviewer`](./submission-reviewer) | Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score. | `1.0.2` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/submission-reviewer.zip) |
+| [`research-paper-writing`](./research-paper-writing) | Scholarly prose that reads like a working researcher wrote it. | `2.1.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/research-paper-writing.zip) |
+| [`submission-formatter`](./submission-formatter) | Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word. | `1.1.2` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/submission-formatter.zip) |
+| [`submission-reviewer`](./submission-reviewer) | Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score. | `1.0.3` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/submission-reviewer.zip) |
 
 **Deprecated.** Retained during a transition period; prefer the replacements.
 
@@ -127,6 +128,7 @@ Most of the time you don't invoke a skill by name. Describe the task, and the ag
 > *"I have these results and a November deadline. What's the paper?"* → `research-ideation`
 > *"Where should I submit this manuscript?"* → `journal-advisor`
 > *"Review this draft and tell me if it's ready to submit."* → `submission-reviewer`
+> *"Revise the paper for these reviewer comments and draft the response."* → `manuscript-editor`
 > *"Turn this plot into a publication-quality Figure 2 for Nature."* → `manuscript-figures`
 > *"Format this for IEEE Access and build the submission package."* → `submission-formatter`
 > *"Make this related-work section sound less like AI wrote it."* → `prose-naturalizer`

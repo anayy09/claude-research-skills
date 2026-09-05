@@ -2,7 +2,7 @@
 
 > Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score.
 
-[![Version](https://img.shields.io/badge/version-1.0.2-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.3-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -117,6 +117,8 @@ an 85.
 
 ## Changelog
 
+- **1.0.3**: Hand off to `manuscript-editor` once real reviews are in hand; this
+  skill scores a paper, it does not run the revision round.
 - **1.0.2**: Hand off to `manuscript-figures` when a figure is what needs fixing.
 - **1.0.1**: Point to `submission-formatter` for the venue template step.
 - **1.0.0**: Initial release.

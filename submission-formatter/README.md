@@ -2,7 +2,7 @@
 
 > Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word.
 
-[![Version](https://img.shields.io/badge/version-1.1.1-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.1.2-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -142,6 +142,9 @@ required declaration sections.
 
 ## Changelog
 
+- **1.1.2**: Hand off to `manuscript-editor` when content still has to change in
+  response to reviewers. The marked-up copy a venue asks for is still built
+  here, from a manuscript that has already been revised there.
 - **1.1.1**: Hand off to `manuscript-figures` when artwork misses the venue's
   figure specs, rather than trying to rebuild it during the conversion.
 - **1.1.0**: Recover headings, reference lists, and figure captions from Word

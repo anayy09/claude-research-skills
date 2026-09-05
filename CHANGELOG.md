@@ -7,6 +7,59 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-09-05
+
+A new skill for the part of publishing that happens after the reviews arrive,
+and the boundary drawn between it and the skill that writes the sentences.
+
+### Added
+- `manuscript-editor` (1.0.0): manuscript-level editorial discipline for
+  revision rounds. Three containers with a hard boundary (manuscript, response
+  to reviewers, internal revision ledger) and the test for which one a sentence
+  belongs in; a workflow that audits before touching anything, triages comments
+  into atomic items with an explicit change type, locates the single home for a
+  point before writing, makes the smallest complete change, and ends with a
+  whole-manuscript coherence pass; redundancy and length rules; and integrity
+  rules that put `[AUTHOR INPUT: ...]` where a number, reference, or decision
+  is missing rather than inventing one.
+- `manuscript-editor`: `audit_manuscript.py`, a standard-library audit for
+  `.md`, `.tex`, `.docx`, and `.txt`. Reports the section outline with word
+  counts, revision-commentary leaks, near-duplicate sentences, terminology
+  variants, acronym problems, display-item order and orphans, hedge density,
+  abstract numbers absent from the body, and outstanding placeholders. `--strict`
+  exits non-zero while any leak remains, so it works as a submission gate.
+- `manuscript-editor`: four references covering the leak catalog with
+  before/after pairs by section, the manual coherence pass the script cannot
+  do, venue conventions separated into general principles and family-specific
+  rules (Nature, Science, Cell, medical journals, IEEE, ACM, Elsevier,
+  Springer/PLOS, ML conferences), and the structure of the response letter;
+  plus ledger and response templates.
+
+### Changed
+- `research-paper-writing` (2.0.1 to 2.1.0): gains a scope section stating that
+  it owns the prose and not placement, scope of change, or whole-manuscript
+  coherence. The rebuttal section now says the account of what changed lives
+  only in the response letter, and the revised manuscript never narrates its own
+  revision. Rewriting starts by checking whether the manuscript already makes
+  the point somewhere else, since a point stated twice reads as patching and the
+  two copies drift apart in later rounds.
+- `submission-reviewer` (1.0.2 to 1.0.3) and `submission-formatter` (1.1.1 to
+  1.1.2) hand off to `manuscript-editor` at the point where the revision itself,
+  rather than the score or the template, is the work. The marked-up copy stays
+  with `submission-formatter`, built from an already-revised manuscript.
+
+- `prose-naturalizer` (2.0.0 to 2.0.1): rewritten in plainer language. The same
+  31 patterns in the same order, with headings that name the problem rather
+  than label it, an explicit rewrite process, and a check that the rewrite
+  neither added nor lost a fact, number, quote, or citation.
+
+### Fixed
+- `prose-naturalizer`: the frontmatter description was a block scalar whose
+  first line was indented one space and the rest two, so every continuation
+  line loaded with a stray leading space, and its last sentence ended mid-quote.
+- Version badges in `data-engineering` and `manuscript-figures` READMEs had
+  drifted behind the versions in their `SKILL.md`.
+
 ## [0.6.0] - 2026-08-31
 
 Both research skills now prefer the peer-reviewed record over preprints, and
@@ -302,7 +355,9 @@ First public release of the collection.
 - Standardized every skill's frontmatter: added `summary`, semantic `version`,
   `author`, `license`, and a consistent `metadata` block.
 
-[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.5.2...HEAD
+[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/anayy09/claude-research-skills/compare/v0.6.0...v0.7.0
+[0.6.0]: https://github.com/anayy09/claude-research-skills/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/anayy09/claude-research-skills/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/anayy09/claude-research-skills/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/anayy09/claude-research-skills/compare/v0.4.0...v0.5.0

@@ -4,7 +4,7 @@
 
 <sub>Formerly `humanizer`.</sub>
 
-[![Version](https://img.shields.io/badge/version-2.0.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.0.1-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -40,6 +40,13 @@ needs to read and edit text.
 
 ## Changelog
 
+- **2.0.1**: Rewritten in plainer language. The same 31 patterns in the same
+  order, with headings and explanations that name the problem instead of
+  labeling it ("Sales language" rather than "Promotional and
+  Advertisement-like Language"), an explicit rewrite process, and a check that
+  no fact, number, quote, or citation was added or lost in the rewrite. Also
+  repairs the frontmatter description, whose continuation lines carried a stray
+  leading space and whose last sentence was cut off mid-quote.
 - **2.0.0**: Renamed from `humanizer` to `prose-naturalizer` (breaking: the
   skill's folder and name changed). No behavior change.
 - **1.0.0**: Initial release.

@@ -9,14 +9,18 @@ description: >
   paragraph", "write the related work", "help me phrase this contribution", or
   any request to produce or repair scholarly writing that has to read as if a
   working researcher wrote it. Do not use for casual summaries, blog posts,
-  marketing copy, slide bullet text, or code generation.
+  marketing copy, slide bullet text, or code generation. For revision rounds
+  driven by reviewer comments, response-to-reviewers documents, and
+  whole-manuscript coherence or redundancy checks, use this together with
+  manuscript-editor, which decides what belongs in the manuscript versus the
+  response and how much to change; this skill writes the sentences.
 summary: "Scholarly prose that reads like a working researcher wrote it."
-version: "2.0.1"
+version: "2.1.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-08-30"
+  last_updated: "2026-09-05"
 ---
 
 # Research Paper Writing
@@ -34,6 +38,22 @@ of confidence, never commits to a position on the literature, treats every
 result as good news, and pads transitions to sound coherent. Fix the substance
 and most surface tells disappear on their own. Everything below serves that
 goal; treat it as reasoning to internalize, not a checklist to satisfy.
+
+## Scope, and what belongs elsewhere
+
+This skill owns the prose: what a paragraph claims, how it argues, and how it
+reads. It does not:
+
+- Decide what belongs in the manuscript versus the response to reviewers or
+  internal notes, how much to change in a revision round, or whether the
+  whole manuscript still holds together afterwards. That is
+  `manuscript-editor`. Any time reviewer comments are on the table, or the
+  edit touches more than one section, run its workflow and use this skill
+  for the sentences it calls for.
+- Score the science (`submission-reviewer`), choose the venue
+  (`journal-advisor`), typeset to a template (`submission-formatter`), or
+  produce figures and statistics (`manuscript-figures`,
+  `ml-eval-statistics`).
 
 ## The one thing that matters most: have a real claim per paragraph
 
@@ -165,9 +185,7 @@ reader trying to reproduce or build on the work.
 
 **Results.** Lead with what the numbers mean, then the numbers. Name the
 baseline, name the gap, interpret the gap. Include failure cases and edge
-conditions; their absence undermines credibility. Write the text that cites a
-figure here; hand off to `manuscript-figures` to produce the figure itself, and
-to `ml-eval-statistics` when a claimed gap still needs an interval.
+conditions; their absence undermines credibility.
 
 **Discussion.** Interpret and extend; do not restate results. This is where
 tentative explanation is allowed, but flag it: "one likely explanation is",
@@ -184,6 +202,13 @@ what is correct without groveling, and push back on what is wrong with evidence
 rather than deference. State exactly what changed in the manuscript and where.
 Keep the register professional and factual, not defensive and not effusive.
 
+The response letter is the only place that account of change lives. The
+revised manuscript itself never says that something was added, revised, or
+done at a reviewer's request; it presents the resulting science as if it had
+always been written that way. For the structure of the response document,
+the revision ledger, and the rules on what moves where, follow
+`manuscript-editor`.
+
 ## When rewriting existing text
 
 1. Read the whole passage first and work out what it is trying to claim.
@@ -195,7 +220,11 @@ Keep the register professional and factual, not defensive and not effusive.
 4. Preserve the user's voice and terminology. Make the minimum changes that fix
    the actual problem. If they asked to fix tone, fix tone; do not also rewrite
    correct content.
-5. If the result comes out suspiciously smooth and uniform, the fix is not to
+5. Before adding a sentence to make a point, check whether the manuscript
+   already makes it somewhere else. If it does, revise or relocate that
+   passage rather than adding a second one; a point stated twice reads as
+   patching, and the two versions drift apart in later rounds.
+6. If the result comes out suspiciously smooth and uniform, the fix is not to
    sprinkle in short sentences. Go back and check that each paragraph is built
    on a real claim; uniformity is almost always a symptom of prose that is
    describing rather than arguing.
