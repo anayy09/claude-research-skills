@@ -13,6 +13,16 @@ Stdlib only. Reads .md, .tex, .txt, or .docx and reports:
   7. Hedge and meta-commentary density, with hedge-stacked sentences
   8. Numbers in the abstract that do not appear in the body
   9. Outstanding placeholders
+ 10. Editorial self-commentary (announced restraint, announced honesty, announced placement)
+ 11. Protocol refrain (methodological virtues restated at every use)
+ 12. Reader management (sentences that instruct the reader how to read a result)
+ 13. Internal workflow artifacts (decision ids, gate names, plan vocabulary, repo paths)
+ 14. Pre-emptive objection frames
+ 15. Recurring distinctive phrases across paragraphs (the same argument in several homes)
+ 16. Summary paragraphs (body paragraphs that restate several abstract numbers)
+ 17. Captions and table notes that argue rather than describe
+ 18. Citation statistics per section
+ 19. Limitations section length and share of the Discussion
 
 Everything here is a pointer for a human-quality read, not a verdict. The script
 cannot see semantic duplication or a contradiction in claim strength; the
@@ -150,10 +160,12 @@ def read_txt(path: str) -> list[tuple[str, str]]:
     for line in open(path, encoding="utf-8", errors="replace"):
         line = line.rstrip("\n")
         s = line.strip()
+        tableish = (len(re.findall(r"\d+\.\d+", s)) >= 2 or "[" in s or "   " in s
+                    or re.match(r"^(R\d|Row|Table|Fig)", s))
         looks_heading = (
-            s and len(s.split()) <= 8 and not s.endswith((".", ",", ";", ":"))
+            s and len(s.split()) <= 10 and not s.endswith((".", ",", ";", ":")) and not tableish
             and (s.lower().rstrip(".") in HEADING_WORDS
-                 or re.match(r"^(\d+(\.\d+)*\.?|[IVX]+\.)\s+\S", s))
+                 or re.match(r"^(\d+(\.\d+)*\.?|[IVX]+\.)\s+[A-Z]", s))
         )
         if looks_heading:
             if buf:
@@ -210,17 +222,43 @@ class Section:
 
 
 def build_sections(blocks: list[tuple[str, str]]) -> list[Section]:
+    """Group paragraphs under headings. Once a References heading is seen, everything
+    after it is references unless a known non-reference heading appears (Declarations,
+    Appendix), so table rows and citation lines inside the bibliography never become
+    sections of their own."""
     sections: list[Section] = []
     current = Section("(front matter)", 0)
+    in_refs = False
     for kind, text in blocks:
         if kind == "heading":
+            key = re.sub(r"^[\d.\s]+", "", text).strip().lower()
+            if in_refs and key not in ("declarations", "appendix", "supplementary", "supplementary material",
+                                       "additional file", "acknowledgements", "acknowledgments"):
+                current.paras.append(text)
+                continue
+            if key in ("references", "bibliography"):
+                in_refs = True
+            elif key in ("declarations", "appendix", "supplementary", "supplementary material"):
+                in_refs = False
             if current.paras or sections:
                 sections.append(current)
             current = Section(text, len(sections) + 1)
         else:
             current.paras.append(text)
     sections.append(current)
-    return [s for s in sections if s.paras or s.title != "(front matter)"]
+    sections = [s for s in sections if s.paras or s.title != "(front matter)"]
+    # PDF-derived text: axis labels and table stubs get read as headings. A heading with
+    # almost no text under it and no standard name is folded back into the previous section.
+    merged: list[Section] = []
+    for s in sections:
+        if merged and s.words <= 3 and s.key not in HEADING_WORDS and s.key not in SKIP_SECTIONS:
+            merged[-1].paras.append(s.title)
+            merged[-1].paras.extend(s.paras)
+        else:
+            merged.append(s)
+    for i, s in enumerate(merged):
+        s.index = i + 1
+    return merged
 
 
 def sentences(text: str) -> list[str]:
@@ -278,6 +316,70 @@ HEDGE_PATTERNS = [
     r"\bin\s+this\s+(section|subsection|paragraph),?\s+we\b",
     r"\bthis\s+(section|subsection)\s+(describes|presents|discusses|clarifies|explains)\b",
     r"\bwhile\s+(we|our|this|it)\b.*\b(may|might|could)\b.*\b(however|nevertheless|nonetheless)\b",
+]
+
+SELF_COMMENTARY_PATTERNS = [
+    # announced restraint or honesty: the sentence describes the authors' editorial virtue
+    r"\bwe\s+would\s+rather\b", r"\brather\s+than\s+(bank|hide|hiding|let|leave|leaving|treat|treating|assert|asserting|assum\w+|quietly)",
+    r"\bcount(s|ed)?\s+(it|them|that)\s+as\s+nothing\b", r"\bnever\s+instead\s+of\b",
+    r"\bwe\s+(do\s+not|don't)\s+lean\s+on\b", r"\bwe\s+declined\s+(it|to)\b",
+    r"\bwe\s+report\s+(all\s+of\s+)?(this|it|them|these|both)\s+because\b",
+    r"\bbecause\s+we\s+(registered|declared|promised|said)\b",
+    r"\bwe\s+(say|state|report)\s+(so|this|that)\s+(plainly|here|rather|in\s+the)\b",
+    r"\bwe\s+are\s+explicit\s+that\b", r"\bwe\s+state\s+that\s+plainly\b",
+    # announced placement or emphasis
+    r"\bworth\s+(stating|naming|saying|noting|knowing|pausing|reporting|recording)\b",
+    r"\bbelongs\s+here\s+rather\s+than\b", r"\b(is|are)\s+the\s+reason\s+(we|to)\s+report\b",
+    r"\brather\s+than\s+(in|as)\s+a\s+footnote\b", r"\bwe\s+(put|phrase|frame)\s+it\s+that\s+way\b",
+    r"\bwe\s+would\s+not\s+offer\s+(that|this|it)\s+as\b",
+    r"\bwhich\s+is\s+(also\s+)?why\s+we\s+report\b", r"\bwe\s+cite\s+(them|it|these)\s+as\s+that\b",
+    r"\bso\s+that\s+it\s+could\s+not\s+be\s+offered\b", r"\bprecisely\s+so\s+that\b",
+    r"\bthe\s+(honest|conservative)\s+(statement|direction|reading|scope)\b",
+    r"\bwe\s+think\s+it\s+should\b",
+]
+
+PROTOCOL_REFRAIN_PATTERNS = [
+    # a design property restated at the point of use instead of once in Methods
+    r"\b(declared|registered|pre-?declared|pre-?registered|fixed|specified|recorded|committed)\s+(in\s+advance|before\s+(the\s+first|any|running|computing|measuring|fitting|seeing))",
+    r"\bbefore\s+(the\s+first\s+run|any\s+(number|row|curve|model|result|figure|run)\b|running\s+anything|any\s+result\s+existed)",
+    r"\bin\s+advance\b", r"\bwe\s+(declared|registered|fixed|stated|committed)\s+(as\s+much|the|this|that|it)\b",
+    r"\bbefore\s+(it|they|the\s+runs?)\s+existed\b", r"\bnot\s+chosen\s+after\s+seeing\b",
+    r"\bchoosing\s+(one|it|the)\b.*\bafter\s+seeing\b",
+    r"\bno\s+number\b.*\b(typed|entered)\s+by\s+hand\b", r"\bresolves?\s+(mechanically\s+)?to\s+a\s+named\s+cell\b",
+    r"\bchecked\s+mechanically\b", r"\bevery\s+(number|value)\s+(in\s+this\s+(paper|manuscript|figure)\s+)?resolves\b",
+    r"\bis\s+a\s+cell\s+of\s+table\b", r"\bnothing\s+is\s+plotted\s+that\s+is\s+not\s+tabulated\b",
+]
+
+READER_MANAGEMENT_PATTERNS = [
+    r"\bmust\s+not\s+be\s+read\s+as\b", r"\bshould\s+(not\s+)?be\s+read\s+as\b", r"\b(can|could)\s+be\s+read\s+as\b",
+    r"\ba\s+reader('s)?\b", r"\bthe\s+reader('s)?\b", r"\breaders\s+(will|may|might|should|can)\b",
+    r"\bno\s+part\s+of\s+(our|this)\s+argument\b", r"\bthis\s+paper\s+must\s+not\s+be\s+read\b",
+    r"\bwe\s+are\s+not\s+claiming\b", r"\bthis\s+is\s+not\s+(a\s+claim|an\s+indictment|a\s+trick)\b",
+    r"\bthe\s+(obvious|first|natural)\s+(objection|suspicion|question)\b",
+    r"\bone\s+might\s+(ask|object|argue|wonder)\b", r"\bsome\s+may\s+argue\b",
+]
+
+INTERNAL_ARTIFACT_PATTERNS = [
+    r"\b[A-Z]-\d{3}\b",                       # decision-log ids like D-050
+    r"\bgate\s+G\d\b", r"\bG\d:\s", r"\bstrengthener\s+\d+\b", r"\bstrengthener\b",
+    r"\bkill[- ]experiment\b", r"\bthe\s+plan\b", r"\bschedule\s+slips\b", r"\bdecision\s+log\b",
+    r"\b[\w-]+/[\w.-]+\.(md|yaml|yml|json|py|csv|txt)\b", r"\bdocs/\w+", r"\bsources/\w+",
+    r"\bcomparisons?/[\w.-]+", r"\bledger\b", r"\bclosing\s+D-\d+\b",
+    r"(?-i:\bTHIS\s+TABLE\s+DOES\s+NOT\b)", r"(?-i:\b[A-Z]{4,}(\s+[A-Z]{3,}){1,}\b)",  # shouted phrases in notes
+]
+
+# The objection is usually typeset with markdown emphasis around it, so the anchored
+# patterns tolerate leading markup; without that the frame this skill documents as the
+# family F example went undetected by the family F check.
+_FRAME_OPEN = r"^[\s>*_\"']*"
+
+OBJECTION_FRAME_PATTERNS = [
+    _FRAME_OPEN + r"(this\s+is\s+just|your\s+[\w\s]{0,40}?\s*(is|are|leaks?|do|does|cannot|can't|fails?)\b"
+                  r"|you\s+are\s+comparing|so\s+using\s+it\s+is\s+fine)",
+    _FRAME_OPEN + r"\w[^.?!]{0,80}\?\s",     # a paragraph opening with a rhetorical question
+    # the objection as a fully emphasized opening sentence, followed by the rebuttal
+    r"^\s*[*_]{1,2}[^*_\n]{10,160}[.?!][*_]{1,2}",
+    r"\bthe\s+(strongest|obvious)\s+(available\s+)?objection\b", r"\bobjections?\s*$",
 ]
 
 SOFT_HEDGES = [r"\bmay\b", r"\bmight\b", r"\bcould\b", r"\bpossibly\b", r"\bpotentially\b",
@@ -538,15 +640,190 @@ def check_abstract_numbers(sections: list[Section]) -> list[str]:
         return []
     body = " ".join(s.text for s in sections if s is not abstract and is_body_section(s))
     body = re.sub(r"(\d),(\d{3})", r"\1\2", body)
-    nums = set(re.findall(r"(?<![\w.])\d{1,3}(?:,\d{3})+(?:\.\d+)?%?|(?<![\w.])\d+(?:\.\d+)?%?(?![\w.])", abstract.text))
+    # The trailing guard rejects a following digit or letter but must allow a full stop.
+    # A number that ends a sentence ("was 0.812.") is the commonest position for one in
+    # prose; excluding "." here made those invisible to extraction and unfindable in the
+    # body, so a number that was present got reported as missing from it.
+    nums = set(re.findall(r"(?<![\w.])\d{1,3}(?:,\d{3})+(?:\.\d+)?%?|(?<![\w.])\d+(?:\.\d+)?%?(?!\w)", abstract.text))
     missing = []
     for n in sorted(nums, key=lambda x: float(x.rstrip("%").replace(",", ""))):
         bare = n.rstrip("%").replace(",", "")
         if float(bare) < 3 and "." not in bare:  # skip 1, 2 (counts of things, section numbers)
             continue
-        if not re.search(r"(?<![\w.])%s(?![\w.])" % re.escape(bare), body):
+        if not re.search(r"(?<![\w.])%s(?!\w)" % re.escape(bare), body):
             missing.append(n)
     return missing
+
+
+def scan_family(sections: list[Section], patterns: list[str], per_paragraph: bool = False) -> dict:
+    compiled = [re.compile(p, re.I | re.M) for p in patterns]
+    hits = []
+    words = 0
+    for sec in sections:
+        if not is_body_section(sec):
+            continue
+        words += sec.words
+        for pi, para in enumerate(sec.paras):
+            units = [para] if per_paragraph else sentences(mask_placeholders(para))
+            for unit in units:
+                for rx in compiled:
+                    m = rx.search(unit)
+                    if m:
+                        hits.append({"section": sec.title, "para": pi + 1, "match": m.group(0)[:60],
+                                     "sentence": unit[:220]})
+                        break
+    by_section: Counter = Counter(h["section"] for h in hits)
+    return {"count": len(hits), "per_1000_words": round(1000.0 * len(hits) / words, 1) if words else 0.0,
+            "by_section": dict(by_section.most_common()), "hits": hits}
+
+
+STOPWORDS = set("""a an the of to in on at for and or but with without from by as is are was were be been
+being it its this that these those we our us they their them he she his her which who whom whose what
+when where why how not no nor so than then there here into over under between against about above below
+after before during through per each any all both some such only own same other another more most less
+least very can could may might must shall should will would do does did done have has had having also
+one two three four five six first second third""".split())
+
+
+def check_recurring_phrases(sections: list[Section], min_paras: int = 3) -> list[dict]:
+    """Distinctive 3- and 4-word phrases that recur in several paragraphs. Paraphrased
+    restatements of one argument usually share a distinctive phrase even when no whole
+    sentence repeats, so this finds the multi-home justifications the sentence-level
+    duplicate check misses. Phrases made only of stopwords, and phrases that appear in
+    more than a quarter of paragraphs (plain terminology), are dropped."""
+    para_index = []
+    for sec in sections:
+        if not is_body_section(sec):
+            continue
+        for pi, para in enumerate(sec.paras):
+            para_index.append((sec.title, pi + 1, normalize_sentence(para).split()))
+    n_paras = len(para_index) or 1
+    # paragraph frequency per word: a phrase is distinctive only if its rarest content
+    # word appears in few paragraphs; otherwise it is the paper's terminology
+    word_pf: Counter = Counter()
+    for _, _, toks in para_index:
+        for w in set(toks):
+            word_pf[w] += 1
+    occ: dict[tuple[str, ...], set[int]] = defaultdict(set)
+    for idx, (_, _, toks) in enumerate(para_index):
+        for k in (3, 4):
+            for i in range(max(0, len(toks) - k + 1)):
+                ph = tuple(toks[i:i + k])
+                content = [w for w in ph if w not in STOPWORDS and not w.isdigit() and len(w) > 2]
+                if len(content) < 2 or (ph[0] in STOPWORDS and ph[-1] in STOPWORDS):
+                    continue
+                if min(word_pf[w] for w in content) > max(3, 0.12 * n_paras):
+                    continue
+                occ[ph].add(idx)
+    rows = []
+    for ph, idxs in occ.items():
+        if len(idxs) < min_paras:
+            continue
+        rows.append((len(idxs), ph, idxs))
+    # drop 3-grams contained in a reported 4-gram with the same spread
+    rows.sort(key=lambda r: (-r[0], -len(r[1])))
+    kept: list[tuple[int, tuple[str, ...], set[int]]] = []
+    for cnt, ph, idxs in rows:
+        if any(cnt == kc and len(ph) < len(kp) and " ".join(ph) in " ".join(kp) for kc, kp, _ in kept):
+            continue
+        kept.append((cnt, ph, idxs))
+    out = []
+    for cnt, ph, idxs in kept[:40]:
+        secs = sorted({para_index[i][0] for i in idxs})
+        locs = sorted({"%s p%d" % (para_index[i][0], para_index[i][1]) for i in idxs})
+        out.append({"phrase": " ".join(ph), "paragraphs": cnt, "sections": secs, "locations": locs[:8]})
+    out.sort(key=lambda r: (-len(r["sections"]), -r["paragraphs"]))
+    return out
+
+
+def check_summary_paragraphs(sections: list[Section], min_numbers: int = 3) -> list[dict]:
+    """Body paragraphs outside Results and outside the abstract that carry several of the
+    abstract's numbers. Each is a summary of the paper; a manuscript needs at most three
+    (end of Introduction, opening of Discussion, Conclusion) and none of them verbatim."""
+    abstract = find_abstract(sections)
+    if not abstract:
+        return []
+    nums = set(re.findall(r"(?<![\w.])[-+]?\d+\.\d{2,}(?!\w)", abstract.text))
+    nums = {n.lstrip("+") for n in nums}
+    if len(nums) < 2:
+        return []
+    out = []
+    for sec in sections:
+        if sec is abstract or not is_body_section(sec):
+            continue
+        for pi, para in enumerate(sec.paras):
+            found = [n for n in nums if re.search(r"(?<![\w.])[-+]?%s(?!\w)" % re.escape(n), para)]
+            if len(found) >= min_numbers:
+                out.append({"section": sec.title, "para": pi + 1, "abstract_numbers": sorted(found),
+                            "opening": para[:120]})
+    return out
+
+
+def check_captions(sections: list[Section]) -> list[dict]:
+    """Captions and table notes that argue, shout, instruct, or carry internal ids."""
+    rx_caption = re.compile(r"^(CAPTION:|Fig(?:ure)?\.?\s*\d+|Table\s*\d+\w?)", re.I)
+    rx_bad = re.compile(r"\b(must\s+not|does\s+not\s+order|argument|the\s+text\s+(makes|discusses)|"
+                        r"is\s+strengthener|the\s+plan|D-\d{3}|schedule|what\s+(an?\s+)?\w+\s+does\s+to|"
+                        r"which\s+is\s+what\b|worth|THIS\s+TABLE|we\s+would|never\s+count)", re.I)
+    out = []
+    for sec in sections:
+        if not is_body_section(sec):
+            continue
+        for pi, para in enumerate(sec.paras):
+            if rx_caption.match(para.strip()):
+                m = rx_bad.search(para)
+                if m or len(para.split()) > 150:
+                    out.append({"section": sec.title, "para": pi + 1, "match": (m.group(0) if m else "length"),
+                                "words": len(para.split()), "opening": para[:100]})
+    return out
+
+
+def check_citations(sections: list[Section]) -> dict:
+    """Numeric-citation statistics: distinct references, per-section density, references
+    cited exactly once, and the longest run of citations in one sentence."""
+    per_section = {}
+    all_refs: Counter = Counter()
+    once_only_by_section: Counter = Counter()
+    ref_sections: dict[str, set] = defaultdict(set)
+    longest = (0, "")
+    for sec in sections:
+        if not is_body_section(sec):
+            continue
+        refs = []
+        for m in re.finditer(r"\[(\d+(?:\s*[,\u2013-]\s*\d+)*)\]", sec.text):
+            for part in re.split(r"\s*,\s*", m.group(1)):
+                if re.match(r"^\d+\s*[\u2013-]\s*\d+$", part):
+                    a, b = [int(x) for x in re.split(r"\s*[\u2013-]\s*", part)]
+                    refs.extend(str(i) for i in range(a, b + 1))
+                elif part.strip().isdigit():
+                    refs.append(part.strip())
+        for r in refs:
+            all_refs[r] += 1
+            ref_sections[r].add(sec.title)
+        if sec.words:
+            per_section[sec.title] = {"citations": len(refs), "per_1000_words": round(1000.0 * len(refs) / sec.words, 1)}
+        for sent in sentences(sec.text):
+            n = len(re.findall(r"\[\d", sent))
+            if n > longest[0]:
+                longest = (n, sent[:160])
+    once = [r for r, c in all_refs.items() if c == 1]
+    for r in once:
+        for st in ref_sections[r]:
+            once_only_by_section[st] += 1
+    return {"distinct_references_cited": len(all_refs), "cited_once": len(once),
+            "cited_once_by_section": dict(once_only_by_section.most_common()),
+            "per_section": per_section, "most_citations_in_one_sentence": longest[0], "example": longest[1]}
+
+
+def check_limitations(sections: list[Section]) -> dict:
+    lim = [s for s in sections if s.key.startswith("limitation")]
+    disc = [s for s in sections if s.key.startswith("discussion")]
+    if not lim:
+        return {}
+    lw = sum(s.words for s in lim)
+    dw = sum(s.words for s in disc) + lw
+    return {"limitations_words": lw, "limitations_paragraphs": sum(len(s.paras) for s in lim),
+            "share_of_discussion": round(lw / dw, 2) if dw else None}
 
 
 def check_placeholders(sections: list[Section]) -> list[dict]:
@@ -604,6 +881,16 @@ def run(path: str) -> dict:
         "hedging": check_hedges(sections),
         "abstract_numbers_missing_from_body": check_abstract_numbers(sections),
         "placeholders": check_placeholders(sections),
+        "self_commentary": scan_family(sections, SELF_COMMENTARY_PATTERNS),
+        "protocol_refrain": scan_family(sections, PROTOCOL_REFRAIN_PATTERNS),
+        "reader_management": scan_family(sections, READER_MANAGEMENT_PATTERNS),
+        "internal_artifacts": scan_family(sections, INTERNAL_ARTIFACT_PATTERNS),
+        "objection_frames": scan_family(sections, OBJECTION_FRAME_PATTERNS, per_paragraph=True),
+        "recurring_phrases": check_recurring_phrases(sections),
+        "summary_paragraphs": check_summary_paragraphs(sections),
+        "captions": check_captions(sections),
+        "citations": check_citations(sections),
+        "limitations": check_limitations(sections),
     }
     return result
 
@@ -705,8 +992,80 @@ def to_markdown(r: dict) -> str:
     if not p:
         L.append("None.")
     L.append("")
+
+    def family(num: str, title: str, key: str, guidance: str, limit: int = 25) -> None:
+        f = r[key]
+        L.append("## %s. %s (%d, %.1f per 1000 words)" % (num, title, f["count"], f["per_1000_words"]))
+        L.append("")
+        L.append(guidance)
+        if f["by_section"]:
+            L.append("")
+            L.append("By section: " + "; ".join("%s %d" % (k, v) for k, v in list(f["by_section"].items())[:8]))
+        for h in f["hits"][:limit]:
+            L.append("- %s, para %d, `%s`: %s" % (h["section"], h["para"], h["match"], h["sentence"]))
+        if len(f["hits"]) > limit:
+            L.append("- ... %d more (see --json)" % (len(f["hits"]) - limit))
+        L.append("")
+
+    family("10", "Editorial self-commentary", "self_commentary",
+           "Sentences that announce the authors' restraint, honesty, or placement decisions instead of just making the statement. Target: zero. Delete the frame, keep the fact.")
+    family("11", "Protocol refrain", "protocol_refrain",
+           "A design property (pre-registration, fixed in advance, mechanically checked) restated at the point of use. State it once in Methods; above ~1 per 1000 words reads as insistence.")
+    family("12", "Reader management", "reader_management",
+           "Sentences that tell the reader how to read a result. State the scope of the claim instead. Target: at most one or two in the whole paper, in Discussion.")
+    family("13", "Internal workflow artifacts", "internal_artifacts",
+           "Decision ids, gate names, plan vocabulary, repository paths, shouted table notes. None of these belong in a manuscript; move to the supplement, the repository README, or the ledger.")
+    family("14", "Pre-emptive objection frames", "objection_frames",
+           "Paragraphs framed as an objection and its rebuttal. Fold the substance into Methods rationale or Limitations; the frame is response-letter material.", limit=10)
+
+    rp = r["recurring_phrases"]
+    L.append("## 15. Recurring distinctive phrases (%d)" % len(rp))
+    L.append("")
+    L.append("Phrases that recur across several paragraphs usually mark one argument living in several homes. For each, decide the single home and reduce the others to a cross-reference or nothing.")
+    for x in rp[:30]:
+        L.append("- `%s`: %d paragraphs across %d sections (%s)" % (x["phrase"], x["paragraphs"], len(x["sections"]), "; ".join(x["locations"][:5])))
+    if not rp:
+        L.append("None above threshold.")
+    L.append("")
+    sp = r["summary_paragraphs"]
+    L.append("## 16. Summary paragraphs (%d)" % len(sp))
+    L.append("")
+    L.append("Body paragraphs outside Results carrying 3+ of the abstract's numbers. Budget: end of Introduction, first paragraph of Discussion, Conclusion. Any others are restatement.")
+    for x in sp:
+        L.append("- %s, para %d, numbers %s: %s" % (x["section"], x["para"], ", ".join(x["abstract_numbers"]), x["opening"]))
+    if not sp:
+        L.append("None (or no abstract with decimal numbers detected).")
+    L.append("")
+    cp = r["captions"]
+    L.append("## 17. Captions and table notes that argue (%d)" % len(cp))
+    L.append("")
+    for x in cp:
+        L.append("- %s, para %d (%d words, `%s`): %s" % (x["section"], x["para"], x["words"], x["match"], x["opening"]))
+    if not cp:
+        L.append("None flagged. Captions describe; the argument lives in the text.")
+    L.append("")
+    c = r["citations"]
+    L.append("## 18. Citations")
+    L.append("")
+    L.append("- Distinct references cited in body: %d; cited exactly once: %d" % (c["distinct_references_cited"], c["cited_once"]))
+    if c["cited_once_by_section"]:
+        L.append("- Once-only citations by section: " + "; ".join("%s %d" % (k, v) for k, v in list(c["cited_once_by_section"].items())[:6]))
+    dense = sorted(c["per_section"].items(), key=lambda kv: -kv[1]["per_1000_words"])[:5]
+    if dense:
+        L.append("- Densest sections: " + "; ".join("%s %.0f/1000" % (k, v["per_1000_words"]) for k, v in dense))
+    if c["most_citations_in_one_sentence"] >= 3:
+        L.append("- Most citations in one sentence: %d (%s)" % (c["most_citations_in_one_sentence"], c["example"]))
+    L.append("Every citation must do a job for this paper's argument (gap, method, comparator, counter-example). A reference cited once in Related Work and never again is the first candidate to cut.")
+    L.append("")
+    lim = r["limitations"]
+    if lim:
+        L.append("## 19. Limitations section")
+        L.append("")
+        L.append("- %d words in %d paragraphs; %s of the Discussion. One limitation per paragraph, each with mechanism and consequence; anything explained elsewhere is referenced, not re-explained." % (
+            lim["limitations_words"], lim["limitations_paragraphs"], ("%.0f%%" % (100 * lim["share_of_discussion"])) if lim["share_of_discussion"] is not None else "n/a"))
+        L.append("")
     L.append("---")
-    L.append("Pattern-based checks only. Contradictions, claim-strength drift, broken transitions, and semantic duplication need the manual coherence pass (references/coherence-audit.md).")
+    L.append("Pattern-based checks only. They locate candidates; the editorial read (references/editorial-read.md) decides. Contradictions, claim-strength drift, relevance of citations, and broken continuity are not detectable here.")
     return "\n".join(L)
 
 

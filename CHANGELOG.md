@@ -7,6 +7,48 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-09-06
+
+### Changed
+- `manuscript-editor` (1.0.0 to 1.1.0): the check is now a paragraph-level
+  editorial read, with the audit script as its instrument rather than its
+  substitute. The skill previously treated reviewer-facing language as the
+  thing to catch; that is the rarest failure in a careful draft. Five more
+  families of non-manuscript text are now named, none of which mentions a
+  reviewer: editorial self-commentary ("we would rather say so than bank the
+  pass"), protocol refrain ("declared before the first run", restated at every
+  result), reader management ("this must not be read as"), internal workflow
+  artifacts (decision ids, plan vocabulary, repository paths), and pre-emptive
+  objection sections. Adds rules for the summary budget, the job a citation has
+  to do, paragraph continuity, and what a caption may say.
+- `manuscript-editor`: `audit_manuscript.py` gains ten checks: one per new
+  family, plus recurring distinctive phrases (one argument living in several
+  homes, which the sentence-level duplicate check cannot see), summary
+  paragraphs, captions that argue, citation density with once-only references,
+  and limitations length.
+- `manuscript-editor`: new `references/editorial-read.md` (three questions per
+  paragraph, three running indexes, section and manuscript tests, cut
+  decisions) and `assets/editorial-report.md` for the prioritized cut list,
+  which is delivered before any cut is made.
+
+### Fixed
+- `manuscript-editor`: a decimal that ended a sentence was invisible to the
+  abstract-number check, because the guard after the number rejected a
+  following full stop as well as a following digit. A body sentence reading
+  "The external AUROC was 0.812." did not satisfy the search, so a headline
+  number that was present in the body was reported as missing from it, in the
+  check whose whole job is catching a number that was dropped in revision. The
+  same guard also hid those numbers from the new summary-paragraph check.
+- `manuscript-editor`: the pre-emptive-objection detector did not match the
+  objection frame the skill itself documents as the family F example, because
+  the anchored patterns did not allow for the markdown emphasis the device is
+  normally typeset with, and required "your X is/are" rather than any
+  accusation. It now tolerates leading markup and recognizes a fully
+  emphasized opening sentence followed by a rebuttal.
+- `manuscript-editor`: section detection no longer splits a bibliography into
+  one section per citation line, and no longer reads a PDF axis label or table
+  stub as a heading.
+
 ## [0.7.0] - 2026-09-05
 
 A new skill for the part of publishing that happens after the reviews arrive,
@@ -355,7 +397,8 @@ First public release of the collection.
 - Standardized every skill's frontmatter: added `summary`, semantic `version`,
   `author`, `license`, and a consistent `metadata` block.
 
-[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.7.1...HEAD
+[0.7.1]: https://github.com/anayy09/claude-research-skills/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/anayy09/claude-research-skills/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/anayy09/claude-research-skills/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/anayy09/claude-research-skills/compare/v0.5.1...v0.5.2

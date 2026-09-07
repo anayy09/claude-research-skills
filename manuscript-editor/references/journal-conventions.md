@@ -253,6 +253,40 @@ Within a venue, the article type changes the shape more than the venue does.
 - **Case report, technical note, comment.** Venue-specific templates; follow
   them exactly.
 
+### Pre-registered studies, registered reports, and audits
+
+Papers whose contribution includes having registered targets in advance
+have a specific failure mode: the registration becomes the subject of the
+prose. Convention across venues that publish them (Nature Human Behaviour,
+Cortex and other Registered Reports outlets, BMJ, PLOS, most
+Nature Portfolio and Springer titles with a pre-registration policy):
+
+- One Methods subsection states what was registered, where (repository or
+  registry, with identifier and date), and what changed since. That is the
+  only place the word "registered" carries an argument.
+- Results reports registered and exploratory analyses in the same voice,
+  with the distinction carried by a table column or a one-word label
+  ("registered", "exploratory"), not by repeated prose assertions.
+- Failed registered predictions are reported as results: target, measured
+  value, interval, verdict, in one table. Interpretation of the failures is
+  one Discussion paragraph. Their status as "reported because registered" is
+  not stated; the table is the statement.
+- Provenance and reproducibility machinery (run ledgers, hash checks,
+  automated reference verification) is one Methods paragraph or a
+  supplement. It is not repeated in figure captions or in the contribution
+  list.
+
+### Where a literature search belongs in a research article
+
+When a research article includes a structured literature search (to
+establish that a baseline is absent, to position a claim), the search is a
+method: protocol, sources, dates, screening counts go in Methods (one
+paragraph) or a supplement with a PRISMA-style flow if the venue's article
+type expects it. The Introduction or Background cites what the search found
+and states the gap; it does not describe how the search was run. A table of
+every screened study with its bearing on the paper is supplementary.
+Rapid-review and scoping-review limits are stated once, in Limitations.
+
 ## 5. Reporting guidelines by study type
 
 These determine what Methods and Results must contain. The checklist is

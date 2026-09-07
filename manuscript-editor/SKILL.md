@@ -15,12 +15,12 @@ description: >-
   and section content match the target venue and article type. Pairs with
   research-paper-writing, which owns sentence and paragraph quality.
 summary: "Keeps manuscripts coherent through revision: right content in the right document, minimal changes, whole-paper consistency."
-version: "1.0.0"
+version: "1.1.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-05"
+  last_updated: "2026-09-06"
 ---
 
 # Manuscript Editor
@@ -32,12 +32,24 @@ why it existed. Points got restated where the reviewer happened to look
 instead of where they belong. Terminology drifted. The result reads as a
 record of the review process rather than as a research article.
 
-This skill is the discipline that prevents that. It treats the manuscript as
+The same decay happens without any reviewer. A careful author who has
+pre-registered a study and is anxious to be seen as honest produces a
+different patchwork: every design choice is defended at the point of use,
+every number is followed by a sentence announcing that it was declared in
+advance, the same headline is restated in six places, the Introduction
+grows a literature review that cites everything the search returned, and the
+Discussion acquires an "Objections" section. Nothing in it is reviewer-facing
+and all of it is non-manuscript text.
+
+This skill is the discipline that prevents both. It treats the manuscript as
 one artifact with one author voice, and it treats everything about the
-editing process as belonging somewhere else. It does not replace
-`research-paper-writing`; that skill makes each paragraph argue well. This
-one decides what goes where, how much to change, and whether the whole still
-holds together afterwards.
+editing process, the authors' own conduct, and the reader's presumed
+suspicions as belonging somewhere else. The check is a paragraph-by-paragraph
+editorial read (`references/editorial-read.md`); the audit script is an
+instrument that points the read at likely trouble, not a substitute for it.
+This skill does not replace `research-paper-writing`; that skill makes each
+paragraph argue well. This one decides what goes where, how much to say, how
+often, and whether the whole still holds together afterwards.
 
 ## Scope, and what belongs elsewhere
 
@@ -81,6 +93,30 @@ caused them: scientific rationale for a design choice, methodological
 justification a reader in the field would expect, and limitations. These are
 part of the science. Defensive framing around them is not.
 
+## Six families of non-manuscript text
+
+Reviewer-facing language is the most obvious family and the least common in
+a well-run draft. The other five do most of the damage and none of them
+mentions a reviewer. Full catalog with before/after pairs in
+`references/manuscript-boundary.md`; the audit script has a detector for each.
+
+| Family | What it sounds like | Where it goes |
+|---|---|---|
+| A. Review-process narration | "As suggested by Reviewer 2, we have now added" | Response letter |
+| B. Editorial self-commentary | "We would rather say so than bank the pass." "We report all of this because we registered it." "Worth stating rather than hiding." "Belongs here rather than in a footnote." | Nowhere; do the thing, do not announce it |
+| C. Protocol refrain | "declared before the first run", "fixed in advance", "not chosen after seeing", "every number resolves to a named cell", restated at each use | Once, in Methods; once in the abstract if the venue expects it |
+| D. Reader management | "This must not be read as", "a reader's first suspicion is", "no part of our argument rests on", "we are not claiming" | State the claim's scope once; the reader is not instructed |
+| E. Internal workflow artifacts | Decision ids (D-050), gate names, "strengthener 10", "kill experiment", "the plan", repo paths, ledger vocabulary, shouted table notes | Repository, supplement, ledger |
+| F. Pre-emptive objections | A subsection or paragraph framed as "This is just X." followed by rebuttal | Substance into Methods rationale or Limitations; frame deleted |
+
+The common test: the sentence is about the authors, the paper, or the
+reader, not about the study. A manuscript sentence is about the study.
+
+Honesty in a manuscript is shown, not narrated. A failed pre-registered
+target is reported by putting the target and the measured value in one
+table and interpreting it in one paragraph. Saying five times that it was
+reported because it was registered persuades no one and costs a page.
+
 ## Modes
 
 Identify which one applies before starting; each has a different entry point.
@@ -88,8 +124,10 @@ Identify which one applies before starting; each has a different entry point.
 - **Revision round.** Reviewer or editor comments plus an existing
   manuscript. Follow the full workflow below.
 - **Editorial pass.** An existing draft, no external comments, and a request
-  to tighten, check consistency, or remove patchiness. Skip triage; run
-  steps 1, 6, and 7.
+  to tighten, check consistency, or remove patchiness. Run the editorial
+  read and the audit, deliver the editorial report with its prioritized cut
+  list (`assets/editorial-report.md`), and make the cuts only after the
+  author has seen the list. Then steps 6 and 7.
 - **Initial drafting.** Writing a manuscript or a section from results and
   notes. Read `references/journal-conventions.md` for the venue, build the
   section plan, then write with `research-paper-writing`. Start the ledger on
@@ -104,18 +142,25 @@ Identify which one applies before starting; each has a different entry point.
 
 ### 1. Parse and inventory before touching anything
 
-Read the whole manuscript once. Then run the audit so the mechanical picture
-is on the table before editing starts:
+Read the whole manuscript once as a reader, then once as an editor following
+`references/editorial-read.md`: for each paragraph, what is its one job, is it
+the first place that job is done, and does its opening connect to what the
+previous paragraph established. Keep the three running indexes that read
+produces (claims, justifications, summaries) in the ledger. Then run the
+audit so the mechanical picture is on the table too:
 
 ```bash
 python scripts/audit_manuscript.py paper.md --report audit_before.md
 ```
 
-It reports the outline with word counts, revision-commentary leaks already
-present, near-duplicate sentences, terminology variants, acronym problems,
-display-item references, hedge density, abstract/body number mismatches, and
-open placeholders. Accepts `.md`, `.tex`, `.docx`, `.txt`. Read
-`references/coherence-audit.md` for how to interpret it and what it cannot see.
+It reports the outline with word counts, all six families above, recurring
+distinctive phrases (one argument in several homes), summary paragraphs,
+near-duplicate sentences, terminology variants, acronym problems,
+display-item references, captions that argue, citation density, limitations
+length, abstract/body number mismatches, and open placeholders. Accepts
+`.md`, `.tex`, `.docx`, `.txt`. Read `references/coherence-audit.md` for how
+to interpret it and what it cannot see. The script finds candidates; the read
+decides.
 
 Load the revision ledger if one exists; otherwise create it from
 `assets/revision-ledger.md`. Record the venue, article type, word budget,
@@ -192,8 +237,10 @@ After the batch, not after each item. Re-run the audit:
 python scripts/audit_manuscript.py paper.md --report audit_after.md
 ```
 
-Then do the manual pass in `references/coherence-audit.md`. The parts the
-script cannot do and that matter most:
+Then repeat the editorial read (`references/editorial-read.md`) on every
+section that changed, and the whole-manuscript pass in
+`references/coherence-audit.md`. The parts the script cannot do and that
+matter most:
 
 - Contradictions: a number or claim changed in one place and not another.
   Abstract, Introduction contributions, Results, Discussion, and Conclusion
@@ -235,31 +282,101 @@ These apply in every mode, including initial drafting.
 - **One home per point.** A fact, justification, or limitation appears once
   in the main text, in the section whose job it is. The abstract restates
   headline results by design; that is the only sanctioned duplication.
+- **One home per justification.** Why a choice was made, why a feature
+  cannot leak, why recalibration was out of scope: each is explained once,
+  where the choice is introduced (usually Methods). Every later mention is
+  the bare fact or a cross-reference, never a re-explanation. The editorial
+  read builds a justification index for exactly this; the audit's
+  recurring-phrase section finds the ones that have spread.
+- **State the protocol once.** Pre-registration, what was fixed in advance,
+  how numbers are checked: one paragraph in Methods, one clause in the
+  abstract if the venue expects it. After that, the Results simply report
+  and the tables mark registered items with a column. A sentence that adds
+  "as declared in advance" to a result is protocol refrain.
+- **Summary budget.** The paper summarizes itself at most three times
+  outside the abstract: the contributions at the end of the Introduction,
+  the first paragraph of the Discussion, and the Conclusion. Each is shorter
+  than the last full account, adds interpretation rather than repeating
+  numbers, and shares no sentence with the others. A Results subsection
+  titled "Summary of outcomes" is a table, not prose. A Discussion
+  subsection titled "What failed" is one paragraph, not a second Results.
 - **Add only what is absent.** Before writing a sentence, check that the
   manuscript does not already say it. If it does and the reviewer missed it,
   the fix is a clearer sentence or a better location, not a second sentence.
 - **Justify design, not existence.** Explain why a method choice was made in
   the terms a reader needs to reproduce or evaluate it. Do not explain why
-  the paper is valid, why a section is present, or why the authors are
-  confident.
+  the paper is valid, why a section is present, why a number is reported, or
+  why the authors are confident or restrained.
 - **Caveat budget.** One limitation gets one clear statement in the
-  Discussion, with its mechanism if known. Hedges scattered through Results
-  to pre-empt criticism are cut. If a caveat is real, it belongs in the
-  limitations paragraph; if it is not, it goes.
+  Discussion, with its mechanism and its consequence for the claim, in one
+  to three sentences. Hedges scattered through Results to pre-empt criticism
+  are cut. A Limitations section that re-explains Methods is cut back to the
+  limitation itself plus a cross-reference.
 - **No summaries of what was just said.** End-of-section recaps,
   "in summary" sentences inside a section, and Conclusion paragraphs that
-  restate the Discussion are removed. The Conclusion states what was shown
-  and what it means, in a form shorter than the Discussion.
+  restate the Discussion are removed.
 - **Background lives in the Introduction.** Discussion paragraphs that
   re-explain why the problem matters are cut. Discussion positions the
   result against prior work, which is different.
 - **Growth must be earned.** A round that adds more than about 10 percent to
   a section needs a reason in the ledger.
 
+## Citations and related work
+
+A citation has to do a job for this paper's argument. The four jobs: it
+establishes the gap, it supplies a method or definition used here, it
+supplies a comparator or precedent the results are read against, or it is a
+direct counter-example the paper must answer. A work that merely shows the
+authors have read widely does none of these and is cut. Concretely:
+
+- Evidence about research practice in another field (recommender systems,
+  numerical PDEs) gets at most one sentence and one or two citations, in the
+  Introduction, if the point cannot be made with in-field evidence.
+- Studies that ask a neighbouring question the paper does not answer are
+  mentioned only if a reader would otherwise confuse the two; one sentence
+  each, no subsection.
+- The method of a literature search belongs in Methods (one paragraph) or
+  the supplement, not in the Introduction. A table of every screened study
+  is a supplementary table. The Introduction cites what the search found,
+  not how it was run.
+- Introduction and related-work text together should not exceed roughly a
+  quarter of the body. When it does, the paper is reviewing a literature
+  instead of reporting a study, and the venue's article type will say which
+  one it is.
+- A reference cited once, in the related-work section only, is the first
+  candidate for removal. The audit reports these.
+
+## Continuity
+
+A manuscript reads as stitched when each paragraph is a self-contained
+essay with an aphoristic opening ("The noise floor is a table, not a
+number.") and no dependence on what came before. It reads as continuous
+when each paragraph's first sentence takes something the previous paragraph
+established and does the next thing with it. This is not achieved with
+connectives ("Furthermore", "However") and not with aphorisms; it is
+achieved by ordering the paragraphs so that each needs the last.
+
+Test: read only the first sentence of every paragraph in a section. They
+should form an outline of an argument a reader could follow without the
+paragraphs. If they read as a list of independent assertions, reorder or
+merge until they do. One aphoristic opener per section is a stylistic
+choice; one per paragraph is a tic.
+
+## Captions, table notes, and figure text
+
+Captions and notes describe what is shown: what the marks are, the unit,
+the sample, the interval definition, where the values come from. They do
+not argue, warn, shout, or instruct ("THIS TABLE DOES NOT ORDER THE ARMS
+BY DISCRIMINATION", "two things visible here are arguments the text makes",
+"strengthener 10 in the plan"). If a table can be misread, the sentence
+that prevents the misreading goes in the text where the table is cited,
+once. Decision-log ids and pipeline provenance go in the supplement or the
+repository, not in the caption.
+
 ## Short examples
 
-Each pair shows text that leaked into a manuscript and the form it should
-take. More, organized by section, in `references/manuscript-boundary.md`.
+One pair per family plus the two integrity cases. More, organized by
+section and family, in `references/manuscript-boundary.md`.
 
 **Reviewer attribution in Methods.**
 Before: As suggested by Reviewer 2, we have now added a sensitivity analysis
@@ -285,22 +402,47 @@ index, which confirms that the model is well calibrated overall.
 After: Integrated calibration index was 0.021 (internal) and 0.048 (external).
 Interpretation of "well calibrated" goes to Discussion, once.
 
-**Restated background in Discussion.**
-Before: Sepsis is a leading cause of in-hospital mortality, and early
-identification is important because delayed treatment increases mortality.
-Our model achieved an external AUROC of 0.81.
-After: (delete the first sentence; it is in the Introduction) An external
-AUROC of 0.81 places the model with the better-performing published
-approaches, but the calibration drift in older patients means the operating
-threshold would need to be reset per site.
+**Announced restraint (family B).**
+Before: This is an easy test to pass and we would rather say so than bank
+the pass. Landing inside the published interval shows the reproduction is
+not badly wrong; it does not show that it is precisely right.
+After: The published interval is wide because six of the fifteen targets
+have fewer than fifty positives in the test fold; the reproduction falls
+inside it, which bounds but does not pin the reference arm.
+The restraint is now in the content of the sentence, not narrated.
 
-**Hedge stacking after a critical review.**
-Before: Note that this may potentially be due to differences in case mix,
-although it could possibly also reflect labeling differences, and it might
-perhaps be related to sampling frequency.
-After: The most likely cause is case-mix difference: the external cohort had
-a higher proportion of surgical admissions (Table 1). Labeling and sampling
-frequency differed as well and cannot be excluded.
+**Protocol refrain (family C).**
+Before: The operating threshold is 0.10, fixed from the clinical framing
+and recorded before any curve was computed. We declared as much before
+computing any of it, precisely so that it could not be offered afterwards as
+an explanation for an unflattering number.
+After: The operating threshold was 0.10 (Methods, Registration). Then the
+result.
+One Methods paragraph says what was registered and where the registration
+lives. Every later mention is a cross-reference.
+
+**Reader management (family D).**
+Before: Acquisition context does not, however, explain the waveform arm,
+and this paper must not be read as saying that it does. Those are two
+claims. The first survives and the second does not.
+After: Acquisition context recovers most of the waveform arm's discrimination
+at short horizons but does not account for it: within matched strata the
+waveform arm retains 78 to 93 percent of its advantage over demographics.
+The scope is in the numbers; the reader is not told how to read.
+
+**Internal artifacts (family E).**
+Before: Net benefit is strengthener 10 in the plan, the second thing cut if
+the schedule slips. Every value here is a cell of Table 11 (D-065, closing
+D-018).
+After: (delete; the note describes the table's contents and the threshold)
+
+**Pre-emptive objection (family F).**
+Before: *Your acquisition features leak the label.* We separated the feature
+blocks before fitting any model, every feature carries an availability
+timestamp enforced by a test that fails on deliberately poisoned data, ...
+After: (delete the subsection) The availability test is already in Methods,
+Acquisition context. If a reviewer raises the leak, the response letter
+points there.
 
 **Missing evidence.**
 Before: Our method also generalizes to pediatric populations.
@@ -327,8 +469,16 @@ drafting mode and whenever a revision changes structure.
 
 Confirm, without narrating the check to the user:
 
-- Zero revision-commentary leaks in the audit, and none of the softer kinds
-  the audit cannot see (a paragraph that only exists to reassure).
+- Zero hits in audit families A to F that were not consciously kept, and
+  none of the softer kinds the audit cannot see (a paragraph that only
+  exists to reassure).
+- Each justification in the justification index has one home. Each
+  recurring phrase the audit reports has been resolved to one home or
+  accepted as terminology.
+- At most three summaries outside the abstract, each shorter than the last.
+- Every citation passes the job test; the Introduction plus related work is
+  within the venue's proportion.
+- First sentences of each section's paragraphs read as an outline.
 - Every headline number and claim agrees across abstract, contributions,
   results, discussion, conclusion.
 - Every claimed change in the response letter exists in the manuscript at

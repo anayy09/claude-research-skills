@@ -40,13 +40,29 @@ Report sections and how to read them:
 | 7 Hedging | Meta-commentary phrases per 1000 words; hedge-stacked sentences | Above roughly 3 per 1000 reads as defensive. Stacked hedges: pick one or commit. |
 | 8 Abstract numbers | Numbers in the abstract absent from the body | Either the abstract or the body is stale. Fix the one that is wrong. |
 | 9 Placeholders | `[AUTHOR INPUT ...]`, TODO, TBD, XXX | All must be resolved or listed in the change summary. |
+| 10 Self-commentary | Announced restraint, honesty, placement (family B) | Target zero. Delete the frame, keep the fact. |
+| 11 Protocol refrain | Registration and provenance virtues restated at each use (family C) | One Methods statement; everything else is cut. Above ~1 per 1000 words is insistence. |
+| 12 Reader management | "must not be read as", "a reader" (family D) | At most one or two in the paper. Replace with the claim's scope as fact. |
+| 13 Internal artifacts | Decision ids, gate and plan vocabulary, repo paths, shouted notes (family E) | Remove or move to supplement. Author-facing placeholders in brackets are expected and listed separately. |
+| 14 Objection frames | Paragraphs opening as an objection (family F) | Substance to Methods or Limitations; frame deleted. |
+| 15 Recurring phrases | Distinctive 3- to 4-word phrases in 3+ paragraphs | Each is a candidate multi-home argument. Decide the home; the read's justification index confirms. Plain terminology can be dismissed. |
+| 16 Summary paragraphs | Body paragraphs with 3+ abstract numbers | Budget: end of Introduction, first Discussion paragraph, Conclusion. In Results the numbers appear once each; a Results paragraph listing all of them is a summary. |
+| 17 Captions that argue | Captions or notes with argument, warning, plan vocabulary, or over 150 words | Move the argument to the text; the caption describes. |
+| 18 Citations | Distinct refs, once-only refs by section, density, longest citation run | Once-only refs in related work are the first cut candidates; run the citation job test. |
+| 19 Limitations | Words, paragraphs, share of Discussion | One paragraph per limitation; re-explanations of Methods are cut to a cross-reference. |
 
 The script is conservative on purpose: it reports candidates, not verdicts.
 False positives are cheap to dismiss; a missed leak costs a round.
 
 ## 2. What the script cannot see
 
-- The same point made in different words (semantic duplication).
+- Whether a citation does a job for the argument, or is there to show reading.
+- Whether a paragraph's first sentence depends on the previous paragraph
+  (continuity), or is a free-standing aphorism.
+- Whether a subsection exists to defend the authors rather than to report
+  the study, when it does not use any of the pattern vocabulary.
+- The same point made in different words (semantic duplication) beyond what
+  shared distinctive phrases reveal.
 - A claim stated at one strength in Results and another in Discussion.
 - A number changed in one place and not another, if the two places used
   different phrasing (the abstract check catches the common case only).
@@ -62,8 +78,11 @@ False positives are cheap to dismiss; a missed leak costs a round.
 
 ## 3. The manual pass, in order
 
-Do this after the whole batch of changes, reading the manuscript from the
-top. Keep a scratch list; fix at the end so the read stays continuous.
+The paragraph-level editorial read (`references/editorial-read.md`) comes
+first and produces the claim, justification, and summary indexes. The pass
+below uses them. Do it after the whole batch of changes, reading the
+manuscript from the top. Keep a scratch list; fix at the end so the read
+stays continuous.
 
 1. **Read the abstract, then the contributions list, then the first
    paragraph of the Discussion, then the Conclusion.** These four should

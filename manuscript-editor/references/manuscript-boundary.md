@@ -7,11 +7,12 @@ wrong one.
 Contents
 
 1. The reader test
-2. Leak catalog
-3. What legitimately stays in the manuscript
-4. Before/after pairs by section
-5. Repair procedure for a leaked passage
-6. Edge cases where the manuscript does narrate change
+2. Leak catalog: family A, review-process narration
+3. Families B to F: non-manuscript text with no reviewer in it
+4. What legitimately stays in the manuscript
+5. Before/after pairs by section
+6. Repair procedure for a leaked passage
+7. Edge cases where the manuscript does narrate change
 
 ## 1. The reader test
 
@@ -33,7 +34,7 @@ So for each sentence ask two questions:
 Manuscript sentences answer yes to the first and "the science" to the
 second. Everything else moves.
 
-## 2. Leak catalog
+## 2. Leak catalog: family A, review-process narration
 
 Recognizable forms of revision commentary that end up in manuscripts. The
 audit script catches most of the first three groups by pattern; the rest
@@ -97,7 +98,157 @@ need reading.
   for word
 - A limitation stated in Methods, in Results, and in Discussion
 
-## 3. What legitimately stays in the manuscript
+## 3. Families B to F: non-manuscript text with no reviewer in it
+
+These are more common than family A in drafts written by careful authors,
+and they are what makes a manuscript read as a series of defended positions
+rather than a report of a study. The test is the same: is the sentence
+about the study, or about the authors, the paper, or the reader?
+
+### B. Editorial self-commentary
+
+The sentence describes the authors' own honesty, restraint, or placement
+decision.
+
+- Announced restraint: "we would rather say so than bank the pass", "we
+  report it and count it as nothing", "we declined it the first time it was
+  available and again here", "we do not lean on it", "never instead of it".
+- Announced honesty: "we report all of this because we registered it", "we
+  state that plainly rather than let a reader find it", "we are explicit
+  that", "we say so in the discussion rather than leaving a reader to
+  notice", "we would rather say so than present a result as more damaging".
+- Announced placement or emphasis: "worth stating rather than hiding", "worth
+  naming rather than asserting", "belongs here rather than in a footnote",
+  "which is the reason to report them rather than to treat them as a local
+  curiosity", "we cite them as that".
+
+Before: This is an easy test to pass and we would rather say so than bank
+the pass.
+After: The published interval is wide because six of fifteen targets have
+fewer than fifty positives; the reproduction falls inside it.
+
+Before: We report all of this because we registered it. An audit of how
+other people's benchmarks are evaluated has no standing if it quietly
+substitutes its own successful endpoints for its failed ones.
+After: (delete) The registered-targets table in Results, with target and
+measured value side by side, is the statement. Methods says once that
+targets were registered and where.
+
+Before: Haimovich and colleagues found the waveform arm adding real value
+over the non-signal arms, which is a result in the opposite direction from
+our hypothesis and belongs here rather than in a footnote.
+After: Haimovich and colleagues found the waveform arm adding value over
+age, sex, and biomarkers on a chest-pain cohort [35], the opposite direction
+from our hypothesis.
+
+### C. Protocol refrain
+
+A methodological virtue restated at the point of each use. Pre-registration
+is the usual one; "fixed in advance", "declared before the first run",
+"before any number existed", "not chosen after seeing which was more
+favourable", "every number resolves to a named cell of a generated table",
+"nothing is plotted that is not tabulated". Each is true once. Stated ten
+times it reads as insistence and it costs a sentence per result.
+
+Before: The operating threshold is 0.10, fixed from the clinical framing and
+recorded before any curve was computed, and quoted at 24-hour ICU admission
+alone. ... We declared as much before computing any of it, precisely so that
+it could not be offered afterwards as an explanation for an unflattering
+number.
+After: Methods, Registration (one paragraph, once): "Targets, the operating
+threshold of 0.10, the matching specification, and the multiplicity families
+were registered in [location] before any model was run." Results: "At the
+registered threshold of 0.10, net benefit was ..." Nothing else.
+
+Before: Every arm is trained at 5 seeds. Evaluation protocol, declared
+before the first run. Four registered targets, and what they returned. No
+number in this figure appears here first.
+After: (figure caption describes panels; the registration statement is in
+Methods)
+
+### D. Reader management
+
+The sentence tells the reader how to read a result rather than stating the
+result's scope.
+
+- "This paper must not be read as saying that it does."
+- "The ordering is not a discrimination ordering and must not be read as
+  one."
+- "No part of our argument should be read as resting on a tight
+  reproduction."
+- "A reader's first suspicion of an audit is that the audited baseline was
+  weakened."
+- "We are not claiming the metadata arm is clinically more useful."
+- "a reader cannot tell", "a reader given only a demographics baseline has no
+  way to see it" (acceptable once, as the paper's motivating claim; not as a
+  refrain).
+
+Before: Acquisition context does not, however, explain the waveform arm, and
+this paper must not be read as saying that it does. Those are two claims.
+The first survives and the second does not.
+After: Acquisition context recovers most of the waveform arm's discrimination
+at short horizons without accounting for it: within matched strata the
+waveform arm retains 78 to 93 percent of its advantage over demographics.
+
+Before: This ordering is not a discrimination ordering and must not be read
+as one. It follows from the calibration result above.
+After: Because the waveform arm's probabilities run at roughly twice the
+observed rate, it flags 96 percent of patients at a 0.10 threshold and its
+net benefit sits close to treat-all.
+
+### E. Internal workflow artifacts
+
+Vocabulary and identifiers from the project's own management that mean
+nothing to a reader: decision-log ids ("D-050", "closing D-018"), gate
+names ("Gate G2"), plan vocabulary ("strengthener 10", "the second thing
+cut if the schedule slips", "kill experiment", "the plan"), ledger and
+pipeline terms used as if they were methods ("resolves to a named cell"),
+repository paths ("docs/LIT-PROTOCOL.md"), machine arm labels in prose
+("R3_acqctx_pre"), and shouted table notes ("THIS TABLE DOES NOT ORDER THE
+ARMS BY DISCRIMINATION").
+
+Before: It is strengthener 10 in the plan, the second thing cut if the
+schedule slips. (table note)
+After: (delete)
+
+Before: And the kill-experiment contrast that preceded all of them,
+acquisition context against demographics at the same longest horizon, is
+-0.0216.
+After: The prerequisite contrast, acquisition context against demographics
+at one year, was -0.0216 [-0.0523, +0.0098].
+
+Before: The search protocol is in docs/LIT-PROTOCOL.md, the record of what
+ran in sources/search_record.md, and the screening decisions in
+docs/LIT-SCREENING.md.
+After: The search protocol, records, and screening decisions are in
+Additional file 2.
+
+### F. Pre-emptive objections
+
+A paragraph or subsection framed as an objection and its rebuttal:
+"Objections", "This is just known shortcut learning.", "Your waveform arm is
+undertrained, so", "Acquisition context is legitimately available at
+inference, so using it is fine." The substance is usually already in Methods
+(the availability test, the tuning budget) or belongs in Limitations
+(transfer to other sites). The frame is a response letter written before
+the review.
+
+Before: Your acquisition features leak the label. We separated the feature
+blocks before fitting any model, every feature carries an availability
+timestamp enforced by a test that fails on deliberately poisoned data, and
+the confirmatory arm uses the pre-acquisition block only.
+After: (delete the subsection) Methods, Acquisition context, already states
+the block separation and the availability test. If the objection arrives in
+review, the response letter points there.
+
+Occasionally an objection is substantive enough to be part of the argument
+(a competing account of the same result). Then it is written as
+positioning, in Discussion, in the same voice as the rest: "An alternative
+account attributes the non-specificity to shared pathophysiology [46]; our
+matched arm is consistent with it because ..." No heading, no second-person
+frame.
+
+## 4. What legitimately stays in the manuscript
 
 Reviewer-caused is not the same as reviewer-facing. These belong in the
 paper regardless of who prompted them:
@@ -121,7 +272,7 @@ is design justification. "We used a 6-hour minimum stay; we emphasize that
 this choice is standard and does not bias our results" is defense. Keep the
 first form.
 
-## 4. Before/after pairs by section
+## 5. Before/after pairs by section
 
 Each "after" is what the manuscript should say. Where the change also
 produces response-letter text, it is shown.
@@ -231,7 +382,7 @@ Before: Figure 3 (new). Calibration by age group, added in response to
 Reviewer 1.
 After: Figure 3. Calibration by age group.
 
-## 5. Repair procedure for a leaked passage
+## 6. Repair procedure for a leaked passage
 
 1. Identify the fact inside the frame. Most leaked sentences contain one
    real statement wrapped in commentary.
@@ -245,7 +396,7 @@ After: Figure 3. Calibration by age group.
 6. Record in the ledger: item id, what the fact is, where it now lives.
 7. Write the response-letter entry from the ledger, with the location.
 
-## 6. Edge cases where the manuscript does narrate change
+## 7. Edge cases where the manuscript does narrate change
 
 A few document types describe change by design. Do not strip these:
 
