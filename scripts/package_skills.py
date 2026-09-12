@@ -40,6 +40,16 @@ ZIP_EPOCH = (1980, 1, 1, 0, 0, 0)
 EXCLUDE_NAMES = {".DS_Store", "Thumbs.db", "__pycache__", ".pytest_cache", ".ipynb_checkpoints"}
 EXCLUDE_SUFFIXES = {".pyc", ".pyo", ".swp"}
 
+# Files maintained once in the repository but shipped inside more than one
+# skill's archive, so a skill that delegates to a sibling still installs on
+# its own. Key: skill that receives the copy; value: (published path inside
+# that skill, source path relative to the repo root).
+SHARED_FILES = {
+    "evidence-synthesis": [
+        ("scripts/check_citations.py", "investigating-sources/scripts/check_citations.py"),
+    ],
+}
+
 
 def discover_skills() -> list[Path]:
     return [
@@ -80,7 +90,12 @@ def package_one(skill_dir: Path, out_dir: Path) -> tuple[Path, int, int]:
         for path in paths:
             # Root the archive at the skill folder itself: claude.ai requires it.
             add(zf, path, f"{skill_dir.name}/{path.relative_to(skill_dir).as_posix()}")
-    return target, len(paths), target.stat().st_size
+        for published, source in SHARED_FILES.get(skill_dir.name, []):
+            src = REPO_ROOT / source
+            if not src.exists():
+                sys.exit(f"{skill_dir.name}: shared file {source} is missing")
+            add(zf, src, f"{skill_dir.name}/{published}")
+    return target, len(paths) + len(SHARED_FILES.get(skill_dir.name, [])), target.stat().st_size
 
 
 def package_bundle(skill_dirs: list[Path], out_dir: Path) -> tuple[Path, int, int]:
@@ -90,6 +105,11 @@ def package_bundle(skill_dirs: list[Path], out_dir: Path) -> tuple[Path, int, in
         for skill_dir in skill_dirs:
             for path in files_in(skill_dir):
                 add(zf, path, f"{skill_dir.name}/{path.relative_to(skill_dir).as_posix()}")
+                count += 1
+            # In the bundle every skill is present, so the sibling resolves;
+            # ship the copy anyway so the archive layout matches the singles.
+            for published, source in SHARED_FILES.get(skill_dir.name, []):
+                add(zf, REPO_ROOT / source, f"{skill_dir.name}/{published}")
                 count += 1
     return target, count, target.stat().st_size
 

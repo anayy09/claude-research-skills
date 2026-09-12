@@ -7,8 +7,8 @@ body:
     attributes:
       label: Which skill?
       options:
+        - build-check
         - data-engineering
-        - deep-research
         - evidence-synthesis
         - experiment-ledger
         - hpc-cluster
@@ -17,6 +17,7 @@ body:
         - manuscript-editor
         - manuscript-figures
         - ml-eval-statistics
+        - project-ledger
         - prose-naturalizer
         - research-ideation
         - research-paper-writing

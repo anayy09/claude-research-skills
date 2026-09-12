@@ -1,8 +1,8 @@
 # evidence-synthesis
 
-> Plan, run, appraise, and report systematic and other evidence syntheses (PRISMA, GRADE, RoB).
+> Formal evidence syntheses as research designs: protocol, PRISMA-S search, screening log, RoB, GRADE.
 
-[![Version](https://img.shields.io/badge/version-1.1.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.0.0-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -23,21 +23,22 @@ It covers the whole pipeline:
   platforms including IEEE Xplore, SpringerLink and the Nature portfolio,
   Elsevier ScienceDirect, and the ACM Digital Library
 - **Peer-reviewed-first sourcing**: preprints are upgraded to the published
-  version of record before extraction, and peer-review status is read from the
-  record rather than guessed from the publisher's name
+  version of record before extraction
 - **Screening logs** with a reconciling PRISMA 2020 flow diagram
 - **Risk-of-bias tool selection**: RoB 2, ROBINS-I, QUADAS-2, PROBAST+AI, AMSTAR 2, ROBIS
 - **Synthesis** with or without meta-analysis, and **GRADE** certainty rating
-- **Executable citation verification**, including retraction and preprint checking
 - **RAISE-compliant disclosure** of AI use
+
+It is for the formal review. A related-work section, a literature sweep, a
+cited brief or report, a reference audit, and a reference diet belong to
+[`investigating-sources`](../investigating-sources), which also owns the
+citation checker this skill calls.
 
 ## When Claude uses it
 
-- "Do a literature review / systematic review / meta-analysis / scoping review"
+- "Do a systematic review / meta-analysis / scoping review"
 - "PRISMA anything": flow diagram, PRISMA-S search reporting, protocol
-- "What does the evidence say about …?"
-- "Critically appraise this study / this review"
-- "Check whether these references are real" / retraction checking
+- "Critically appraise this study / this review" / "risk of bias" / "GRADE"
 - "How should I report my search?"
 - A reviewer has raised a methods objection about a review
 
@@ -52,17 +53,22 @@ evidence-synthesis/
 │   ├── peer-reviewed-sources.md     version of record, preprint upgrade, publishers
 │   ├── appraisal-tools.md           picking RoB 2 / ROBINS-I / QUADAS-2 / …
 │   ├── certainty-and-synthesis.md   synthesis (with/without meta-analysis) + GRADE
-│   ├── verification-protocol.md     citation, retraction & peer-review checks
+│   ├── verification-protocol.md     what the citation check proves and does not
 │   └── ai-use-reporting.md          RAISE-compliant AI-use disclosure
 ├── scripts/
 │   ├── search_builder.py            one spec -> 13 platform syntaxes
 │   ├── screening_log.py             screening log + reconciling PRISMA 2020 flow
-│   └── verify_citations.py          verify, flag retractions, upgrade preprints
+│   └── verify_citations.py          parses a reference list or .bib and delegates to check_citations.py
 └── templates/
     ├── protocol.md                  review protocol scaffold
     ├── evidence-table.md            extraction / evidence table
     └── ai-disclosure.md             AI-use disclosure statement
 ```
+
+The release zip also ships a copy of
+`investigating-sources/scripts/check_citations.py` inside `scripts/`, so the
+skill installs on its own. In a checkout of the whole collection the shim
+finds the sibling copy instead.
 
 ## Scripts
 
@@ -75,34 +81,31 @@ python evidence-synthesis/scripts/verify_citations.py --self-test
 
 # Peer-reviewed-first workflow
 python evidence-synthesis/scripts/search_builder.py --spec search.yaml --peer-reviewed-only
-python evidence-synthesis/scripts/verify_citations.py --refs refs.md     --mailto you@uni.edu --upgrade-preprints --require-peer-reviewed
+python evidence-synthesis/scripts/verify_citations.py --refs refs.md --mailto you@uni.edu \
+    --upgrade-preprints --require-peer-reviewed --write-log sources.json
 ```
 
-`verify_citations.py` makes read-only calls to public keyless APIs (Crossref,
-DataCite, OpenAlex, bioRxiv) and degrades gracefully offline: network-dependent
-checks are marked *unchecked*, never silently passed or failed. It falls back to
-DataCite when Crossref 404s, because arXiv registers there, and without that
-fallback every arXiv citation reads as a fabrication. Both scripts ship a
-`--self-test` that checks their own logic against fixtures.
-
-> **Related skills:** [`investigating-sources`](../investigating-sources) for
-> general citation-honest research and fact-checking. **evidence-synthesis**
-> supersedes the deprecated `deep-research` skill for systematic reviews. Reach
-> for it whenever the deliverable is a formal, reporting-standard-compliant review.
+`verify_citations.py` needs `requests` for live lookups (the checker it
+delegates to uses it) and degrades to structural checks offline, marking
+network-dependent checks *skipped*, never passed. `--write-log` keeps the
+source log so `audit_report.py` can cross-check the finished manuscript.
 
 ## Changelog
 
-- **1.1.0**: Peer-reviewed sourcing. `search_builder.py` gains SpringerLink and
-  the Nature portfolio, Elsevier ScienceDirect, the ACM Digital Library, Wiley,
-  Europe PMC, and a Crossref REST supplement (13 platforms total), a
-  `--peer-reviewed-only` mode that applies each platform's publication-type
-  restriction, platform-quirk warnings for the failures that silently return the
-  wrong result set, and a `--self-test`. `verify_citations.py` gains
-  peer-review status per reference, a DataCite fallback so arXiv DOIs stop
-  reading as fabrications, `--upgrade-preprints` to find the published version
-  of record, `--require-peer-reviewed`, retries with backoff, and reconstruction
-  of DOIs from bare `arXiv:` identifiers. New reference
-  `peer-reviewed-sources.md`.
+- **2.0.0**: Rescoped to the formal review design and put on the collection's
+  one citation checker (behavior change). The description now says what this
+  skill is not for: a related-work section, a literature sweep, a cited brief
+  or report, a reference audit, or a reference diet are
+  `investigating-sources`. `verify_citations.py` is now a shim: it parses the
+  reference list or `.bib` into the source-log schema and delegates to
+  `investigating-sources/scripts/check_citations.py`, which the release zip
+  ships alongside it, so the DataCite fallback, preprint upgrade, and
+  retraction check are implemented once. Same flags, plus `--write-log` and
+  `--checker`. The `deep-research` skill this one replaced is removed from the
+  collection.
+- **1.1.0**: Peer-reviewed sourcing across `search_builder.py` (13 platforms,
+  `--peer-reviewed-only`) and the verifier (peer-review status, DataCite
+  fallback, `--upgrade-preprints`, `--require-peer-reviewed`).
 - **1.0.0**: Initial release.
 
 ---

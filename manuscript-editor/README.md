@@ -125,6 +125,10 @@ and citation relevance are not detectable here.
 
 ## Changelog
 
+- **1.1.1**: Hand off to `build-check` for the compiled PDF (page count
+  against a cap before and after cuts, content past the margin) and name
+  `project-ledger` as the home of the decision ids and gate vocabulary this
+  skill strips from the manuscript.
 - **1.1.0**: The check is now a paragraph-level editorial read, with the script
   as its instrument rather than its substitute. Adds five families of
   non-manuscript text that never mention a reviewer (editorial self-commentary,

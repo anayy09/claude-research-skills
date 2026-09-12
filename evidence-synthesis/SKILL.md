@@ -1,27 +1,30 @@
 ---
 name: evidence-synthesis
 description: >-
-  Plan, run, appraise, and report literature reviews and evidence syntheses:
-  systematic, scoping, rapid, umbrella, living, diagnostic accuracy, and
-  prediction-model reviews. Covers review-type selection, protocol and
-  registration, concept-block search construction with PRISMA-S reporting,
-  screening logs with a reconciling PRISMA 2020 flow diagram, risk-of-bias tool
-  selection (RoB 2, ROBINS-I, QUADAS-2, PROBAST+AI, AMSTAR 2, ROBIS), synthesis
-  with or without meta-analysis, GRADE certainty rating, executable citation
-  verification including retraction and peer-review checking, preferring the
-  peer-reviewed version of record over preprints, and RAISE-compliant disclosure
-  of AI use. Use when the user asks for a literature review, systematic review,
-  meta-analysis, scoping review, evidence summary, PRISMA anything, "what does
-  the evidence say", critical appraisal of a study or review, help checking
-  whether references are real, or how to report a search. Also use when a
-  reviewer has raised a methods objection about a review.
-summary: "Plan, run, appraise, and report systematic and other evidence syntheses (PRISMA, GRADE, RoB)."
-version: "1.1.0"
+  Plan, run, appraise, and report a formal evidence synthesis as a research
+  design: systematic, scoping, rapid, umbrella, living, diagnostic accuracy,
+  and prediction-model reviews, with a registered protocol, concept-block
+  search construction and PRISMA-S reporting, a screening log with a
+  reconciling PRISMA 2020 flow diagram, risk-of-bias tool selection (RoB 2,
+  ROBINS-I, QUADAS-2, PROBAST+AI, AMSTAR 2, ROBIS), synthesis with or without
+  meta-analysis, GRADE certainty rating, and RAISE-compliant disclosure of AI
+  use. Use when the deliverable is a review with a protocol, a screening log,
+  appraisal, and a reporting guideline: "systematic review", "scoping
+  review", "meta-analysis", "PRISMA flow diagram", "risk of bias", "GRADE",
+  "how do I report the search", or a reviewer's methods objection about a
+  review. Do not use for a related-work section, a literature sweep, a brief
+  or report with citations, a reference audit, or a reference diet; those are
+  investigating-sources, which also owns the citation checker this skill
+  calls.
+summary: "Formal evidence syntheses as research designs: protocol, PRISMA-S search, screening log, RoB, GRADE."
+version: "2.0.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-08-31"
+  last_updated: "2026-09-12"
+  related_skills:
+    - investigating-sources
 ---
 
 # Evidence Synthesis
@@ -32,8 +35,18 @@ appraisal tool), an analysis, and a reporting standard. Treating it as anything
 less produces a document that reads like a review and cannot be reproduced.
 
 This skill is written to be run inside one conversation with executable checks
-at the points where reviews usually break. It does not delegate to subagents and
-does not depend on any other skill.
+at the points where reviews usually break. It does not delegate to subagents.
+Citation verification is delegated to the collection's one checker,
+`check_citations.py` in `investigating-sources`, through the
+`scripts/verify_citations.py` shim here; the release zip ships a copy of the
+checker so the skill installs on its own.
+
+This skill is for the formal review: a protocol, a search that is reported,
+a screening log, an appraisal instrument, and a reporting guideline. A
+related-work section, a literature sweep, a cited brief or report, a
+reference audit, and a reference diet are `investigating-sources`. When a
+related-work section grows into a review with a screening log, the hand-over
+is at the protocol: write it here, and keep the source log shared.
 
 ## Four rules with mechanisms behind them
 
@@ -225,22 +238,18 @@ python scripts/verify_citations.py --refs references.md --mailto you@uni.edu \
 python scripts/verify_citations.py --self-test    # checks the verifier's logic
 ```
 
-The script queries Crossref (which has ingested the Retraction Watch database
-and exposes retractions through `updated-by`) and corroborates against
-OpenAlex's `is_retracted`. It reports disagreement between the two rather than
-resolving it silently. A reference that could not be checked because the service
-was unreachable is marked UNCHECKED, never FAIL: a firewall is not evidence of
-fabrication.
-
-It falls back to **DataCite** when Crossref returns 404, because arXiv registers
-its DOIs with DataCite. Without that fallback every arXiv citation in a reference
-list is reported as a fabrication, which is a false accusation on a real object.
-
-Peer-review status is reported per reference, separately from the verdict, so
-"real but not reviewed" and "not real" never collapse into the same finding. A
-preprint whose peer-reviewed version exists is a FAIL with the replacement DOI
-attached; `--require-peer-reviewed` escalates any remaining unreviewed source to
-FAIL, for reviews whose protocol restricts them to the published record.
+`verify_citations.py` parses the reference list (one per line, or a `.bib`)
+into the source-log schema and hands it to `check_citations.py`, which
+queries Crossref (with the Retraction Watch data it ingested, exposed through
+`updated-by`), falls back to **DataCite** because arXiv registers there (a
+Crossref-only check reports every arXiv citation as a fabrication), corroborates
+retractions against OpenAlex, classifies peer-review status from the record
+rather than the publisher's name, and looks up the published version of every
+preprint. A reference that could not be checked because the service was
+unreachable is reported as skipped, never as failed: a firewall is not evidence
+of fabrication. `--write-log sources.json` keeps the resulting source log so
+`audit_report.py` can cross-check the finished manuscript against it. The
+checker needs `requests` for live lookups.
 
 Then report against the guideline for the review type, using
 `templates/evidence-table.md` for the study characteristics table and
@@ -288,7 +297,7 @@ the limitation goes in the report.
 | `templates/protocol.md` | protocol and registration template |
 | `templates/evidence-table.md` | study characteristics and results extraction table |
 | `templates/ai-disclosure.md` | AI-use statement for methods sections |
-| `scripts/verify_citations.py` | existence, metadata match, peer-review status, preprint upgrade, retraction status |
+| `scripts/verify_citations.py` | parses a reference list or `.bib` and delegates to `investigating-sources/scripts/check_citations.py` (shipped in the zip): existence, metadata match, peer-review status, preprint upgrade, retraction status |
 | `scripts/search_builder.py` | one spec, thirteen platform syntaxes, peer-reviewed-only mode, PRISMA-S record |
 | `scripts/screening_log.py` | append-only decisions, reconciling PRISMA flow |
 

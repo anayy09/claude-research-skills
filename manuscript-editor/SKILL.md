@@ -15,12 +15,12 @@ description: >-
   and section content match the target venue and article type. Pairs with
   research-paper-writing, which owns sentence and paragraph quality.
 summary: "Keeps manuscripts coherent through revision: right content in the right document, minimal changes, whole-paper consistency."
-version: "1.1.0"
+version: "1.1.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-06"
+  last_updated: "2026-09-12"
 ---
 
 # Manuscript Editor
@@ -62,7 +62,12 @@ between manuscript and revision commentary. It does not:
 - Score or review the science. `submission-reviewer`.
 - Typeset into a venue template or verify format compliance.
   `submission-formatter`, which also owns the marked-copy build once the
-  content is final.
+  content is final. Compile and inspect the resulting PDF: `build-check`,
+  which measures the page count against a cap before and after a cut list
+  is applied and reports what ran past the margin.
+- Keep the project's decision ids, gate names, run ids, and phase vocabulary
+  (family E below) in the repository. `project-ledger` owns that record;
+  this skill only keeps it out of the manuscript.
 - Pick the venue. `journal-advisor`.
 - Compute statistics or produce figures a reviewer asked for.
   `ml-eval-statistics`, `manuscript-figures`. When a reviewer request needs

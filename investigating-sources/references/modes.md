@@ -12,6 +12,8 @@ applies, then follow the workflow steps for that mode from SKILL.md.
 - verify
 - systematic
 - scope
+- related-work-table
+- reference-diet
 - Choosing when unsure
 
 ## brief
@@ -144,3 +146,44 @@ have a specific question", "Where should I start?"
 When still ambiguous, ask. Do not default to the heaviest mode; producing a
 12,000-word systematic review for someone who asked a yes/no question is a
 failure of judgment, not thoroughness.
+
+## related-work-table
+
+The comparative table that closes a related-work section: one row per study
+the section discusses, columns for objective, method, data or setting, key
+findings, and limitations, and a last row for this work.
+
+- Steps: VERIFY (the log must already be confirmed) -> COMPOSE.
+- Input: the source log with `summary` fields filled from each source while it
+  was read, never afterwards from memory. See `verification.md`.
+- Output: `scripts/related_work_table.py sources.json [--format tex] [--only-cited draft]`.
+  Rows are emitted only for confirmed sources; missing cells are
+  `[AUTHOR INPUT: ...]`; preprints are marked and, where a version of record
+  exists, the row says to cite that instead.
+- The table supplements the synthesis; it does not replace it. The prose still
+  has to say where the literature agrees, conflicts, and leaves a gap.
+
+Use for: "add a summary table of the related work", "compare the closest
+studies in a table", a reviewer asking for a structured comparison.
+
+## reference-diet
+
+A reference list cut to a venue's cap and upgraded to versions of record,
+with the cuts chosen by rule where a rule is safe and handed to the author
+where it is not.
+
+- Steps: VERIFY (`check_citations.py --upgrade-preprints --write`) -> the plan
+  from `scripts/reference_diet.py refs.bib paper.tex --cap N --sources sources.json`
+  -> apply -> AUDIT (`audit_report.py`).
+- Rules, in order: upgrade preprints with a published version; remove failed
+  or unconfirmed sources; remove related-work-only preprints; remove
+  related-work-only once-cited sources, oldest first; stop. A source cited in
+  Methods, Results, or Discussion, or cited more than once, is never removed
+  by rule; the plan lists it as a candidate for the author.
+- After the cuts, the related-work prose is re-read: a paragraph that cited
+  three removed sources now has to make its point with what remains or be
+  merged (`manuscript-editor`).
+
+Use for: "trim the references to around 40, preprints first", "eliminate the
+preprint references", "replace the arXiv citations with the published
+versions", a venue with a reference cap.

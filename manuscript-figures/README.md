@@ -92,6 +92,9 @@ python manuscript-figures/scripts/check_figure.py fig3.tif --width 183 --min-dpi
 
 ## Changelog
 
+- **1.1.2**: Hand off to `build-check` once a figure is placed: it renders
+  the built page and reports a figure or label past the text block, which
+  `check_figure.py` cannot see from the figure file alone.
 - **1.1.1**: `check_figure.py` no longer fails a PDF that contains no text.
   It treated the string `/Font` as proof that fonts were referenced, but that
   is only a resource-dictionary key and matplotlib emits it even when the

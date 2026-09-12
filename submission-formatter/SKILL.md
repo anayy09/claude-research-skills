@@ -16,12 +16,12 @@ description: >-
   Never rewrites, condenses, paraphrases, or invents content: missing items are
   marked for the author, never filled in.
 summary: "Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word."
-version: "1.1.2"
+version: "1.1.3"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-05"
+  last_updated: "2026-09-12"
 ---
 
 # Submission Formatter
@@ -258,6 +258,13 @@ are frequently not installed in a minimal TeX environment. A build that fails
 only because a `.cls` is missing locally is not a defect in the output: say so,
 ship the zip, and note that Overleaf or the author's TeX installation will
 compile it.
+
+When the build succeeds, the log is not the result. Run `build-check` on the
+built package (`build_check.py main.tex --no-build --max-pages <cap>`): it
+renders every page, reports tables and figures past the text block, floats
+that landed in the references or outside their citing section, the page count
+against the cap, and fonts that are not embedded. A package is not reported as
+built until that report exists and the flagged pages have been looked at.
 
 For DOCX, render with pandoc using the publisher `--reference-doc`, then open
 the result to confirm styles applied rather than assuming they did.

@@ -13,15 +13,21 @@ description: >-
   Wiley, PubMed) and cites the published version of record rather than a
   preprint whenever one exists. Also use when a user wants a report "with
   citations," wants existing sources graded for quality, or wants help scoping a
-  vague research question into an answerable one. Prefer this skill over
-  answering research questions from memory alone.
-summary: "Citation-honest research where every claim traces to a real, verified source."
-version: "1.1.0"
+  vague research question into an answerable one. Also use for the two
+  reference chores that recur before submission: "add a summary table of
+  related work" (rendered from the verified source log) and "trim the
+  references to N, preprints first" or "replace the arXiv citations with the
+  published versions" (the reference diet). This skill owns the collection's
+  citation checker; evidence-synthesis is only for a formal review design with
+  a protocol, a screening log, and appraisal. Prefer this skill over answering
+  research questions from memory alone.
+summary: "Citation-honest research: verified sources, version of record, related-work tables, reference diets."
+version: "1.2.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-08-31"
+  last_updated: "2026-09-12"
 ---
 
 # Investigating Sources
@@ -61,10 +67,39 @@ detail in `references/modes.md`; read that file once you know which one applies.
 | `verify` | An audit of an existing reference list or set of DOIs/URLs | varies |
 | `systematic` | A PRISMA-style review with explicit search, screening, and appraisal | 4,000-12,000 words |
 | `scope` | Help turning a vague interest into an answerable research question | short, iterative |
+| `related-work-table` | The comparative table that closes a related-work section, rendered from the verified source log | one table |
+| `reference-diet` | A reference list cut to a cap and upgraded to versions of record, with a plan that never cuts a load-bearing citation by rule | one plan |
 
 When the request is ambiguous, default to `brief` for a single question and
 `report` for a broad topic. Do not silently produce a giant systematic review
-when the user asked a simple question.
+when the user asked a simple question. A `systematic` review that needs a
+protocol, a screening log with a reconciling flow diagram, risk-of-bias
+appraisal, or GRADE is `evidence-synthesis`'s job; this skill's `systematic`
+mode is the lighter PRISMA-style report.
+
+The two chore modes:
+
+- **`related-work-table`.** Every row is a source with `verified: confirmed`
+  in the log; every cell comes from the source's `summary` fields
+  (`objective`, `method`, `data`, `findings`, `limitations`, see
+  `references/verification.md`) or is written as `[AUTHOR INPUT: ...]`.
+  Preprints are marked, and one with a version of record is reported as
+  "cite that instead". `scripts/related_work_table.py` renders Markdown or a
+  LaTeX `tabularx`; `--only-cited draft.tex` restricts rows to keys the draft
+  cites; `--this-work` adds the last row. The prose above the table still
+  has to read as a synthesis (`research-paper-writing`); the table does not
+  replace it.
+- **`reference-diet`.** Run `check_citations.py --upgrade-preprints --write`
+  first so the log carries `peer_reviewed` and `superseded_by`. Then
+  `scripts/reference_diet.py refs.bib paper.tex --cap N --sources sources.json`
+  produces the plan: upgrade preprints that have a published version, remove
+  failed or unconfirmed sources, then remove related-work-only preprints and
+  related-work-only once-cited sources, oldest first, until the cap. It never
+  cuts a source cited in Methods, Results, or Discussion, or cited more than
+  once; when the cap is still not met it lists the next candidates for the
+  author to rule on. `--write-bib` writes the pruned file; `--fetch-vor-bibtex`
+  pulls BibTeX for each version of record. After applying the plan, re-run
+  `audit_report.py`.
 
 ## The workflow
 
@@ -271,6 +306,19 @@ python scripts/audit_report.py draft.md sources.json
 ```
 
 Read `references/verification.md` for the source-log schema both scripts expect.
+
+**`scripts/related_work_table.py`** and **`scripts/reference_diet.py`** serve
+the two chore modes above. Both are standard library, both have `--self-test`,
+and neither writes to the manuscript.
+
+```bash
+python scripts/related_work_table.py sources.json --format tex --only-cited paper/main.tex
+python scripts/reference_diet.py refs.bib paper/main.tex --cap 40 --sources sources.json --write-bib refs.pruned.bib
+```
+
+`check_citations.py` is the collection's one citation checker.
+`evidence-synthesis` calls it through a thin `verify_citations.py` shim, so a
+fix here fixes both; keep it that way rather than growing a second copy.
 
 ## Reference files
 

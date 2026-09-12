@@ -142,6 +142,9 @@ required declaration sections.
 
 ## Changelog
 
+- **1.1.3**: After a successful compile, hand the built package to
+  `build-check`, which renders and inspects the pages; the log alone no longer
+  counts as a finished build.
 - **1.1.2**: Hand off to `manuscript-editor` when content still has to change in
   response to reviewers. The marked-up copy a venue asks for is still built
   here, from a manuscript that has already been revised there.

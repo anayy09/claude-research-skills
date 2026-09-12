@@ -49,7 +49,14 @@ of truth that both scripts read. Structure:
       "peer_reviewed": "",
       "superseded_by": "",
       "tier": "",
-      "notes": ""
+      "notes": "",
+      "summary": {
+        "objective": "",
+        "method": "",
+        "data": "",
+        "findings": "",
+        "limitations": ""
+      }
     }
   ]
 }
@@ -74,6 +81,12 @@ Field notes:
   preprint that has since been published. Cite that DOI instead.
 - `tier`: quality grade from `source_quality.md` (`tier_1` to `tier_4`).
 - `notes`: flags such as conflict of interest, retraction, or currency caveat.
+
+- `summary`: optional, five short fields filled while the source is being
+  read (objective, method, data or evaluation setting, key findings,
+  limitations). `related_work_table.py` renders the comparative table from
+  them and writes `[AUTHOR INPUT: ...]` for any that is empty; it never
+  fills a cell from memory. Write them at reading time or not at all.
 
 Only `key`, `type`, `title`, and `year` are strictly required. Everything with a
 DOI should carry it, because that is the strongest automatic check.

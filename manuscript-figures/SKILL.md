@@ -17,12 +17,12 @@ description: >-
   exploratory plots into final manuscript figures and when reviewing figures
   before submission.
 summary: "Publication-grade figures: styled matplotlib, hand-authored SVG schematics, generative art."
-version: "1.1.1"
+version: "1.1.2"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-08-30"
+  last_updated: "2026-09-12"
 ---
 
 # Manuscript Figures
@@ -152,6 +152,11 @@ Then do the human pass with `references/review-checklist.md`: caption
 completeness, panel-label consistency across the whole manuscript, grayscale
 survival, and the small-but-fatal items (missing units, unlabeled colorbars,
 legend covering data).
+
+The checker sees the figure file, not the figure on the page. Once the figure
+is placed in the manuscript, `build-check` renders the built PDF and reports
+a figure or its labels running past the text block; a label that crosses its
+frame at print size comes back here to fix.
 
 ## Typical session shapes
 

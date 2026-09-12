@@ -14,12 +14,12 @@ description: >-
   whichever runs happen to exist. Prefer this over ad hoc directories and
   spreadsheet tracking.
 summary: "Reproducible ML experiment tracking: config-as-file, hashed manifests, honest baselines."
-version: "1.0.1"
+version: "1.0.2"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-08-02"
+  last_updated: "2026-09-12"
 ---
 
 # Experiment Ledger
@@ -177,6 +177,16 @@ Do not try to reconstruct manifests for old runs from memory. Instead:
 
 Reconstructing a manifest after the fact produces a document that looks like
 provenance and is not. An honest gap is better.
+
+## Where this sits in a project
+
+This skill owns runs: manifests, config hashes, the pre-declared comparison,
+and the generated results table. The project-level record around it, the
+decision log with rejected alternatives, the typed progress log, the results
+log that cites these run ids, the gate ledger, the runbook for long jobs, and
+the continuation brief for the next session, is `project-ledger`. Use both:
+`ledger.py new` registers the run, `project_ledger.py append result` records
+each metric it produced with its interval and the run id.
 
 ## Reference files
 

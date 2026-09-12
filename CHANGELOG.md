@@ -7,6 +7,97 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-09-12
+
+The first release shaped by a usage audit: 130 Claude Code sessions and 20
+Codex sessions over the collection, read for what recurred and what failed.
+Two new skills for the two workflows that had none, one merge, one rescope,
+one removal.
+
+### Added
+- `build-check` (1.0.0): compile a manuscript or submission package and
+  inspect the result the way an author would. `build_check.py` builds every
+  target, triages the log (errors, undefined references, missing files,
+  overfull boxes above a threshold, float warnings), counts pages against the
+  venue cap and body words against the guidance, measures every text line,
+  image, and drawing against the column edges the document itself
+  establishes (so a table past the margin is reported by page with its
+  overhang), maps every float to the page it landed on and flags floats in
+  the references or outside their citing section, checks font embedding,
+  compares derived PDFs with their sources by modification time, and renders
+  every page into a thumbnail grid in `BUILD_REPORT.md`. The rule the skill
+  enforces: a build is finished when the report exists and the flagged pages
+  have been looked at, never when the compiler exits. References cover log
+  triage, float placement (including why `[H]` is inert on a double-column
+  float), recovering pages honestly, and reading the page images.
+- `project-ledger` (1.0.0): the operating record of a multi-session research
+  project. Templates for PLAN, PREREGISTRATION, DECISIONS (`D-NNN` with
+  rejected alternatives and their cost), PROGRESS (`NNNN`, typed, gap-free),
+  RESULTS-LOG (`R-NNNN`, interval required, citing `experiment-ledger` run
+  ids), GATES (`CHECK`, `EXPECT`, `EVIDENCE`), RUNBOOK, AGENT, and
+  SKILL-ROUTING. `project_ledger.py` scaffolds them, allocates ids, appends
+  validated entries (a result without an interval is refused), verifies
+  append-only history against git, runs gate checks and writes their
+  evidence, prints a one-screen state, and generates the next session's
+  continuation brief from the record, which is never committed. References
+  cover ledger entries, gates with positive controls, long-running jobs
+  (stop files, progress files, handing a command to the owner), the session
+  bootstrap, and the hand-off.
+- `investigating-sources` (1.1.0 to 1.2.0): two chore modes.
+  `related-work-table` renders the comparative table that closes a
+  related-work section from the verified source log
+  (`related_work_table.py`, Markdown or LaTeX, `[AUTHOR INPUT]` for any
+  cell not extracted at reading time). `reference-diet` plans a cut to a
+  venue's cap (`reference_diet.py`): upgrade preprints with a published
+  version, remove failed or unconfirmed sources, then related-work-only
+  preprints and once-cited sources oldest first, and never a Methods,
+  Results, or Discussion citation by rule. The source-log schema gains
+  optional `summary` fields.
+- `research-paper-writing` (2.1.0 to 3.0.0): `scripts/prose_lint.py`, which
+  counts the mechanical tells per section (dashes, stock vocabulary,
+  not-X-but-Y contrasts, triads, repeated openers, bold labels, announcing,
+  one-line closers, hedge stacks, chatbot residue, revision narration) on
+  `.md`, `.tex`, and `.txt`, stripping code, math, tables, and citations
+  first.
+
+### Changed
+- `research-paper-writing` (3.0.0): absorbs the manuscript subset of
+  `prose-naturalizer`. The skill now ends with a tell sweep ordered by how
+  much one sighting justifies an edit, with em and en dashes, revision
+  narration, and chatbot residue as hard rules. Adds the identity and
+  metadata rule (author names, affiliations, emails, ORCIDs, funding, and
+  ethics text come only from the user or a project file, never from session
+  context) after a fabricated author block reached a compiled PDF. The
+  description names the prompts that used to bypass the skill ("remove the
+  em dashes", "AI-like sentences") and says not to load `prose-naturalizer`
+  for a manuscript.
+- `prose-naturalizer` (3.0.0, by hand, then 3.0.1): rewritten around why the
+  tells exist, 25 patterns ordered strongest first with graded confidence;
+  then scoped to non-academic prose, with the description saying not to load
+  it for a manuscript.
+- `evidence-synthesis` (1.1.0 to 2.0.0): rescoped to the formal review
+  design (protocol, PRISMA-S search, screening log, appraisal, GRADE) and put
+  on the collection's one citation checker. `verify_citations.py` is now a
+  shim that parses a reference list or `.bib` into the source-log schema and
+  delegates to `investigating-sources/scripts/check_citations.py`; the
+  release zip ships a copy of the checker so the skill installs alone
+  (`package_skills.py` gains a shared-files map). Same flags, plus
+  `--write-log` and `--checker`.
+- `submission-formatter` (1.1.3), `manuscript-figures` (1.1.2),
+  `manuscript-editor` (1.1.1): hand off to `build-check` for the built PDF.
+  `manuscript-editor` also names `project-ledger` as the home of the
+  workflow vocabulary it strips from manuscripts.
+- `experiment-ledger` (1.0.2): names `project-ledger` as the project record
+  its run registry sits inside.
+- Root README: usage examples for the new skills and the writing split, the
+  one-checker note, and `build-check`'s tooling in the surface notes.
+
+### Removed
+- `deep-research`: deprecated since 0.2.0 and replaced by `evidence-synthesis`
+  and `investigating-sources`; its 376 KB were still on disk, still in the
+  catalog, and still being invoked by subagents. Deleted from the tree, the
+  catalog, the issue template, and the release assets.
+
 ## [0.7.1] - 2026-09-06
 
 ### Changed
