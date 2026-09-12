@@ -117,6 +117,7 @@ place.
 
 ## Changelog
 
+- **2.0.2**: A "not on a cluster?" section: local long jobs go to `project-ledger`'s runbook discipline, with the `STOP` file, `progress.json`, and `RUNBOOK.md` conventions named, and a note that the job-script patterns here (idempotence guards, checkpoint cadence, `set -euo pipefail`) transfer unchanged.
 - **2.0.1**: The description hands local long-running jobs to `project-ledger`'s runbook discipline; the loading-discipline section.
 - **2.0.0**: Generalized to any HPC cluster. Site-specific paths, accounts, QoS names, and wrapper
   commands are replaced by filesystem roles and discovery steps;

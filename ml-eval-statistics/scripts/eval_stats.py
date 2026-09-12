@@ -538,6 +538,172 @@ def cmd_selective(a: argparse.Namespace) -> int:
     return 0
 
 
+def z_quantile(p: float) -> float:
+    """Inverse standard normal CDF. scipy when present, else Acklam's
+    rational approximation (relative error below 1.2e-9)."""
+    if _sps is not None:
+        return float(_sps.norm.ppf(p))
+    if not 0.0 < p < 1.0:
+        return float("nan")
+    a_ = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02,
+          1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00]
+    b_ = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02,
+          6.680131188771972e+01, -1.328068155288572e+01]
+    c_ = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00,
+          -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00]
+    d_ = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00,
+          3.754408661907416e+00]
+    plow, phigh = 0.02425, 1 - 0.02425
+    if p < plow:
+        q = math.sqrt(-2 * math.log(p))
+        return (((((c_[0] * q + c_[1]) * q + c_[2]) * q + c_[3]) * q + c_[4]) * q + c_[5]) / \
+               ((((d_[0] * q + d_[1]) * q + d_[2]) * q + d_[3]) * q + 1)
+    if p <= phigh:
+        q = p - 0.5
+        r = q * q
+        return (((((a_[0] * r + a_[1]) * r + a_[2]) * r + a_[3]) * r + a_[4]) * r + a_[5]) * q / \
+               (((((b_[0] * r + b_[1]) * r + b_[2]) * r + b_[3]) * r + b_[4]) * r + 1)
+    q = math.sqrt(-2 * math.log(1 - p))
+    return -(((((c_[0] * q + c_[1]) * q + c_[2]) * q + c_[3]) * q + c_[4]) * q + c_[5]) / \
+           ((((d_[0] * q + d_[1]) * q + d_[2]) * q + d_[3]) * q + 1)
+
+
+def paired_boot_diff(a: argparse.Namespace, y, groups, classes, preds, name_a: str, name_b: Optional[str]):
+    """Bootstrap replicates of a metric for arm A, and of B minus A when B is
+    given, under one shared group resample (the paired design)."""
+    rng = np.random.default_rng(a.seed)
+    gids, gidx = np.unique(groups, return_inverse=True)
+    W = multinomial_weights(len(gids), a.n_boot, rng)
+    if a.metric == "auroc":
+        y_pos = (y == classes[1])
+
+        def pack(s):
+            order = np.argsort(s, kind="mergesort")
+            _, block = np.unique(s[order], return_inverse=True)
+            return order, block, int(block.max()) + 1
+
+        pa = pack(preds[name_a])
+        ba = np.array([auroc_weighted(y_pos, *pa, W[i][gidx]) for i in range(a.n_boot)])
+        bb = None
+        if name_b:
+            pb = pack(preds[name_b])
+            bb = np.array([auroc_weighted(y_pos, *pb, W[i][gidx]) for i in range(a.n_boot)])
+    else:
+        ga = GroupStats(y, to_hard(preds[name_a], classes, a.threshold), groups)
+        ba = ga.metric(a.metric, W)
+        bb = None
+        if name_b:
+            gb = GroupStats(y, to_hard(preds[name_b], classes, a.threshold), groups)
+            bb = gb.metric(a.metric, W)
+    return ba, bb, len(gids)
+
+
+def cmd_mde(a: argparse.Namespace) -> int:
+    """Minimum detectable effect for a paired comparison at this sample size:
+    (z_{1-alpha/2} + z_{power}) times the bootstrap standard error of the
+    paired difference. The standard error comes from the difference between
+    two arms under one shared resample, never from an arm bootstrapped
+    against itself: with a shared resample and the same signal on both sides
+    the sampling variance cancels exactly, and what is left is tie-break
+    noise, which understates the MDE by a large factor."""
+    cols, y, groups, classes, preds = _prep(a, [a.a] + ([a.b] if a.b else []))
+    if a.metric == "auroc" and len(classes) != 2:
+        sys.exit("auroc requires a binary label column")
+    ba, bb, n_groups = paired_boot_diff(a, y, groups, classes, preds, a.a, a.b)
+    if bb is not None:
+        se = float(np.nanstd(bb - ba, ddof=1))
+        basis = f"paired difference {a.b} minus {a.a}, one shared group resample"
+    else:
+        se = float(np.nanstd(ba, ddof=1))
+        basis = (f"marginal SE of {a.a} (no --b given); the paired SE is usually smaller, "
+                 f"so this MDE is conservative")
+    z_a = z_quantile(1 - a.alpha / 2)
+    z_b = z_quantile(a.power)
+    mde = (z_a + z_b) * se
+    print(f"metric           : {a.metric}")
+    print(f"SE basis         : {basis}")
+    print(f"bootstrap SE     : {se:.5f}  ({a.n_boot:,} resamples over {n_groups:,} groups)")
+    print(f"alpha, power     : {a.alpha}, {a.power}   (z = {z_a:.3f} + {z_b:.3f})")
+    print(f"MDE              : {mde:.4f}")
+    print(f"items            : {len(y):,}    groups: {n_groups:,}")
+    print(design_effect(len(y), n_groups))
+    print("\nAn interval that contains zero from a design whose MDE is larger than the "
+          "smallest effect worth reporting is 'not distinguishable at this sample size', "
+          "not evidence of equivalence. State the MDE beside every null.")
+    return 0
+
+
+def self_test() -> int:
+    import contextlib
+    import io
+    import tempfile
+    ok = True
+
+    def check(desc: str, cond: bool) -> None:
+        nonlocal ok
+        print(("  ok   " if cond else "  FAIL ") + desc)
+        ok = ok and cond
+
+    def run(fn, **kw) -> str:
+        buf = io.StringIO()
+        ns = argparse.Namespace(**kw)
+        with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
+            fn(ns)
+        return buf.getvalue()
+
+    def grab(text: str, key: str) -> List[float]:
+        line = next(ln for ln in text.splitlines() if ln.startswith(key))
+        return [float(x) for x in re.findall(r"[-+]?\d*\.\d+|[-+]?\d+", line.split(":", 1)[1].replace(",", ""))]
+
+    import re
+    rng = np.random.default_rng(1)
+    n_pat, per = 120, 5
+    pid = np.repeat(np.arange(n_pat), per)
+    y = rng.integers(0, 2, size=n_pat * per)
+    good = np.where(rng.random(len(y)) < 0.85, y, 1 - y)          # ~85 percent accuracy
+    same = good.copy()
+    worse = np.where(rng.random(len(y)) < 0.75, y, 1 - y)          # ~75 percent
+    prob = np.where(y == 1, 0.9, 0.1)                              # near-perfect calibration
+    with tempfile.TemporaryDirectory() as td:
+        path = f"{td}/p.csv"
+        with open(path, "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["y", "pid", "good", "same", "worse", "prob"])
+            for i in range(len(y)):
+                w.writerow([y[i], pid[i], good[i], same[i], worse[i], prob[i]])
+        base = dict(csv=path, label="y", group="pid", n_boot=400, alpha=0.05, seed=0, threshold=0.5)
+        out = run(cmd_ci, pred="good", metric="accuracy", **base)
+        lo, hi = grab(out, "95% CI")[:2]
+        pt = grab(out, "point estimate")[0]
+        check("ci: interval brackets the point estimate near 0.85", lo <= pt <= hi and 0.78 < pt < 0.92)
+        out = run(cmd_compare, a="good", b="same", metric="accuracy", **base)
+        lo, hi = grab(out, "95% CI of diff")[:2]
+        check("compare: identical arms give a zero difference with an interval containing zero", lo <= 0 <= hi and abs(grab(out, "paired difference")[0]) < 1e-9)
+        out = run(cmd_compare, a="worse", b="good", metric="accuracy", **base)
+        lo, hi = grab(out, "95% CI of diff")[:2]
+        check("compare: a real 10-point gap excludes zero", lo > 0)
+        out = run(cmd_mde, a="worse", b="good", metric="accuracy", power=0.8, **base)
+        mde = grab(out, "MDE")[0]
+        se = grab(out, "bootstrap SE")[0]
+        check("mde: (1.96 + 0.84) * SE, positive, from the paired difference", abs(mde - 2.8016 * se) < 0.002 and 0 < mde < 0.2)
+        out2 = run(cmd_mde, a="good", b="same", metric="accuracy", power=0.8, **base)
+        check("mde: identical arms give SE 0 (the paired SE cancels only when the arms really are identical)", grab(out2, "bootstrap SE")[0] < 1e-9)
+        out3 = run(cmd_mde, a="good", b=None, metric="accuracy", power=0.8, **base)
+        check("mde: single arm reports the marginal basis and a positive MDE", "marginal" in out3 and grab(out3, "MDE")[0] > 0)
+        out = run(cmd_mcnemar, csv=path, label="y", a="good", b="same", threshold=0.5, exact=False)
+        check("mcnemar: identical arms, no discordant pairs", "0" in out.split("A correct, B wrong")[1].split("\n")[0])
+        prob_cal = rng.random(4000)
+        y_cal = rng.random(4000) < prob_cal
+        ece, _ = _ece(y_cal, prob_cal, 10, "equal_width")
+        ece_bad, _ = _ece(y_cal, np.clip(prob_cal * 0.5, 0, 1), 10, "equal_width")
+        check("calibration: labels drawn from the probabilities give a small ECE, halved probabilities a large one", ece < 0.05 < ece_bad)
+        out = run(cmd_holm, p="0.004,0.031,0.048,0.220", alpha=0.05)
+        check("holm: smallest p adjusted by family size, largest by one", "0.016" in out and "0.22" in out)
+        check("z quantile: 0.975 -> 1.96, 0.8 -> 0.8416", abs(z_quantile(0.975) - 1.95996) < 1e-4 and abs(z_quantile(0.8) - 0.84162) < 1e-4)
+    print("\nself-test " + ("passed" if ok else "FAILED"))
+    return 0 if ok else 1
+
+
 def cmd_holm(a: argparse.Namespace) -> int:
     ps = [float(x) for x in a.p.split(",") if x.strip()]
     m = len(ps)
@@ -626,6 +792,20 @@ def main() -> int:
     q.add_argument("--alpha", type=float, default=0.05)
     q.set_defaults(func=cmd_holm)
 
+    q = sub.add_parser("mde", help="minimum detectable effect for a paired comparison at this sample size")
+    common(q)
+    q.add_argument("--a", required=True, help="reference model column")
+    q.add_argument("--b", default=None, help="treatment model column; omit for a single-arm (marginal, conservative) MDE")
+    q.add_argument("--metric", default="balanced_accuracy",
+                   choices=sorted(RATIO_METRICS | {"auroc"}))
+    q.add_argument("--power", type=float, default=0.8)
+    q.set_defaults(func=cmd_mde)
+
+    q = sub.add_parser("self-test", help="check the estimators on synthetic data (no files needed)")
+    q.set_defaults(func=lambda a: self_test())
+
+    if len(sys.argv) > 1 and sys.argv[1] == "--self-test":
+        return self_test()
     a = p.parse_args()
     return a.func(a)
 

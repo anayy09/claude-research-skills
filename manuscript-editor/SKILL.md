@@ -20,7 +20,7 @@ description: >-
   manuscript-writing, which owns sentence and paragraph quality, and with
   build-check, which measures the page count the cuts are aimed at.
 summary: "Keeps manuscripts coherent through revision: checklist, right content in the right document, minimal changes, cuts to a budget, the letter."
-version: "1.2.0"
+version: "1.2.1"
 author: anayy09
 license: MIT
 metadata:
@@ -412,84 +412,33 @@ that prevents the misreading goes in the text where the table is cited,
 once. Decision-log ids and pipeline provenance go in the supplement or the
 repository, not in the caption.
 
-## Short examples
+## Three examples
 
-One pair per family plus the two integrity cases. More, organized by
-section and family, in `references/manuscript-boundary.md`.
+One pair per family and the integrity cases, organized by section, are in
+`references/manuscript-boundary.md`. Three here, so the shape of a fix is
+clear before that file is opened.
 
-**Reviewer attribution in Methods.**
-Before: As suggested by Reviewer 2, we have now added a sensitivity analysis
-excluding stays with missing lactate.
-After: A sensitivity analysis excluded stays with missing lactate
-measurements.
-Response letter gets: "We added a sensitivity analysis excluding stays with
-missing lactate (Methods, Sensitivity analyses; Results, Table S3)."
-
-**Defensive justification in Discussion.**
-Before: To address concerns about generalizability, we emphasize that
-external validation on an independent cohort is a major strength of this
-study and supports the robustness of our findings.
-After: Performance on the external cohort was 0.05 lower than internally,
-which is within the range reported for other vital-sign models transferred
-between sites [refs].
-The reviewer's concern is answered by the number and the comparison, not by
-the word "strength".
-
-**Narrated change in Results.**
+**Narrated change (family A), Results.**
 Before: In the revised analysis we also report the integrated calibration
 index, which confirms that the model is well calibrated overall.
 After: Integrated calibration index was 0.021 (internal) and 0.048 (external).
-Interpretation of "well calibrated" goes to Discussion, once.
+The response letter gets the account of the change; Discussion interprets
+"well calibrated", once.
 
 **Announced restraint (family B).**
 Before: This is an easy test to pass and we would rather say so than bank
-the pass. Landing inside the published interval shows the reproduction is
-not badly wrong; it does not show that it is precisely right.
+the pass.
 After: The published interval is wide because six of the fifteen targets
 have fewer than fifty positives in the test fold; the reproduction falls
 inside it, which bounds but does not pin the reference arm.
-The restraint is now in the content of the sentence, not narrated.
-
-**Protocol refrain (family C).**
-Before: The operating threshold is 0.10, fixed from the clinical framing
-and recorded before any curve was computed. We declared as much before
-computing any of it, precisely so that it could not be offered afterwards as
-an explanation for an unflattering number.
-After: The operating threshold was 0.10 (Methods, Registration). Then the
-result.
-One Methods paragraph says what was registered and where the registration
-lives. Every later mention is a cross-reference.
-
-**Reader management (family D).**
-Before: Acquisition context does not, however, explain the waveform arm,
-and this paper must not be read as saying that it does. Those are two
-claims. The first survives and the second does not.
-After: Acquisition context recovers most of the waveform arm's discrimination
-at short horizons but does not account for it: within matched strata the
-waveform arm retains 78 to 93 percent of its advantage over demographics.
-The scope is in the numbers; the reader is not told how to read.
-
-**Internal artifacts (family E).**
-Before: Net benefit is strengthener 10 in the plan, the second thing cut if
-the schedule slips. Every value here is a cell of Table 11 (D-065, closing
-D-018).
-After: (delete; the note describes the table's contents and the threshold)
-
-**Pre-emptive objection (family F).**
-Before: *Your acquisition features leak the label.* We separated the feature
-blocks before fitting any model, every feature carries an availability
-timestamp enforced by a test that fails on deliberately poisoned data, ...
-After: (delete the subsection) The availability test is already in Methods,
-Acquisition context. If a reviewer raises the leak, the response letter
-points there.
+The restraint is in the content of the sentence, not narrated.
 
 **Missing evidence.**
 Before: Our method also generalizes to pediatric populations.
 After: `[AUTHOR INPUT: Reviewer 1 asked about pediatric generalization. No
 pediatric cohort was evaluated. Either supply results or we state this as a
 limitation.]`
-Then, once the author decides: either a result with numbers or one sentence
-in limitations. Never an unsupported claim.
+Never an unsupported claim to close an item.
 
 ## Journal and article-type conventions
 

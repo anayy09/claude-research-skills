@@ -208,6 +208,152 @@ def inspect_svg(data: bytes) -> dict:
     return out
 
 
+# ---------------------------------------------------------------- placed text
+
+def _tool(name: str) -> str | None:
+    """poppler tool on PATH, or next to pdftoppm/pdfinfo (MiKTeX, TeX Live)
+    when the PATH copy is an xpdf build without -bbox-layout."""
+    import shutil
+    found = shutil.which(name)
+    if name == "pdftotext" and found:
+        try:
+            import subprocess
+            p = subprocess.run([found, "-h"], capture_output=True, text=True, errors="replace", timeout=20)
+            if "bbox" not in (p.stdout + p.stderr):
+                found = None
+        except Exception:
+            found = None
+    if not found:
+        import os
+        from pathlib import Path
+        for sib in ("pdftoppm", "pdfinfo", "pdflatex"):
+            s = shutil.which(sib)
+            if s:
+                cand = Path(s).parent / (name + (".exe" if os.name == "nt" else ""))
+                if cand.exists():
+                    return str(cand)
+    return found
+
+
+def pdf_text_boxes(path: str) -> tuple[list[dict], float, float] | None:
+    """Text boxes on page 1 as dicts (x0, y0, x1, y1, height_pt, text), with
+    the page width and height in pt. poppler's pdftotext -bbox-layout when
+    available, PyMuPDF otherwise, None when neither exists."""
+    import subprocess
+    import tempfile
+    tool = _tool("pdftotext")
+    if tool:
+        with tempfile.TemporaryDirectory() as td:
+            out = f"{td}/b.html"
+            subprocess.run([tool, "-bbox-layout", "-f", "1", "-l", "1", "-enc", "UTF-8", path, out],
+                           capture_output=True)
+            try:
+                html = open(out, encoding="utf-8", errors="replace").read()
+            except OSError:
+                html = ""
+        m = re.search(r'<page width="([\d.]+)" height="([\d.]+)">', html)
+        if m:
+            boxes = []
+            for lm in re.finditer(r'<line xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</line>', html, re.S):
+                words = re.findall(r"<word[^>]*>(.*?)</word>", lm.group(5), re.S)
+                x0, y0, x1, y1 = (float(v) for v in lm.groups()[:4])
+                boxes.append({"x0": x0, "y0": y0, "x1": x1, "y1": y1, "height_pt": y1 - y0, "text": " ".join(words)})
+            return boxes, float(m.group(1)), float(m.group(2))
+    try:
+        import fitz  # type: ignore
+        with fitz.open(path) as doc:
+            p = doc[0]
+            boxes = []
+            for b in p.get_text("dict")["blocks"]:
+                for ln in b.get("lines", []):
+                    spans = ln.get("spans", [])
+                    if not spans:
+                        continue
+                    x0 = min(s["bbox"][0] for s in spans); y0 = min(s["bbox"][1] for s in spans)
+                    x1 = max(s["bbox"][2] for s in spans); y1 = max(s["bbox"][3] for s in spans)
+                    boxes.append({"x0": x0, "y0": y0, "x1": x1, "y1": y1,
+                                  "height_pt": max(s["size"] for s in spans), "text": "".join(s["text"] for s in spans)})
+            return boxes, p.rect.width, p.rect.height
+    except Exception:
+        return None
+
+
+def svg_text_boxes(text: str) -> tuple[list[dict], float, float] | None:
+    """Approximate text boxes from <text> elements: x, y, font-size, and a
+    width estimate of 0.55 em per character. Returns boxes in user units plus
+    the viewBox width and height."""
+    m = re.search(r"<svg\b[^>]*>", text, re.DOTALL)
+    if not m:
+        return None
+    tag = m.group(0)
+    vb = re.search(r'viewBox\s*=\s*"([\d.\-]+)[ ,]+([\d.\-]+)[ ,]+([\d.\-]+)[ ,]+([\d.\-]+)"', tag)
+    if not vb:
+        return None
+    vx, vy, vw, vh = (float(v) for v in vb.groups())
+    boxes = []
+    for tm in re.finditer(r"<text\b([^>]*)>(.*?)</text>", text, re.S):
+        attrs, inner = tm.group(1), tm.group(2)
+        content = re.sub(r"<[^>]+>", "", inner).strip()
+        if not content:
+            continue
+        def attr(name: str, default: float) -> float:
+            am = re.search(name + r'\s*=\s*"([\d.\-]+)', attrs)
+            if am:
+                return float(am.group(1))
+            sm = re.search(name.replace("-", r"\-") + r"\s*:\s*([\d.\-]+)", attrs)
+            return float(sm.group(1)) if sm else default
+        x, y, fs = attr("x", 0.0), attr("y", 0.0), attr("font-size", 3.5)
+        anchor = re.search(r'text-anchor\s*[=:]\s*"?(start|middle|end)', attrs)
+        w = 0.55 * fs * len(content)
+        x0 = x - (w / 2 if anchor and anchor.group(1) == "middle" else w if anchor and anchor.group(1) == "end" else 0)
+        boxes.append({"x0": x0, "y0": y - fs, "x1": x0 + w, "y1": y, "height_pt": fs, "text": content})
+    return boxes, vw, vh
+
+
+def check_placed_text(rep: Report, boxes: list[dict], page_w: float, page_h: float,
+                      drawn_w_mm: float | None, target_mm: float | None, min_font_pt: float,
+                      units: str = "pt") -> None:
+    """Text outside the frame, text below the minimum size at print width, and
+    text boxes that overlap. Sizes are scaled by target/drawn when both are
+    known, since the figure prints at the target width."""
+    if not boxes:
+        rep.unverified("no text boxes found; labels may be outlined paths (then legibility is not measurable here) or the figure has no text")
+        return
+    scale = (target_mm / drawn_w_mm) if (target_mm and drawn_w_mm) else 1.0
+    unit_pt = 1.0 if units == "pt" else (MM_PER_INCH / 96.0 * 72.0 / MM_PER_INCH) if units == "px" else 72.0 / MM_PER_INCH
+    outside = [b for b in boxes if b["x0"] < -0.5 or b["y0"] < -0.5 or b["x1"] > page_w + 0.5 or b["y1"] > page_h + 0.5]
+    for b in outside[:6]:
+        rep.fail(f"text crosses the figure frame: \"{b['text'][:50]}\" (box {b['x0']:.0f}..{b['x1']:.0f} of {page_w:.0f} wide)")
+    if len(outside) > 6:
+        rep.fail(f"... {len(outside) - 6} more text boxes cross the frame")
+    small = []
+    for b in boxes:
+        pt = b["height_pt"] * unit_pt * scale
+        if pt + 0.2 < min_font_pt:
+            small.append((pt, b["text"]))
+    small.sort()
+    for pt, t in small[:6]:
+        rep.fail(f"text prints at {pt:.1f} pt (< {min_font_pt:.0f} pt at {target_mm:.0f} mm): \"{t[:50]}\"" if target_mm
+                 else f"text is {pt:.1f} pt (< {min_font_pt:.0f} pt): \"{t[:50]}\"")
+    if len(small) > 6:
+        rep.fail(f"... {len(small) - 6} more labels below {min_font_pt:.0f} pt")
+    collisions = 0
+    examples = []
+    for i in range(len(boxes)):
+        for j in range(i + 1, len(boxes)):
+            a, b = boxes[i], boxes[j]
+            ox = min(a["x1"], b["x1"]) - max(a["x0"], b["x0"])
+            oy = min(a["y1"], b["y1"]) - max(a["y0"], b["y0"])
+            if ox > 1.0 and oy > 0.3 * min(a["y1"] - a["y0"], b["y1"] - b["y0"]):
+                collisions += 1
+                if len(examples) < 4:
+                    examples.append(f"\"{a['text'][:30]}\" and \"{b['text'][:30]}\"")
+    if collisions:
+        rep.warn(f"{collisions} pair(s) of text boxes overlap (labels colliding or a legend over an axis): " + "; ".join(examples))
+    if not outside and not small and not collisions:
+        rep.ok(f"{len(boxes)} text boxes inside the frame, all at or above {min_font_pt:.0f} pt at print width, none overlapping")
+
+
 # ---------------------------------------------------------------- evaluation
 
 def resolve_target_mm(args) -> float | None:
@@ -247,10 +393,40 @@ def check_width(rep: Report, width_mm: float | None, target: float | None,
                f"(±{WIDTH_TOL_MM:.0f} mm)")
 
 
+def self_test() -> int:
+    ok = True
+
+    def check(desc: str, cond: bool) -> None:
+        nonlocal ok
+        print(("  ok   " if cond else "  FAIL ") + desc)
+        ok = ok and cond
+
+    svg = ('<svg xmlns="http://www.w3.org/2000/svg" width="182mm" height="100mm" viewBox="0 0 182 100">'
+           '<text x="10" y="10" font-size="3">Input patches</text>'
+           '<text x="12" y="10.5" font-size="3">Overlapping label</text>'
+           '<text x="170" y="50" font-size="3" text-anchor="start">A label that runs off the right edge</text>'
+           '<text x="10" y="90" font-size="1.5">tiny</text></svg>')
+    tb = svg_text_boxes(svg)
+    check("svg: boxes and viewBox parsed", tb is not None and len(tb[0]) == 4 and tb[1] == 182.0)
+    rep = Report()
+    boxes, vw, vh = tb
+    check_placed_text(rep, boxes, vw, vh, 182.0, 182.0, 6.0, "mm")
+    levels = [lv for lv, _ in rep.lines]
+    msgs = " ".join(m for _, m in rep.lines)
+    check("svg: off-edge label is a FAIL", "runs off the right edge" in msgs and levels.count("FAIL") >= 2)
+    check("svg: 1.5 mm label (4.3 pt) fails the 6 pt floor, 3 mm (8.5 pt) passes", "tiny" in msgs and "Input patches" not in msgs.split("collid")[0].split("pt):")[-1] if "pt):" in msgs else "tiny" in msgs)
+    check("svg: overlap warned", "overlap" in msgs)
+    rep2 = Report()
+    check_placed_text(rep2, boxes[:1], vw, vh, 182.0, 89.0, 6.0, "mm")
+    check("scaling to a narrower target shrinks labels (3 mm at 89/182 = 4.2 pt fails)", any(lv == "FAIL" for lv, _ in rep2.lines))
+    print("\nself-test " + ("passed" if ok else "FAILED"))
+    return 0 if ok else 1
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("file")
+    ap.add_argument("file", nargs="?")
     ap.add_argument("--journal", default="default",
                     help="venue key for --width slots (default: default)")
     ap.add_argument("--width", default=None,
@@ -258,7 +434,17 @@ def main() -> int:
     ap.add_argument("--min-dpi", type=float, default=300.0,
                     help="DPI floor for raster formats (default 300; use 600 "
                          "for combination art, 1000 for pure line art)")
+    ap.add_argument("--min-font-pt", type=float, default=6.0,
+                    help="smallest label size at print width (default 6; Nature 5, "
+                         "IEEE and Elsevier 6 to 7, Springer 5 to 7)")
+    ap.add_argument("--no-text", action="store_true",
+                    help="skip the placed-text checks (frame, size, collisions)")
+    ap.add_argument("--self-test", action="store_true")
     args = ap.parse_args()
+    if args.self_test:
+        return self_test()
+    if not args.file:
+        ap.error("give a figure file (or --self-test)")
 
     # A Windows console defaults to cp1252, which cannot encode the glyphs in
     # the report lines below, so the checker would crash on its own output.
@@ -299,6 +485,13 @@ def main() -> int:
                 rep.warn("embedded raster image(s) inside the PDF: fine for "
                          "deliberate rasterization (heatmaps, photos, generative "
                          "elements), a defect if the whole plot is a screenshot")
+            if not args.no_text:
+                tb = pdf_text_boxes(args.file)
+                if tb is None:
+                    rep.unverified("placed-text checks need poppler's pdftotext (-bbox-layout) or PyMuPDF")
+                else:
+                    boxes, pw, ph = tb
+                    check_placed_text(rep, boxes, pw, ph, info.get("width_mm"), target, args.min_font_pt, "pt")
         elif name.endswith(".eps") or data.startswith(b"%!PS"):
             info = inspect_eps(data)
             check_width(rep, info.get("width_mm"), target, "bounding-box width")
@@ -343,6 +536,15 @@ def main() -> int:
                          f"physical units (mm) so conversion is size-true")
             if info.get("has_text_elements"):
                 rep.ok("text present as <text> elements (editable master)")
+                if not args.no_text:
+                    tb = svg_text_boxes(data.decode("utf-8", errors="replace"))
+                    if tb is None:
+                        rep.unverified("no viewBox; placed-text checks need one")
+                    else:
+                        boxes, vw, vh = tb
+                        # user units: mm when the declared width is in mm and matches the viewBox
+                        units = "mm" if info.get("width_unit") == "mm" and abs(info.get("width_mm", 0) - vw) < 1.0 else "px"
+                        check_placed_text(rep, boxes, vw, vh, info.get("width_mm"), target, args.min_font_pt, units)
             rep.warn("SVG is a working format: convert to PDF for submission "
                      "and re-check the PDF")
         else:

@@ -1,0 +1,32 @@
+# targets.yaml: one body, several venue packages. See references/multi-venue-build.md.
+body: paper/body.tex              # shared body: no \documentclass, no \begin{document}
+abstract: paper/abstract.tex
+keywords: paper/keywords.tex      # one keyword per line, most important first
+authors: docs/AUTHORS.yaml        # the only source of author identity
+bib: paper/refs.bib
+figures: paper/figures
+
+targets:
+  cep:                            # Elsevier, Control Engineering Practice
+    template: templates/elsarticle-main.tex
+    out: submission/cep
+    class: elsarticle
+    assets: [templates/elsarticle.cls, templates/elsarticle-num.bst]
+    max_keywords: 6
+    drop: []
+    page_cap: 0
+  srep:                           # Springer Nature, Scientific Reports
+    template: templates/sn-jnl-main.tex
+    out: submission/srep
+    class: sn-jnl
+    assets: [templates/sn-jnl.cls, templates/sn-mathphys-num.bst]
+    max_keywords: 6
+    drop: []
+    page_cap: 0
+  tcst:                           # IEEE Transactions on Control Systems Technology
+    template: templates/ieeetran-main.tex
+    out: submission/tcst
+    class: ieeetran
+    assets: [templates/IEEEtran.cls, templates/IEEEtran.bst]
+    drop: [appendix, extended]
+    page_cap: 16

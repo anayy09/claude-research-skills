@@ -62,7 +62,7 @@ manuscript-figures/
 │   └── review-checklist.md     final pre-submission pass
 ├── scripts/
 │   ├── figstyle.py             apply_style, fig_size, OKABE_ITO, label_panels, save_figure
-│   └── check_figure.py         stdlib compliance checker (PDF/EPS/SVG/PNG/TIFF)
+│   └── check_figure.py         compliance checker (PDF/EPS/SVG/PNG/TIFF), incl. placed-text checks
 └── assets/
     └── manuscript.mplstyle     the same style as a matplotlib style sheet
 ```
@@ -76,11 +76,18 @@ python manuscript-figures/scripts/figstyle.py
 # compliance check
 python manuscript-figures/scripts/check_figure.py fig2.pdf --journal nature --width single
 python manuscript-figures/scripts/check_figure.py fig3.tif --width 183 --min-dpi 300
+
+# placed text: labels against the frame, size at the target width, collisions
+python manuscript-figures/scripts/check_figure.py fig1.pdf --journal springer --width double --min-font-pt 6
+python manuscript-figures/scripts/check_figure.py --self-test
 ```
 
 ## Dependencies
 
-- `check_figure.py`: standard library only.
+- `check_figure.py`: standard library for the dimension, DPI, and font checks;
+  the placed-text checks on PDFs need poppler's `pdftotext` (the build with
+  `-bbox-layout`) or PyMuPDF, and report UNVERIFIED without them. SVG text
+  needs nothing extra.
 - `figstyle.py`: `matplotlib` (and `numpy` for its demo).
 - SVG→PDF conversion uses whichever of `rsvg-convert`, `inkscape`, or
   `cairosvg` is installed; the skill degrades gracefully and tells you the
@@ -92,6 +99,7 @@ python manuscript-figures/scripts/check_figure.py fig3.tif --width 183 --min-dpi
 
 ## Changelog
 
+- **1.2.0**: `check_figure.py` reads the placed text: every label's box against the figure frame, every label's size at the target width (`--min-font-pt`, default 6), and label collisions, from poppler or PyMuPDF for PDFs and from `<text>` elements for SVGs; `--no-text` skips it, `--self-test` exercises it. On a real schematic it confirms the labels survive scaling to a double column.
 - **1.1.3**: The description names "plot", "chart", "make the figures publishable", and states precedence over general charting or dataviz skills for print figures; the loading-discipline section.
 - **1.1.2**: Hand off to `build-check` once a figure is placed: it renders
   the built page and reports a figure or label past the text block, which

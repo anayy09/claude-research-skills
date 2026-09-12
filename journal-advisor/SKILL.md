@@ -21,7 +21,7 @@ description: >-
   is not thereby a poor fit, and fee coverage depends on the author's
   institution. Load once per session; a second call re-injects nothing new.
 summary: "Match a manuscript to the right journal, with desk-reject risk, from five publisher catalogs."
-version: "1.0.2"
+version: "1.1.0"
 author: anayy09
 license: MIT
 metadata:
@@ -64,7 +64,13 @@ needed, look it up from SCImago rather than inferring it from a sibling journal.
 
 `references/catalog-schema.md` has the full field map and what each list is
 (three of the five are agreement or eligibility lists, not complete publisher
-catalogs).
+catalogs). `assets/list-provenance.yaml` records, per list, its kind, the
+institution and agreement it belongs to, the export date, and what that
+means for fees; `build_catalog.py` writes those into `list_kind`,
+`coverage_note`, and `fee_note` on every row, and the report quotes them.
+When the Elsevier or Springer list belongs to another institution's
+agreement, say so in the report and in the fee line: it is a permission
+statement about this collection, not a fee statement for the author.
 
 ## Workflow
 

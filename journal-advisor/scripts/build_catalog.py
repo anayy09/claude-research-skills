@@ -33,8 +33,25 @@ COLUMNS = [
     "index_wos", "scopus_covered",
     "jif_2024", "jif_quartile", "citescore_2024", "citescore_quartile",
     "sjr_2024", "sjr_quartile", "best_quartile", "quartile_basis",
-    "list_context", "source_file", "source_sheet", "source_row",
+    "list_context", "list_kind", "coverage_note", "fee_note",
+    "source_file", "source_sheet", "source_row",
 ]
+
+PROVENANCE_FILE = HERE.parent / "assets" / "list-provenance.yaml"
+
+
+def load_provenance() -> dict:
+    """Per-publisher kind, scope, institution, agreement, and fee note from
+    assets/list-provenance.yaml. The report quotes these so a user knows
+    whether an absent journal is absent from the publisher or from an
+    institution's agreement."""
+    if not PROVENANCE_FILE.exists():
+        return {}
+    try:
+        import yaml  # type: ignore
+        return yaml.safe_load(PROVENANCE_FILE.read_text(encoding="utf-8")) or {}
+    except ImportError:
+        return {}
 
 # What each uploaded list actually is. This matters: none of them is "every
 # journal the publisher owns", so a title's absence is not evidence that the
@@ -263,6 +280,18 @@ def main() -> None:
         got = fn()
         print(f"{name:<18} {len(got):>5} titles")
         rows.extend(got)
+
+    prov = load_provenance()
+    for r in rows:
+        pv = prov.get(r["publisher"], {})
+        r["list_kind"] = pv.get("kind", "")
+        inst = pv.get("institution", "")
+        r["coverage_note"] = (pv.get("scope", "") + (f" [{inst}]" if inst and not inst.startswith("[AUTHOR") else "")).strip()
+        r["fee_note"] = pv.get("fee_note", "")
+    if prov:
+        print("provenance: " + "; ".join(f"{k}: {v.get('kind', '?')}" for k, v in prov.items()))
+    else:
+        print("note: assets/list-provenance.yaml not read (missing or no PyYAML); list_kind left empty")
 
     df = pd.DataFrame(rows, columns=COLUMNS)
     dupes = df.duplicated(subset=["publisher", "journal_title"]).sum()

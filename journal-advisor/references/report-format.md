@@ -34,7 +34,10 @@ Three to six lines. Name the decision the user actually faces.
 
 ## Data notes
 One or two lines: which fields were unavailable, and whether web verification
-was performed.
+was performed. Then one line naming the lists: which are publisher catalogs
+and which are agreement or eligibility lists, and for whose institution, from
+assets/list-provenance.yaml. A strong journal outside them is outside the
+permitted set, not a poor fit.
 ```
 
 ## The field block
@@ -43,6 +46,10 @@ Every journal, in the overall recommendation and in every ranked list, carries
 these eight items. Keep each to one line where possible.
 
 - **Publisher and OA model** — from the catalog.
+- **List and fee coverage** — the catalog's `list_kind` and `fee_note`: whether
+  the title comes from a full publisher list or an institution's agreement
+  list, and who that covers. A journal on an eligibility list for another
+  institution is a fit statement, not a fee statement, for this author.
 - **Topical fit** — one or two sentences naming what in the journal's stated
   scope matches what in the manuscript. Specific, not "strong alignment with the
   journal's aims".

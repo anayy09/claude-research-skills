@@ -7,6 +7,62 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-09-12
+
+The third release from the usage audit: the P2 items. Each one closes a gap
+a transcript showed and none of them is large.
+
+### Added
+- `submission-formatter` (1.1.4 to 1.2.0): `build_targets.py` and
+  `references/multi-venue-build.md`. One body, several venue packages from a
+  spec: the author block per class from `AUTHORS.yaml` (elsarticle, sn-jnl,
+  IEEEtran, generic), regions of the body dropped per target, `\citep`
+  rewritten for non-natbib classes, assets and figures copied, and a guard
+  that refuses to overwrite a `main.tex` edited by hand since the last
+  render. `--check` runs `build-check` on each package with its page cap.
+  `assets/targets.example.yaml` is the spec shape. This is the pipeline one
+  paper repository had built by hand, generalized.
+- `manuscript-figures` (1.1.3 to 1.2.0): placed-text checks in
+  `check_figure.py`. Every label's box against the figure frame, its size at
+  the target width (`--min-font-pt`, default 6), and label collisions, from
+  poppler or PyMuPDF for PDFs and from `<text>` elements for SVGs. On a real
+  schematic it reports a 194 mm drawing against a 174 mm Springer double
+  column and confirms the labels survive the scaling. `--self-test`.
+- `ml-eval-statistics` (1.0.2 to 1.1.0): `mde`, the minimum detectable
+  effect for a paired comparison, with its standard error from the paired
+  difference under one shared resample; the docstring says why an arm
+  bootstrapped against itself understates it. `--self-test` runs the
+  estimators on synthetic data (interval brackets the point, identical arms
+  give zero, a real gap excludes zero, MDE equals the z-sum times the SE,
+  Holm, ECE, the normal quantile).
+- `data-engineering` (1.0.2 to 1.1.0): `references/research-data.md` (the
+  cohort builder, the `F__available_at` feature contract, the split, the
+  schema contract) and `scripts/leakage_guard.py`, which checks feature
+  availability against the index time and group disjointness across folds,
+  with `--poison` as the positive control that proves the guard fails on
+  leaking data.
+- `journal-advisor` (1.0.2 to 1.1.0): `assets/list-provenance.yaml` names
+  what each bundled list is (a publisher list or an institution's agreement
+  list, whose, exported when, and what that means for fees).
+  `build_catalog.py` writes `list_kind`, `coverage_note`, and `fee_note`
+  onto every row, the field block gains a "list and fee coverage" line, and
+  the data notes name the lists. A strong journal outside them is outside
+  the permitted set, not a poor fit.
+
+### Changed
+- `manuscript-editor` (1.2.0 to 1.2.1): the nine worked examples in
+  SKILL.md are cut to three, since `references/manuscript-boundary.md`
+  carries the full set by section and family; the skill file is back under
+  its size before 1.2.0.
+- `hpc-cluster` (2.0.1 to 2.0.2): a "not on a cluster?" section pointing
+  local long jobs at `project-ledger`'s runbook discipline, with the job
+  script patterns that transfer.
+- Outside the repository: a global `~/.claude/CLAUDE.md` on the author's
+  machine now carries the Windows shell rules (heredoc backslashes, cp1252
+  stdout, PowerShell 5.1, the two pdftotext builds), the git staging rule,
+  the no-dash and identity rules, and the skill routing convention. About a
+  third of the failed tool calls in the audit were shell friction.
+
 ## [0.9.0] - 2026-09-12
 
 The second release from the usage audit: the P1 items. A new skill for the

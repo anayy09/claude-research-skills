@@ -18,7 +18,7 @@ description: >-
   code by hand; a hand-written estimator once measured tie-break variance
   instead of sampling variance for a week before anyone noticed.
 summary: "The right statistics for model evaluation: significance, CIs, calibration, selective prediction."
-version: "1.0.2"
+version: "1.1.0"
 author: anayy09
 license: MIT
 metadata:
@@ -94,7 +94,25 @@ python scripts/eval_stats.py selective --csv preds.csv --label y_true \
 
 # Multiplicity across ablation arms
 python scripts/eval_stats.py holm --p 0.004,0.031,0.048,0.220
+
+# Minimum detectable effect for a paired comparison at this sample size
+python scripts/eval_stats.py mde --csv preds.csv --label y_true --a p_base --b p_structured \
+  --group patient_id --metric auroc --power 0.8
+
+# The estimators against synthetic data, no files needed
+python scripts/eval_stats.py --self-test
 ```
+
+Use the script for every interval, paired test, and minimum detectable
+effect. The `mde` command takes its standard error from the paired
+difference between two arms under one shared resample. Do not write a
+bootstrap that resamples an arm against itself with a shared index: the
+sampling variance cancels exactly, what survives is tie-break noise, and the
+MDE comes out several times too small. That estimator sat in a project for a
+week and changed the verdict on a pre-registered equivalence claim when it
+was corrected. An interval that contains zero is reported as "not
+distinguishable at this sample size" with the MDE beside it, never as
+equivalence.
 
 Every command reports the number of items and the number of groups. If those two
 numbers are far apart and the group count is small, the effective sample size is

@@ -20,7 +20,7 @@ description: >-
   marked for the author, never filled in, and author identity comes only from
   AUTHORS.yaml or the owner.
 summary: "Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word."
-version: "1.1.4"
+version: "1.2.0"
 author: anayy09
 license: MIT
 metadata:
@@ -309,6 +309,29 @@ the chat response with the three things the author has to act on: the markers
 they must fill in, any limit overage, and any unresolved fidelity item. Then the
 one-line status of everything else. Do not summarize the paper back to them.
 
+## Several venues from one body
+
+When a manuscript is kept ready for two or three venues, do not keep three
+copies. Write the body once, put every per-venue difference in a spec and a
+per-venue template, and regenerate the packages after each editorial pass:
+
+```bash
+python scripts/build_targets.py targets.yaml --check
+```
+
+The spec (`assets/targets.example.yaml`) names the shared body, abstract,
+keywords, `AUTHORS.yaml`, bibliography, and figures, and per target the
+template, class, assets, regions of the body to drop (marked
+`% {{begin:appendix}} ... % {{end:appendix}}`), keyword cap, and page cap.
+The script renders each class's author block from `AUTHORS.yaml`, rewrites
+`\citep` to `\cite` for non-natbib classes, copies assets and figures, and
+refuses to overwrite a `main.tex` that was edited by hand since the last
+render, writing `main.tex.regenerated` beside it instead. That guard exists
+because a rebuild once silently reverted hand-added co-authors. `--check`
+runs `build-check` on every package with its page cap.
+`references/multi-venue-build.md` has the rules for what may differ and the
+loop.
+
 ## Degradation, and when to stop
 
 | Situation | Response |
@@ -348,6 +371,7 @@ prints what it could not do.
 | `scripts/inspect_template.py` | Template zip, directory, `.tex`, or `.docx` to a structural requirements inventory |
 | `scripts/compile_tex.py` | Engine selection, `latexmk` build, log triage, and the submission zip |
 | `scripts/fidelity_check.py` | Sentence, number, citation, and structure drift between source and output |
+| `scripts/build_targets.py` | One body, several venue packages from a spec: author blocks per class from `AUTHORS.yaml`, drop regions, citation command, assets; refuses to overwrite a hand-edited `main.tex`; `--check` runs `build-check` on each |
 
 Run any of them with `--help` for exact arguments.
 

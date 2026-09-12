@@ -71,12 +71,16 @@ submission-formatter/
 │   ├── extraction.md           per-format extraction recipes and their hazards
 │   ├── assembly-latex.md       preamble remapping, front matter, math, bibliography
 │   ├── assembly-docx.md        reference-doc workflow, style mapping, page setup
-│   └── fidelity-protocol.md    markers, drift classes, the FORMAT_REPORT template
+│   ├── fidelity-protocol.md    markers, drift classes, the FORMAT_REPORT template
+│   └── multi-venue-build.md    one body, several venue packages: what may differ, the loop
+├── assets/
+│   └── targets.example.yaml    the multi-venue spec shape
 └── scripts/
     ├── extract_manuscript.py   any input format to a structured IR, inventory, media
     ├── inspect_template.py     template zip/dir/.tex/.docx to a requirements sheet
     ├── compile_tex.py          engine choice, latexmk build, log triage, submission zip
-    └── fidelity_check.py       sentence, number, citation, and structure drift
+    ├── fidelity_check.py       sentence, number, citation, and structure drift
+    └── build_targets.py        render several venue packages from one body and a spec
 ```
 
 ## Scripts
@@ -99,7 +103,17 @@ python submission-formatter/scripts/compile_tex.py build/main.tex --package repo
 # 4. prove nothing drifted
 python submission-formatter/scripts/fidelity_check.py \
   --source build/manuscript.json --output build/main.tex --json report/fidelity.json
+
+# several venues from one body: render each package, then build-check each with its page cap
+python submission-formatter/scripts/build_targets.py targets.yaml --check
 ```
+
+`build_targets.py` keeps one body and generates the per-venue packages: the
+author block for each class from `AUTHORS.yaml`, regions dropped per target,
+`\citep` rewritten for classes without natbib, assets and figures copied. It
+refuses to overwrite a `main.tex` edited by hand since the last render and
+writes `main.tex.regenerated` beside it instead. `--self-test` renders a
+two-target fixture in a temporary directory.
 
 `pandoc` is the one dependency worth installing before you start: without it,
 only `.md`, `.txt`, and `.pdf` input can be read. A missing `.cls` is not a
@@ -142,6 +156,7 @@ required declaration sections.
 
 ## Changelog
 
+- **1.2.0**: `scripts/build_targets.py`, `references/multi-venue-build.md`, and `assets/targets.example.yaml`: one body, several venue packages from a spec, with the author block per class from `AUTHORS.yaml`, per-target drop regions, citation command rewriting, a guard against overwriting a hand-edited `main.tex`, and `--check` running `build-check` on every package. SKILL.md gains a section on keeping several venues from one body.
 - **1.1.4**: The description names venue technical-check bounces (nested folders, file naming, editable source, missing declarations, the author block) and multi-venue packaging, and states that author identity comes only from `AUTHORS.yaml`; the loading-discipline section.
 - **1.1.3**: After a successful compile, hand the built package to
   `build-check`, which renders and inspects the pages; the log alone no longer

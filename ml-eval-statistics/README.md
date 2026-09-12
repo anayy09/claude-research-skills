@@ -39,7 +39,7 @@ ml-eval-statistics/
 │   ├── selective-prediction.md    risk-coverage, AURC, coverage at fixed risk
 │   └── reporting-template.md      how to report results honestly
 └── scripts/
-    └── eval_stats.py              compute the tests, CIs, and calibration metrics
+    └── eval_stats.py              tests, CIs, calibration, selective prediction, MDE, self-test
 ```
 
 ## Scripts
@@ -49,11 +49,27 @@ python ml-eval-statistics/scripts/eval_stats.py --help
 ```
 
 Computes paired tests, bootstrap confidence intervals (with clustering support),
-and calibration metrics from your predictions. Run with `--help` for the
-subcommands and expected input format.
+calibration metrics, selective-prediction metrics, and the minimum detectable
+effect from your predictions. Run with `--help` for the subcommands and
+expected input format.
+
+```bash
+# minimum detectable effect for a paired comparison at this sample size
+python ml-eval-statistics/scripts/eval_stats.py mde --csv preds.csv --label y \
+  --a p_base --b p_new --group patient_id --metric auroc --power 0.8
+# the estimators against synthetic data
+python ml-eval-statistics/scripts/eval_stats.py --self-test
+```
+
+`mde` takes its standard error from the paired difference between two arms
+under one shared group resample. An arm bootstrapped against itself with a
+shared index has its sampling variance cancel exactly and reports tie-break
+noise instead; that estimator once sat in a project for a week. Use the
+script.
 
 ## Changelog
 
+- **1.1.0**: `mde` subcommand: the minimum detectable effect for a paired comparison, standard error from the paired difference under one shared resample, with a marginal fallback when only one arm is given. `--self-test` checks the estimators on synthetic data (interval brackets the point, identical arms give zero, a real gap excludes zero, MDE equals the z-sum times the SE, McNemar, ECE, Holm, the normal quantile).
 - **1.0.2**: The description insists on `eval_stats.py` for every interval, paired test, and minimum detectable effect rather than hand-written bootstrap code; the loading-discipline section.
 - **1.0.1**: Hand off to `manuscript-figures` for drawing reliability diagrams,
   risk-coverage curves, and interval plots once the numbers exist.

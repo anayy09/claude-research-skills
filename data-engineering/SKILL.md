@@ -15,7 +15,7 @@ description: >-
   even when nobody says pipeline. Stack-agnostic; adapts to whatever engine
   and language the project already uses.
 summary: "Build, review, and debug data pipelines, SQL, and schemas, whatever the stack."
-version: "1.0.2"
+version: "1.1.0"
 author: anayy09
 license: MIT
 metadata:
@@ -216,6 +216,24 @@ When producing pipeline code:
 - When a choice depends on context you do not have (engine, scale, existing
   conventions), state the assumption you made and proceed, rather than stalling.
 
+## Research data
+
+In a research repository the pipeline has three contracts a warehouse does
+not: a cohort definition a reviewer will reproduce, a feature table whose
+every value was knowable at prediction time, and a split that is disjoint at
+the unit that carries appearance (patient, subject, site, slide). Each is a
+check that runs with a positive control, not a paragraph in Methods.
+`references/research-data.md` gives the cohort builder, the
+`F__available_at` feature contract, the split rules, and the schema
+contract; `scripts/leakage_guard.py` runs the availability and disjointness
+checks and, with `--poison`, proves it would fail on leaking data:
+
+```bash
+python scripts/leakage_guard.py features.parquet --index-time index_time --group patient_id --fold fold --poison
+```
+
+Run it as a gate (`project-ledger` GATES.md) before every training run.
+
 ## Bundled resources
 
 Load these as needed rather than reproducing their contents from memory.
@@ -232,6 +250,11 @@ Load these as needed rather than reproducing their contents from memory.
   late/out-of-order handling, and SCD Type 2.
 - `references/references.md` - the pre-flight checklist to run before declaring
   a pipeline done, plus canonical documentation sources.
+- `references/research-data.md` - the cohort builder, the feature availability
+  contract, the split, and the schema contract for a research repository.
+- `scripts/leakage_guard.py` - availability and disjointness checks on a
+  feature table, with `--poison` as the positive control; a gate before any
+  training run.
 
 ## Loading discipline
 

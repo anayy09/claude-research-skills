@@ -21,7 +21,7 @@ description: >-
   charting or dataviz skill, whose palettes and interaction rules are for
   screens.
 summary: "Publication-grade figures: styled matplotlib, hand-authored SVG schematics, generative art."
-version: "1.1.3"
+version: "1.2.0"
 author: anayy09
 license: MIT
 metadata:
@@ -157,10 +157,19 @@ completeness, panel-label consistency across the whole manuscript, grayscale
 survival, and the small-but-fatal items (missing units, unlabeled colorbars,
 legend covering data).
 
-The checker sees the figure file, not the figure on the page. Once the figure
-is placed in the manuscript, `build-check` renders the built PDF and reports
-a figure or its labels running past the text block; a label that crosses its
-frame at print size comes back here to fix.
+The checker also reads the placed text: every label's box against the
+figure frame (a label running off the edge is a FAIL), every label's size at
+the target width (`--min-font-pt`, default 6; a 3 mm label on a 182 mm
+drawing printed at 89 mm is 4.2 pt and fails), and label boxes that overlap
+(a legend over an axis, colliding tick labels). PDF text comes from poppler's
+`pdftotext` or PyMuPDF; SVG text from the `<text>` elements against the
+viewBox, with a width estimate, so a collision report on an SVG is a prompt
+to render and look. Text converted to outlines is not measurable here and is
+reported as such.
+
+Once the figure is placed in the manuscript, `build-check` renders the built
+PDF and reports a figure or its labels running past the text block; a label
+that crosses its frame at print size comes back here to fix.
 
 ## Typical session shapes
 

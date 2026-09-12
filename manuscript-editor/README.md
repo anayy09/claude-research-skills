@@ -135,6 +135,7 @@ them). All are pattern-based by design and say so; the editorial read decides.
 
 ## Changelog
 
+- **1.2.1**: The nine worked examples in SKILL.md are cut to three; `references/manuscript-boundary.md` carries the full set by section and family. The skill file is back under its pre-1.2.0 size.
 - **1.2.0**: Four modes and three scripts for the parts of a revision round
   that kept being done by hand. Revision checklist (`make_checklist.py`:
   atomic items with stable ids from reviewer files and from a

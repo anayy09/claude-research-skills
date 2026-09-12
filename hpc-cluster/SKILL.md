@@ -18,7 +18,7 @@ description: >-
   the command to the owner) is project-ledger's runbook discipline; this
   skill is for schedulers.
 summary: "Write, debug, and monitor cluster batch jobs, and serve models on compute nodes."
-version: "2.0.1"
+version: "2.0.2"
 author: anayy09
 license: MIT
 metadata:
@@ -263,6 +263,19 @@ want. Some parallel filesystems are deployed without POSIX ACL support and will
 reject `setfacl`; there, rely on setgid plus `umask 007` and verify by creating a
 test file. Full explanation and the read-only variant for released datasets are
 in `references/storage-and-scratch.md`.
+
+## Not on a cluster?
+
+A long job on a laptop or a single workstation has the same failure modes
+without a scheduler to catch them: no wall clock, no accounting, a machine
+that freezes when the data load exceeds memory, and a session that ends
+before the job does. The discipline for that lives in `project-ledger`'s
+`references/long-runs.md`: a `STOP` file the job checks at each checkpoint,
+a `progress.json` the agent polls instead of tailing a log, the launch and
+resume commands recorded in `RUNBOOK.md` before launch, and handing the
+command to the owner when the machine cannot take it. The job script
+patterns here (idempotence guards, checkpoint cadence, `set -euo pipefail`)
+transfer unchanged.
 
 ## Reference files
 

@@ -96,3 +96,13 @@ Known parsing decisions worth preserving on any update:
   collapsed to single spaces or titles will not match.
 - Duplicate publisher+title pairs are retained if the source contains them, with
   a count printed, because silently deduplicating hides a source problem.
+
+## Provenance columns
+
+Every row also carries `list_kind`, `coverage_note`, and `fee_note`,
+filled from `assets/list-provenance.yaml` by the publisher key. `list_kind`
+is the yaml's `kind` (a publisher title list, an institutional eligibility
+list, an agreement eligibility list); `coverage_note` is its scope plus the
+institution when one is named; `fee_note` is the fee statement the report
+quotes. A publisher with no provenance entry gets empty values, and the
+report says the fee position could not be established.

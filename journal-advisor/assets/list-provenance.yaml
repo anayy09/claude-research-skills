@@ -1,0 +1,50 @@
+# Provenance of the five bundled lists. build_catalog.py reads this file and
+# writes `list_kind` and `coverage_note` into every row of journals.csv; the
+# report quotes them. Edit this file when a list is replaced, and say who
+# exported it and when, because three of the five are eligibility lists tied
+# to an institution's agreement rather than complete publisher catalogs.
+
+IEEE:
+  file: IEEE.xlsx
+  kind: publisher title list
+  scope: IEEE journals with open-access type and 2024 metrics; not scoped to any institution
+  institution: ""
+  agreement: ""
+  exported: "2026-01-01"
+  fee_note: "APC applies for OA in hybrid titles; check the author's institution for a read-and-publish agreement"
+
+Springer Nature:
+  file: Springer_Nature.xlsx
+  kind: agreement eligibility list
+  scope: journals eligible under a fully-open-access agreement; a Springer journal absent here may be a fine fit but its APC is not covered by that agreement
+  institution: "[AUTHOR INPUT: institution whose agreement this list belongs to]"
+  agreement: "Springer Nature fully open access agreement"
+  exported: ""
+  fee_note: "APC covered under the agreement for eligible corresponding authors; not covered otherwise"
+
+Elsevier:
+  file: Elsevier.xlsx
+  kind: institutional eligibility list
+  scope: hybrid titles eligible under an institutional publishing agreement (sheet named MUJ 2025); an Elsevier journal absent here is not thereby a poor fit
+  institution: "Manipal University Jaipur (per the sheet name; confirm)"
+  agreement: "Elsevier read-and-publish, 2025"
+  exported: ""
+  fee_note: "OA fee covered for corresponding authors at the listed institution; a UF author pays or publishes subscription-only"
+
+ACM:
+  file: ACM.xlsx
+  kind: publisher list
+  scope: ACM journals; all open access as of 1 January 2026 per the workbook notes
+  institution: ""
+  agreement: ""
+  exported: "2026-01-01"
+  fee_note: "ACM Open covers members' institutions; otherwise an APC applies"
+
+Taylor & Francis:
+  file: T_F.xlsx
+  kind: publisher open-access list
+  scope: fully open-access titles with 2024 metrics; hybrid T&F titles are not listed
+  institution: ""
+  agreement: ""
+  exported: ""
+  fee_note: "APC applies unless the author's institution has a T&F agreement"
