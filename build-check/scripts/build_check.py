@@ -736,6 +736,99 @@ def font_check(pdf: Path) -> Tuple[str, str, List[str]]:
 
 
 # ---------------------------------------------------------------------------
+# 6b. identity and placeholders
+# ---------------------------------------------------------------------------
+
+EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+ORCID_RE = re.compile(r"\b\d{4}-\d{4}-\d{4}-\d{3}[\dX]\b")
+PLACEHOLDER_RE = re.compile(r"\[AUTHOR (?:INPUT|ACTION)[^\]]*\]|\bTODO\b|\bTBD\b|\bXXX+\b|\[DOI PENDING\]|zenodo\.X{5,}|(?<![\w?])\?\?(?![\w?])|\\todo\b|\[CITATION NEEDED\]", re.I)
+
+
+def load_authors(path: Path) -> Dict[str, list]:
+    """Read AUTHORS.yaml. Uses PyYAML when present; otherwise a small reader for
+    the documented shape (a list under `authors:` with name, email, affiliation,
+    orcid). Returns {'names': [...], 'emails': [...], 'orcids': [...]}."""
+    text = path.read_text(encoding="utf-8", errors="replace")
+    authors: List[dict] = []
+    try:
+        import yaml  # type: ignore
+        data = yaml.safe_load(text) or {}
+        authors = list(data.get("authors") or [])
+    except Exception:
+        cur: Optional[dict] = None
+        for ln in text.splitlines():
+            m = re.match(r"^\s*-\s*name:\s*(.+)$", ln)
+            if m:
+                cur = {"name": m.group(1).strip().strip("'\"")}
+                authors.append(cur)
+                continue
+            m = re.match(r"^\s+(\w+):\s*(.+)$", ln)
+            if m and cur is not None:
+                cur[m.group(1)] = m.group(2).strip().strip("'\"")
+    names = [str(a.get("name", "")).strip() for a in authors if a.get("name")]
+    emails = [str(a.get("email", "")).strip().lower() for a in authors if a.get("email")]
+    orcids = [str(a.get("orcid", "")).strip() for a in authors if a.get("orcid")]
+    return {"names": names, "emails": emails, "orcids": orcids}
+
+
+def find_authors_file(start: Path) -> Optional[Path]:
+    for d in [start, start.parent, start.parent.parent]:
+        for name in ("AUTHORS.yaml", "AUTHORS.yml", "authors.yaml", "authors.yml"):
+            if (d / name).exists():
+                return d / name
+    return None
+
+
+def identity_check(main: Optional[Path], texts: List[str], authors_path: Optional[Path]) -> Check:
+    if authors_path is None:
+        return Check("identity", WARN, "no AUTHORS.yaml found next to the target or its parents; author block not checked",
+                     ["Create AUTHORS.yaml (template in project-ledger/templates) with every author's name, email, affiliation, ORCID. "
+                      "Author identity comes only from that file or the owner, never from session context."])
+    A = load_authors(authors_path)
+    front = ""
+    if main is not None and main.exists():
+        src = gather_source(main)
+        i = src.find("\\begin{document}")
+        front = src if i < 0 else src[:i] + src[i:i + 4000]
+    page1 = texts[0] if texts else ""
+    fails: List[str] = []
+    warns: List[str] = []
+    seen_emails = {e.lower() for e in EMAIL_RE.findall(front + "\n" + page1)}
+    for e in sorted(seen_emails):
+        if e not in A["emails"]:
+            fails.append(f"email {e} appears in the front matter but is not in {authors_path.name}")
+    for o in sorted(set(ORCID_RE.findall(front + "\n" + page1))):
+        if o not in A["orcids"]:
+            fails.append(f"ORCID {o} appears in the front matter but is not in {authors_path.name}")
+    # names are searched with emails removed, so a surname inside an address
+    # (sinhal.a@...) cannot stand in for the printed author name
+    hay = EMAIL_RE.sub(" ", front + "\n" + page1).lower()
+    for n in A["names"]:
+        sur = n.split()[-1].lower()
+        if sur not in hay:
+            warns.append(f"author {n} ({authors_path.name}) not found in the front matter or page 1")
+    for e in A["emails"]:
+        if e not in seen_emails and e:
+            warns.append(f"email {e} ({authors_path.name}) does not appear in the front matter or page 1")
+    if fails:
+        return Check("identity", FAIL, f"{len(fails)} identity value(s) not in {authors_path.name}", fails + warns)
+    if warns:
+        return Check("identity", WARN, f"front matter agrees with {authors_path.name}; {len(warns)} note(s)", warns)
+    return Check("identity", PASS, f"every email and ORCID in the front matter is in {authors_path.name}; every author found")
+
+
+def placeholder_check(texts: List[str]) -> Check:
+    hits: List[str] = []
+    for pno, t in enumerate(texts, 1):
+        for m in PLACEHOLDER_RE.finditer(t):
+            ctx = re.sub(r"\s+", " ", t[max(0, m.start() - 40):m.end() + 40]).strip()
+            hits.append(f"page {pno}: \"{ctx}\"")
+    if hits:
+        return Check("placeholders", FAIL, f"{len(hits)} placeholder(s) or unresolved reference(s) in the PDF text", hits[:30])
+    return Check("placeholders", PASS, "no placeholders, TODOs, or ?? in the PDF text")
+
+
+# ---------------------------------------------------------------------------
 # 7. derived artifacts
 # ---------------------------------------------------------------------------
 
@@ -943,6 +1036,27 @@ def check_target(target: Path, a: argparse.Namespace, report_dir: Path) -> Targe
     st, summ, det = font_check(pdf)
     rep.add(Check("fonts", st, summ, det))
 
+    # 6b. identity and placeholders
+    if texts:
+        authors_path = Path(a.authors) if a.authors else find_authors_file(pdf.parent)
+        if authors_path is not None and not authors_path.exists():
+            rep.add(Check("identity", FAIL, f"--authors {authors_path} does not exist"))
+        else:
+            c = identity_check(main, texts, authors_path)
+            if a.no_identity and c.status == WARN and authors_path is None:
+                c = Check("identity", SKIP, "no AUTHORS.yaml and --no-identity given")
+            rep.add(c)
+            for d in c.details:
+                m = re.search(r"page (\d+)", d)
+                if m and c.status == FAIL:
+                    rep.flag(int(m.group(1)), "identity")
+        pc = placeholder_check(texts)
+        rep.add(pc)
+        for d in pc.details:
+            m = re.match(r"page (\d+)", d)
+            if m:
+                rep.flag(int(m.group(1)), "placeholder")
+
     # 8. thumbnails
     if not a.no_thumbs:
         tdir = report_dir / "pages" / (pdf.parent.name + "-" + pdf.stem)
@@ -967,12 +1081,13 @@ def render_report(reports: List[TargetReport], derived: Optional[Check], a: argp
         overall = FAIL
     lines.append(f"## Overall: {overall}")
     lines.append("")
-    lines.append("| Target | Verdict | Pages | Build | Log | Overflow | Floats | Fonts | Words |")
-    lines.append("|---|---|---:|---|---|---|---|---|---|")
+    lines.append("| Target | Verdict | Pages | Build | Log | Overflow | Floats | Fonts | Identity | Placeholders | Words |")
+    lines.append("|---|---|---:|---|---|---|---|---|---|---|---|")
     for r in reports:
         st = {c.name: c.status for c in r.checks}
         lines.append(f"| `{r.target}` | **{r.verdict}** | {r.pages} | {st.get('build','-')} | {st.get('log','-')} | "
-                     f"{st.get('overflow','-')} | {st.get('floats','-')} | {st.get('fonts','-')} | {st.get('words','-')} |")
+                     f"{st.get('overflow','-')} | {st.get('floats','-')} | {st.get('fonts','-')} | {st.get('identity','-')} | "
+                     f"{st.get('placeholders','-')} | {st.get('words','-')} |")
     lines.append("")
     if derived:
         lines += [f"## Derived artifacts: {derived.status}", "", derived.summary, ""]
@@ -1095,6 +1210,20 @@ LaTeX Warning: Label `fig:a' multiply defined.
         os.utime(srcf, (time.time() + 5, time.time() + 5))
         d = derived_check([f"{out}:{srcf}"])
         check("derived: stale output is a FAIL", d.status == FAIL)
+        # identity: an email in the front matter that is not in AUTHORS.yaml
+        auth = Path(td) / "AUTHORS.yaml"
+        auth.write_text("authors:\n  - name: Anay Sinhal\n    email: sinhal.anay@ufl.edu\n    affiliation: University of Florida\n    orcid: 0009-0008-8328-2336\n", encoding="utf-8")
+        tex2 = Path(td) / "front.tex"
+        tex2.write_text("\\author{Anay Sinha}\\email{sinhal.a@northeastern.edu}\\begin{document}text\\end{document}", encoding="utf-8")
+        c = identity_check(tex2, ["Anay Sinha Northeastern University sinhal.a@northeastern.edu"], auth)
+        check("identity: fabricated email is a FAIL, missing author noted", c.status == FAIL and any("northeastern" in x for x in c.details) and any("not found" in x for x in c.details))
+        tex2.write_text("\\author{Anay Sinhal}\\email{sinhal.anay@ufl.edu}\\begin{document}text\\end{document}", encoding="utf-8")
+        c = identity_check(tex2, ["Anay Sinhal University of Florida sinhal.anay@ufl.edu 0009-0008-8328-2336"], auth)
+        check("identity: matching front matter passes", c.status == PASS)
+        check("identity: no file is a WARN", identity_check(tex2, [""], None).status == WARN)
+        pc = placeholder_check(["Results are in Table ?? and [AUTHOR INPUT: the pediatric cohort].", "clean page", "See TODO and zenodo.XXXXXXX"])
+        check("placeholders: ??, AUTHOR INPUT, TODO, zenodo.X caught", pc.status == FAIL and len(pc.details) == 4)
+        check("placeholders: clean text passes", placeholder_check(["A clean page with a question? And another."]).status == PASS)
     print("\nself-test " + ("passed" if ok else "FAILED"))
     return 0 if ok else 1
 
@@ -1110,6 +1239,9 @@ def main() -> int:
     p.add_argument("--margin-pt", type=float, default=3.0, help="tolerance past the text edge before content is reported (default 3)")
     p.add_argument("--derived", action="append", default=[], metavar="OUT:SRC",
                    help="derived artifact and its source; FAIL if the source is newer. Repeatable")
+    p.add_argument("--authors", help="AUTHORS.yaml with every author's name, email, affiliation, ORCID "
+                                     "(default: AUTHORS.yaml next to the target or up to two directories above)")
+    p.add_argument("--no-identity", action="store_true", help="do not warn when no AUTHORS.yaml exists")
     p.add_argument("--report", help="path for BUILD_REPORT.md (default: <first target dir>/build-check/BUILD_REPORT.md)")
     p.add_argument("--json", dest="json_path", help="also write a JSON report here")
     p.add_argument("--dpi", type=int, default=45, help="thumbnail resolution (default 45)")

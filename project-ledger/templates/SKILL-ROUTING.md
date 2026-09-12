@@ -15,7 +15,7 @@ step names it.
 | Cluster jobs, if any | `hpc-cluster` | job scripts, arrays, checkpointing against the wall clock |
 | `LIT-REVIEW.md`, every citation, the related-work table, the reference diet | `investigating-sources` | verified sources, version of record, reference diet |
 | A formal review with a screening log | `evidence-synthesis` | protocol, PRISMA-S, screening, appraisal, GRADE |
-| Manuscript prose | `research-paper-writing` | argument per paragraph, honesty, the tell sweep |
+| Manuscript prose | `manuscript-writing` | argument per paragraph, honesty, the tell sweep |
 | Revision rounds, response letters, whole-paper coherence, cuts to a page budget | `manuscript-editor` | what goes where, smallest complete change, the cut list |
 | Figures | `manuscript-figures` | print-size figures, schematics, compliance check |
 | Every built PDF | `build-check` | overflow, floats, page cap, fonts, stale derived files |

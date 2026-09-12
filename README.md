@@ -7,7 +7,7 @@
 A curated, versioned collection that turns an AI agent into a rigorous research collaborator: literature review, experiment tracking, statistics, HPC, and getting published.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Skills](https://img.shields.io/badge/skills-16-6E56CF)](#-the-skills)
+[![Skills](https://img.shields.io/badge/skills-17-6E56CF)](#-the-skills)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 [![Format: Agent Skills](https://img.shields.io/badge/format-Agent%20Skills-D97757)](https://agentskills.io)
 [![GitHub stars](https://img.shields.io/github/stars/anayy09/claude-research-skills?style=social)](https://github.com/anayy09/claude-research-skills/stargazers)
@@ -40,22 +40,23 @@ This repository collects the skills I use for real research work. They share a b
 <!-- SKILLS:START -->
 | Skill | What it does | Version | Download |
 | :---- | :----------- | :-----: | :------: |
-| [`build-check`](./build-check) | Compile, render, and inspect the built PDF: overflow, floats, page cap, fonts, stale derived files. | `1.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/build-check.zip) |
-| [`data-engineering`](./data-engineering) | Build, review, and debug data pipelines, SQL, and schemas, whatever the stack. | `1.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/data-engineering.zip) |
-| [`evidence-synthesis`](./evidence-synthesis) | Formal evidence syntheses as research designs: protocol, PRISMA-S search, screening log, RoB, GRADE. | `2.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/evidence-synthesis.zip) |
-| [`experiment-ledger`](./experiment-ledger) | Reproducible ML experiment tracking: config-as-file, hashed manifests, honest baselines. | `1.0.2` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/experiment-ledger.zip) |
-| [`hpc-cluster`](./hpc-cluster) | Write, debug, and monitor cluster batch jobs, and serve models on compute nodes. | `2.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/hpc-cluster.zip) |
-| [`investigating-sources`](./investigating-sources) | Citation-honest research: verified sources, version of record, related-work tables, reference diets. | `1.2.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/investigating-sources.zip) |
-| [`journal-advisor`](./journal-advisor) | Match a manuscript to the right journal, with desk-reject risk, from five publisher catalogs. | `1.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/journal-advisor.zip) |
-| [`manuscript-editor`](./manuscript-editor) | Keeps manuscripts coherent through revision: right content in the right document, minimal changes, whole-paper consistency. | `1.1.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/manuscript-editor.zip) |
-| [`manuscript-figures`](./manuscript-figures) | Publication-grade figures: styled matplotlib, hand-authored SVG schematics, generative art. | `1.1.2` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/manuscript-figures.zip) |
-| [`ml-eval-statistics`](./ml-eval-statistics) | The right statistics for model evaluation: significance, CIs, calibration, selective prediction. | `1.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/ml-eval-statistics.zip) |
-| [`project-ledger`](./project-ledger) | Decision, progress, results, and gate ledgers for multi-session research projects, plus the session hand-off. | `1.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/project-ledger.zip) |
-| [`prose-naturalizer`](./prose-naturalizer) | Strip the tells of AI-generated writing from non-academic prose, based on Wikipedia's Signs of AI writing. | `3.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/prose-naturalizer.zip) |
-| [`research-ideation`](./research-ideation) | Turn existing research assets into ranked, publishable directions with a plan to submission. | `1.0.2` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/research-ideation.zip) |
-| [`research-paper-writing`](./research-paper-writing) | Scholarly prose that reads like a working researcher wrote it, with the tell sweep built in. | `3.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/research-paper-writing.zip) |
-| [`submission-formatter`](./submission-formatter) | Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word. | `1.1.3` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/submission-formatter.zip) |
-| [`submission-reviewer`](./submission-reviewer) | Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score. | `1.0.3` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/submission-reviewer.zip) |
+| [`build-check`](./build-check) | Compile, render, and inspect the built PDF: overflow, floats, page cap, fonts, stale derived files. | `1.1.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/build-check.zip) |
+| [`data-engineering`](./data-engineering) | Build, review, and debug data pipelines, SQL, and schemas, whatever the stack. | `1.0.2` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/data-engineering.zip) |
+| [`evidence-synthesis`](./evidence-synthesis) | Formal evidence syntheses as research designs: protocol, PRISMA-S search, screening log, RoB, GRADE. | `2.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/evidence-synthesis.zip) |
+| [`experiment-ledger`](./experiment-ledger) | Reproducible ML experiment tracking: config-as-file, hashed manifests, honest baselines. | `1.0.3` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/experiment-ledger.zip) |
+| [`hpc-cluster`](./hpc-cluster) | Write, debug, and monitor cluster batch jobs, and serve models on compute nodes. | `2.0.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/hpc-cluster.zip) |
+| [`investigating-sources`](./investigating-sources) | Citation-honest research: verified sources, version of record, related-work tables, reference diets. | `1.2.1` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/investigating-sources.zip) |
+| [`journal-advisor`](./journal-advisor) | Match a manuscript to the right journal, with desk-reject risk, from five publisher catalogs. | `1.0.2` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/journal-advisor.zip) |
+| [`manuscript-editor`](./manuscript-editor) | Keeps manuscripts coherent through revision: checklist, right content in the right document, minimal changes, cuts to a budget, the letter. | `1.2.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/manuscript-editor.zip) |
+| [`manuscript-figures`](./manuscript-figures) | Publication-grade figures: styled matplotlib, hand-authored SVG schematics, generative art. | `1.1.3` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/manuscript-figures.zip) |
+| [`manuscript-writing`](./manuscript-writing) | Scholarly prose that reads like a working researcher wrote it, with the tell sweep built in. | `4.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/manuscript-writing.zip) |
+| [`ml-eval-statistics`](./ml-eval-statistics) | The right statistics for model evaluation: significance, CIs, calibration, selective prediction. | `1.0.2` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/ml-eval-statistics.zip) |
+| [`project-ledger`](./project-ledger) | Decision, progress, results, and gate ledgers for multi-session research projects, plus the session hand-off. | `1.1.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/project-ledger.zip) |
+| [`prose-naturalizer`](./prose-naturalizer) | Strip the tells of AI-generated writing from non-academic prose, based on Wikipedia's Signs of AI writing. | `3.0.2` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/prose-naturalizer.zip) |
+| [`release-archive`](./release-archive) | Public reproducibility release: audit, curate, tag, Zenodo deposit with a DOI, write-back. | `1.0.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/release-archive.zip) |
+| [`research-ideation`](./research-ideation) | Turn existing research assets into ranked, publishable directions with a plan to submission. | `1.0.3` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/research-ideation.zip) |
+| [`submission-formatter`](./submission-formatter) | Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word. | `1.1.4` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/submission-formatter.zip) |
+| [`submission-reviewer`](./submission-reviewer) | Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score. | `1.1.0` | [`.zip`](https://github.com/anayy09/claude-research-skills/releases/latest/download/submission-reviewer.zip) |
 <!-- SKILLS:END -->
 
 Each skill has its own README with triggers, layout, and usage. Click a name above.
@@ -113,6 +114,7 @@ The API sandbox has **no network access and no runtime package installation**. T
 
 - **Skills do not sync between surfaces.** Installing into Claude Code does not make a skill available on claude.ai or the API. Set up each surface you actually use.
 - **Dependencies.** Most bundled scripts are standard library only. The few that aren't need `pyyaml`, `requests`, or `matplotlib`, and only if you run them. `submission-formatter` is the skill that wants the most external tooling (`pandoc` above all, plus `latexmk` to compile locally); `build-check` wants a TeX engine and poppler (or PyMuPDF); `manuscript-figures` wants `matplotlib` for its style module and an SVG converter for schematics, while its compliance checker stays standard library only. Each skill's README says what it needs.
+- **One folder for every runtime.** Claude Code reads `~/.claude/skills`; Codex and other Agent Skills clients read `~/.agents/skills`. A copy there goes stale the moment `main` moves. `python scripts/sync_runtimes.py --apply` replaces each copied skill folder under those roots with a junction or symlink to this repository and leaves third-party skills alone; `--check` reports what is stale.
 - **One citation checker.** `investigating-sources/scripts/check_citations.py` is the collection's citation checker. `evidence-synthesis` calls it through a shim, and its release zip ships a copy so it installs alone; in a full checkout the shim uses the sibling. Fixes go in one place.
 - **Building the archives yourself.** `python scripts/package_skills.py` writes the same zips to `dist/`, one per skill plus a combined bundle. CI runs it on every tag and attaches the output to the release.
 
@@ -131,7 +133,8 @@ Most of the time you don't invoke a skill by name. Describe the task, and the ag
 > *"Turn this plot into a publication-quality Figure 2 for Nature."* → `manuscript-figures`
 > *"Format this for IEEE Access and build the submission package."* → `submission-formatter`
 > *"Compile it, check the tables aren't out of bounds, and confirm it fits 16 pages."* → `build-check`
-> *"Make this related-work section sound less like AI wrote it."* → `research-paper-writing`
+> *"Publish the code, mint the Zenodo DOI, and put it in the availability statement."* → `release-archive`
+> *"Make this related-work section sound less like AI wrote it."* → `manuscript-writing`
 > *"Make this README sound less like AI wrote it."* → `prose-naturalizer`
 
 In Claude Code you can also call one directly as `/skill-name` when you want to force it. Each skill's README shows the exact triggers and worked examples.

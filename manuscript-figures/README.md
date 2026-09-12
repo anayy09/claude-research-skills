@@ -2,7 +2,7 @@
 
 > Publication-grade figures: styled matplotlib, hand-authored SVG schematics, generative art.
 
-[![Version](https://img.shields.io/badge/version-1.1.1-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.1.3-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -44,7 +44,7 @@ Hands off elsewhere: [`ml-eval-statistics`](../ml-eval-statistics) when the
 numbers behind a figure still have to be computed,
 [`experiment-ledger`](../experiment-ledger) when a caption has to name the run
 that produced them,
-[`research-paper-writing`](../research-paper-writing) for the paragraph that
+[`manuscript-writing`](../manuscript-writing) for the paragraph that
 cites the figure, and [`submission-formatter`](../submission-formatter) to place
 the finished files in the venue's template. This skill owns the artwork and the
 draft caption; everything around it belongs to those.
@@ -92,6 +92,7 @@ python manuscript-figures/scripts/check_figure.py fig3.tif --width 183 --min-dpi
 
 ## Changelog
 
+- **1.1.3**: The description names "plot", "chart", "make the figures publishable", and states precedence over general charting or dataviz skills for print figures; the loading-discipline section.
 - **1.1.2**: Hand off to `build-check` once a figure is placed: it renders
   the built page and reports a figure or label past the text block, which
   `check_figure.py` cannot see from the figure file alone.

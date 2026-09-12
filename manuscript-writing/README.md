@@ -1,8 +1,8 @@
-# research-paper-writing
+# manuscript-writing
 
 > Scholarly prose that reads like a working researcher wrote it, with the tell sweep built in.
 
-[![Version](https://img.shields.io/badge/version-3.0.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.0.0-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -52,7 +52,7 @@ missing.
 ## What's inside
 
 ```
-research-paper-writing/
+manuscript-writing/
 ├── SKILL.md                 the drafting and editing playbook, ending in the tell sweep
 └── scripts/
     └── prose_lint.py        per-section counts: dashes, stock words, contrasts, triads, openers,
@@ -62,11 +62,11 @@ research-paper-writing/
 ## Scripts
 
 ```bash
-python research-paper-writing/scripts/prose_lint.py paper.md --report lint.md
-python research-paper-writing/scripts/prose_lint.py sections/*.md
-python research-paper-writing/scripts/prose_lint.py main.tex --strict        # exit 1 on a dash, residue, or narration
-python research-paper-writing/scripts/prose_lint.py paper.md --allow-dashes  # the author's own style uses them
-python research-paper-writing/scripts/prose_lint.py --self-test
+python manuscript-writing/scripts/prose_lint.py paper.md --report lint.md
+python manuscript-writing/scripts/prose_lint.py sections/*.md
+python manuscript-writing/scripts/prose_lint.py main.tex --strict        # exit 1 on a dash, residue, or narration
+python manuscript-writing/scripts/prose_lint.py paper.md --allow-dashes  # the author's own style uses them
+python manuscript-writing/scripts/prose_lint.py --self-test
 ```
 
 Standard library only. Reads `.md`, `.tex`, and `.txt`; strips code, math,
@@ -75,6 +75,7 @@ a table or a `\cite{a--b}` key is not a dash.
 
 ## Changelog
 
+- **4.0.0**: Renamed from `research-paper-writing` to `manuscript-writing`, matching `manuscript-editor` and `manuscript-figures` (breaking: the folder and name changed; `/research-paper-writing` no longer resolves). No pattern changed. Adds the loading-discipline section.
 - **3.0.0**: Absorbs the manuscript subset of `prose-naturalizer` (behavior
   change: the skill now ends with a tell sweep and treats em and en dashes,
   revision narration, and chatbot residue as hard rules). Adds the identity

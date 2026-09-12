@@ -16,7 +16,7 @@ description: >-
   manuscript-editor, or manuscript-figures pass that ends in a build. Never
   report a build as clean without this report and a look at the flagged pages.
 summary: "Compile, render, and inspect the built PDF: overflow, floats, page cap, fonts, stale derived files."
-version: "1.0.0"
+version: "1.1.0"
 author: anayy09
 license: MIT
 metadata:
@@ -48,7 +48,7 @@ This skill builds and inspects. It does not:
 - Draw or restyle figures. `manuscript-figures`. This skill reports a figure
   whose text crosses the frame or whose box crosses the margin; the fix is
   made there.
-- Write prose. `research-paper-writing`.
+- Write prose. `manuscript-writing`.
 
 ## The workflow
 
@@ -84,7 +84,15 @@ Each check is one of:
 | overflow | every text line, image, and drawing against the text block edges the document establishes, and against the page edge | content more than three times `--margin-pt` (default 3) past an edge; smaller overhangs WARN |
 | floats | each figure, table, and algorithm: the page it landed on, whether that is inside the references, and whether it is inside the section that first cites it | a float in the references |
 | fonts | embedding | any font not embedded (Type 3 fonts WARN) |
+| identity | every email and ORCID in the front matter and on page 1 against `AUTHORS.yaml` (`--authors`, or found next to the target or up to two directories above); every listed author present | an email or ORCID that is not in the file; WARN when no file exists |
+| placeholders | the PDF text for `[AUTHOR INPUT ...]`, `TODO`, `TBD`, `[DOI PENDING]`, `zenodo.XXXXXXX`, and the `??` of an unresolved reference | any hit |
 | derived | `--derived OUT:SRC` pairs by modification time | the source is newer than the output |
+
+The identity check exists because an author block once reached a compiled
+PDF and a submission form with a surname, an institution, and an email all
+derived from the session's login identity. `AUTHORS.yaml` (template in
+`project-ledger/templates`) is the only source; a front matter that
+disagrees with it is a stop-ship defect, not a typo.
 
 `references/log-triage.md` explains each log message and its usual fix.
 `references/float-placement.md` covers why a float lands in the references,
@@ -142,3 +150,12 @@ Standard-library Python. Uses whichever of these exist: `latexmk` or
 importable. On Windows the poppler tools next to MiKTeX or TeX Live are found
 automatically when the copy on PATH is an older xpdf build. Every check that
 cannot run is reported as SKIP with the reason; nothing passes silently.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

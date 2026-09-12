@@ -2,7 +2,7 @@
 
 > Compile, render, and inspect the built PDF: overflow, floats, page cap, fonts, stale derived files.
 
-[![Version](https://img.shields.io/badge/version-1.0.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.1.0-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -21,6 +21,11 @@ seen. It gives the agent:
   fonts are embedded, compares derived PDFs (response letter, marked-up
   copy, supplement) with their sources by modification time, and renders
   every page to a thumbnail grid in `BUILD_REPORT.md`.
+- **An identity and placeholder gate.** Every email and ORCID in the front
+  matter is checked against `AUTHORS.yaml`, every listed author must appear,
+  and the PDF text is searched for `[AUTHOR INPUT]`, `TODO`, `TBD`, DOI
+  placeholders, and the `??` of an unresolved reference. A fabricated author
+  block cannot reach a submission form again.
 - **A hard rule.** A build is finished when the report exists and the
   flagged pages have been looked at. "Compiles clean", "zero undefined
   references", and "exit 0" are inputs to the result, never the result.
@@ -95,6 +100,12 @@ reported as SKIP with its reason.
 
 ## Changelog
 
+- **1.1.0**: Identity and placeholder checks. `--authors AUTHORS.yaml`
+  (found automatically next to the target or up to two directories above):
+  an email or ORCID in the front matter that is not in the file fails the
+  build, a listed author missing from page 1 warns. The PDF text is searched
+  for author-input markers, TODO, TBD, DOI placeholders, and unresolved `??`
+  references.
 - **1.0.0**: Initial release.
 
 ---

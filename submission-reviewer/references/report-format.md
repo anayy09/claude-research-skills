@@ -46,12 +46,28 @@ and not a promise.
 ## Outlook and next step
 One line on publication or filing outlook by band. One line handing off: venue
 selection to journal-advisor, statistical work to ml-eval-statistics, drafting
-to research-paper-writing, filing questions to a patent attorney.
+to manuscript-writing, filing questions to a patent attorney.
 
 ## Data notes
 One or two lines: what could not be assessed, whether prior art was searched and
 where, and for patents the legal disclaimer.
+
+## Fix list
+Every priority and secondary fix once more as one table row, in the shape
+manuscript-editor's checklist consumes. Nothing new here; the prose above
+stays the readable version.
+
+| id | severity | location | problem | fix | evidence | effort |
+|---|---|---|---|---|---|---|
+| F1 | blocking | Table 2 | one untuned baseline | run the same sweep on the baseline | both curves | a week |
+| F2 | major | Section 4.3 | ... | ... | ... | ... |
 ```
+
+The fix list is the hand-off contract with `manuscript-editor`:
+`make_checklist.py --from-review report.md` reads the rows under the
+`## Fix list` heading, so the ids must be `F` plus a number, severities one of
+`blocking`, `major`, `minor`, and every row seven cells. Keep it last in the
+report so the prose is what a person reads first.
 
 ## Fix-item format
 

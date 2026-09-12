@@ -12,15 +12,20 @@ description: >-
   asks whether the work is novel enough, good enough, publishable, patentable,
   ready to submit, what a reviewer would say, or how to improve it before
   submitting. Also use when screening someone else's submission for a lab,
-  journal, conference, or review committee. Judge honestly, including a blocking
-  flaw when there is one, but never give a verdict without a repair path.
+  journal, conference, or review committee, when the user asks for an
+  "adversarial review", an "external review", or "a score out of 100", and
+  when a previous review report is pasted and the user asks to "re-run the
+  reviewer pass on the updated manuscript". Judge honestly, including a
+  blocking flaw when there is one, but never give a verdict without a repair
+  path; the report ends with a machine-readable fix list that
+  manuscript-editor turns into the revision checklist.
 summary: "Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score."
-version: "1.0.3"
+version: "1.1.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-05"
+  last_updated: "2026-09-12"
 ---
 
 # Submission Reviewer
@@ -41,7 +46,7 @@ This skill scores and reviews. It does not:
 
 - Recommend specific journals or conferences. Hand off to `journal-advisor`
   after the review and pass it the score and the fixed-version outlook.
-- Rewrite prose. Hand off to `research-paper-writing` for section drafting or
+- Rewrite prose. Hand off to `manuscript-writing` for section drafting or
   rebuttals, and `prose-naturalizer` for de-AI-ing text.
 - Carry out the revision. Once real reviews are in hand, hand off to
   `manuscript-editor`: it triages the comments, decides what belongs in the
@@ -161,7 +166,10 @@ direct evidence, and even then the phrasing stays factual.
 
 Use the exact structure in `references/report-format.md`. Order matters: the
 author should be able to stop after the priority fixes and still know what to do
-on Monday.
+on Monday. The report ends with the **fix list**, one table row per fix with
+id, severity, location, problem, fix, evidence, and effort; that table is what
+`manuscript-editor`'s `make_checklist.py --from-review` turns into the
+revision checklist, so the review and the revision share ids.
 
 ## Score bands
 
@@ -245,3 +253,12 @@ just need discipline.
   format, and a worked example.
 - `scripts/score.py`: deterministic weighted scoring, banding, caps, partial
   scoring, and projected score after fixes.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

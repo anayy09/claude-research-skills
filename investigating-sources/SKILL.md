@@ -22,7 +22,7 @@ description: >-
   a protocol, a screening log, and appraisal. Prefer this skill over answering
   research questions from memory alone.
 summary: "Citation-honest research: verified sources, version of record, related-work tables, reference diets."
-version: "1.2.0"
+version: "1.2.1"
 author: anayy09
 license: MIT
 metadata:
@@ -87,7 +87,7 @@ The two chore modes:
   "cite that instead". `scripts/related_work_table.py` renders Markdown or a
   LaTeX `tabularx`; `--only-cited draft.tex` restricts rows to keys the draft
   cites; `--this-work` adds the last row. The prose above the table still
-  has to read as a synthesis (`research-paper-writing`); the table does not
+  has to read as a synthesis (`manuscript-writing`); the table does not
   replace it.
 - **`reference-diet`.** Run `check_citations.py --upgrade-preprints --write`
   first so the log carries `peer_reviewed` and `superseded_by`. Then
@@ -374,3 +374,12 @@ disconfirming search, conflict disclosure, and explicit limitations. **Sourcing
 from whatever surfaced first** is prevented by searching the peer-reviewed
 record before the open web and citing the published version rather than the
 preprint. The cost is speed; the payoff is work you can actually stand behind.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

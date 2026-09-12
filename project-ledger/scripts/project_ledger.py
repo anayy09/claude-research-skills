@@ -68,7 +68,7 @@ HERE = Path(__file__).resolve().parent
 TEMPLATES = HERE.parent / "templates"
 
 DOCS = ["PLAN.md", "DECISIONS.md", "PROGRESS.md", "RESULTS-LOG.md", "PREREGISTRATION.md",
-        "GATES.md", "RUNBOOK.md", "AGENT.md", "SKILL-ROUTING.md"]
+        "GATES.md", "RUNBOOK.md", "AGENT.md", "SKILL-ROUTING.md", "AUTHORS.yaml"]
 
 D_HEAD = re.compile(r"^## D-(\d{3,4})\.\s*(.*)$", re.M)
 P_HEAD = re.compile(r"^### (\d{4}) \| ([^|]+) \| ([A-Z-]+) \| ([^|]+) \| ([^|\n]+)$", re.M)

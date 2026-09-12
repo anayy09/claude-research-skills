@@ -7,10 +7,10 @@ description: |
   language, stock AI words, bold labels, or filler. Based on Wikipedia's "Signs of AI writing."
   For blog posts, essays, documentation, README files, emails, and other non-academic
   prose. Do not load it for a research manuscript, thesis, or response letter:
-  research-paper-writing carries the manuscript subset of these patterns and its own
+  manuscript-writing carries the manuscript subset of these patterns and its own
   lint, and loading both produces conflicting instructions.
 summary: "Strip the tells of AI-generated writing from non-academic prose, based on Wikipedia's Signs of AI writing."
-version: "3.0.1"
+version: "3.0.2"
 author: anayy09
 license: MIT
 metadata:
@@ -381,3 +381,12 @@ Keep the details that carry the writer's voice unless they hurt the meaning:
 ## Source
 
 The patterns come from Wikipedia's ["Signs of AI writing"](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing), maintained by WikiProject AI Cleanup, and from reviews of AI-generated text on Wikipedia and elsewhere.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

@@ -27,3 +27,13 @@ Format:
 - [ ] P0G2: the ledger verifies clean
   CHECK: python scripts/project_ledger.py verify --git
   EXPECT: 0 failure(s)
+
+- [ ] P0G3: AUTHORS.yaml is filled and every author has a name and an email
+  CHECK: python -c "import yaml,sys; a=yaml.safe_load(open('docs/AUTHORS.yaml'))['authors']; assert a and all(x.get('name') and x.get('email') for x in a); print('AUTHORS OK')"
+  EXPECT: AUTHORS OK
+
+## Submission
+
+- [ ] SG1: the built manuscript has no placeholder and its front matter matches AUTHORS.yaml
+  CHECK: python <skill>/build-check/scripts/build_check.py submission/main.tex --no-build --authors docs/AUTHORS.yaml --strict
+  EXPECT: PASS

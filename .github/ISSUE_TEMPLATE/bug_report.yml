@@ -16,11 +16,12 @@ body:
         - journal-advisor
         - manuscript-editor
         - manuscript-figures
+        - manuscript-writing
         - ml-eval-statistics
         - project-ledger
         - prose-naturalizer
+        - release-archive
         - research-ideation
-        - research-paper-writing
         - submission-formatter
         - submission-reviewer
         - (repo tooling / not a specific skill)

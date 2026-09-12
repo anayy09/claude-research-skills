@@ -146,7 +146,7 @@ and report it. Do not cut.
 - List candidate reduction sites with their sizes: a specific subsection, a
   table that duplicates a figure, a related-work paragraph, an appendix that
   could move to supplementary material. Sizes let the author choose.
-- Decide nothing. Hand off to `research-paper-writing` if the author wants the
+- Decide nothing. Hand off to `manuscript-writing` if the author wants the
   cutting done.
 
 ## FORMAT_REPORT.md template

@@ -2,7 +2,7 @@
 
 > Formal evidence syntheses as research designs: protocol, PRISMA-S search, screening log, RoB, GRADE.
 
-[![Version](https://img.shields.io/badge/version-2.0.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.0.1-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -92,6 +92,7 @@ source log so `audit_report.py` can cross-check the finished manuscript.
 
 ## Changelog
 
+- **2.0.1**: The loading-discipline section.
 - **2.0.0**: Rescoped to the formal review design and put on the collection's
   one citation checker (behavior change). The description now says what this
   skill is not for: a related-work section, a literature sweep, a cited brief

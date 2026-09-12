@@ -1,0 +1,25 @@
+# AUTHORS.yaml
+#
+# The only source of author identity for this project. Every front matter,
+# declaration, CITATION.cff, Zenodo creator list, and response-letter
+# signature is generated from or checked against this file. Nothing here is
+# ever inferred from session context, a login email, a memory, or a previous
+# paper. A value the owner has not supplied stays empty and reaches the
+# manuscript as [AUTHOR INPUT: ...].
+#
+# build_check.py fails a build whose front matter carries an email or ORCID
+# that is not listed here, and warns when a listed author is missing.
+
+project: "{{PROJECT}}"
+corresponding: 1          # 1-based index into the list below
+
+authors:
+  - name: ""              # exactly as it should print, e.g. "Anay Sinhal"
+    email: ""
+    affiliation: ""       # one line; add affiliation2 for a second
+    orcid: ""             # 0000-0000-0000-0000, or empty
+    contribution: ""      # CRediT roles, e.g. "Conceptualization, Software, Writing – original draft"
+
+funding: ""               # "No external funding was received." when true
+competing_interests: ""   # "The authors declare no competing interests." when true
+ethics: ""                # approval statement or "Not applicable"

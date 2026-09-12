@@ -13,14 +13,17 @@ description: >-
   reviewing a results table, when a reviewer has raised a statistics objection,
   and whenever an accuracy number is about to be reported without an interval.
   Distinct from meta-analysis of published literature: this is for statistics on
-  experiments the user ran.
+  experiments the user ran. Use the bundled eval_stats.py for every interval,
+  paired test, and minimum detectable effect rather than writing bootstrap
+  code by hand; a hand-written estimator once measured tie-break variance
+  instead of sampling variance for a week before anyone noticed.
 summary: "The right statistics for model evaluation: significance, CIs, calibration, selective prediction."
-version: "1.0.1"
+version: "1.0.2"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-08-30"
+  last_updated: "2026-09-12"
 ---
 
 # ML Evaluation Statistics
@@ -166,3 +169,12 @@ figure's default styling decide how many bins a calibration plot has.
   analysis, and the workload framing clinical reviewers expect.
 - `references/reporting-template.md` — methods and results sentence templates,
   table footnotes, figure captions.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

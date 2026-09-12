@@ -8,15 +8,19 @@ description: >-
   lakehouse work. Triggers include "build a pipeline", "write/optimize this SQL",
   "design a schema", "load this data", "clean this dataset", "why is this query
   slow", "set up ingestion", or any request whose deliverable is moving,
-  reshaping, validating, or storing tabular data. Stack-agnostic; adapts to
-  whatever engine and language the project already uses.
+  reshaping, validating, or storing tabular data. In a research repository
+  that is the cohort builder, the feature pipeline, the schema contract on a
+  parquet, and the leakage guard: "build the cohort", "derive the features",
+  "check for leakage", "verify the split is patient-disjoint"; use it there
+  even when nobody says pipeline. Stack-agnostic; adapts to whatever engine
+  and language the project already uses.
 summary: "Build, review, and debug data pipelines, SQL, and schemas, whatever the stack."
-version: "1.0.1"
+version: "1.0.2"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-07-25"
+  last_updated: "2026-09-12"
 ---
 
 # Data Engineering
@@ -228,3 +232,12 @@ Load these as needed rather than reproducing their contents from memory.
   late/out-of-order handling, and SCD Type 2.
 - `references/references.md` - the pre-flight checklist to run before declaring
   a pipeline done, plus canonical documentation sources.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

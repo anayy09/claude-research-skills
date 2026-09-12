@@ -14,7 +14,7 @@ description: >-
   whichever runs happen to exist. Prefer this over ad hoc directories and
   spreadsheet tracking.
 summary: "Reproducible ML experiment tracking: config-as-file, hashed manifests, honest baselines."
-version: "1.0.2"
+version: "1.0.3"
 author: anayy09
 license: MIT
 metadata:
@@ -199,3 +199,12 @@ each metric it produced with its interval and the run id.
   release, and the reproducibility statement.
 - `assets/config_template.yaml` — starting config with the fields the manifest
   expects.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

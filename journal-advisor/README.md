@@ -2,7 +2,7 @@
 
 > Match a manuscript to the right journal, with desk-reject risk, from five publisher catalogs.
 
-[![Version](https://img.shields.io/badge/version-1.0.1-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.2-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -61,6 +61,7 @@ python journal-advisor/scripts/find_journals.py --help   # rank venues for a pap
 
 ## Changelog
 
+- **1.0.2**: The description says what the bundled lists are (publisher exports that may be an institution's read-and-publish eligibility lists), that fee coverage depends on the institution, and that the skill is loaded once per session; the loading-discipline section.
 - **1.0.1**: Point to `submission-formatter` for the venue template step.
 - **1.0.0**: Initial release.
 

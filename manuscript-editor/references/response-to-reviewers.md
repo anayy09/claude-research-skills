@@ -5,7 +5,7 @@ editor, who decides in minutes whether the revision is complete, and the
 reviewers, who check whether their specific point was handled. Its function
 is traceability: every comment, one answer, one location in the manuscript.
 Register (concede without groveling, push back with evidence) is covered in
-`research-paper-writing`; this file covers structure and content.
+`manuscript-writing`; this file covers structure and content.
 
 Contents
 

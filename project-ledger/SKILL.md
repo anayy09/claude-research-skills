@@ -16,7 +16,7 @@ description: >-
   files; and at the end of every session, to write the hand-off. Composes
   with experiment-ledger, which owns runs and manifests.
 summary: "Decision, progress, results, and gate ledgers for multi-session research projects, plus the session hand-off."
-version: "1.0.0"
+version: "1.1.0"
 author: anayy09
 license: MIT
 metadata:
@@ -49,7 +49,7 @@ runbook, roles, and the session bootstrap and hand-off. It does not:
 - Write cluster job scripts. `hpc-cluster`. This skill covers local
   long-running jobs: stop files, progress files, resume commands, and when
   to hand a command to the owner instead of running it.
-- Write the paper. `research-paper-writing` and `manuscript-editor`, which
+- Write the paper. `manuscript-writing` and `manuscript-editor`, which
   also strips this skill's vocabulary (decision ids, gate names, run ids)
   out of the manuscript.
 
@@ -66,6 +66,7 @@ runbook, roles, and the session bootstrap and hand-off. It does not:
 | `RUNBOOK.md` | state, environment, launch, pause, resume, and check commands for long work; a do-not-run list | by hand, at every hand-off |
 | `AGENT.md` | roles with inputs, outputs, done criteria, and the ten operating rules | by hand |
 | `SKILL-ROUTING.md` | which skill governs which step and file | by hand |
+| `AUTHORS.yaml` | every author's name, email, affiliation, ORCID, CRediT role; funding, competing interests, ethics text | by the owner only; `build-check` fails a front matter that disagrees with it |
 
 Templates for all of them are in `templates/`; `project_ledger.py init`
 scaffolds them without overwriting anything that exists.
@@ -180,3 +181,12 @@ brief must never do (redefine a rule, restate a number without its entry).
 | `references/long-runs.md` | anything that runs longer than a turn: stop files, progress files, memory limits, handing commands to the owner, PowerShell on Windows |
 | `references/session-bootstrap.md` | the first ten minutes of a session; reconciling record and tree |
 | `references/session-handoff.md` | the last ten minutes; what the generated brief cannot know |
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

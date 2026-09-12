@@ -2,7 +2,7 @@
 
 > Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score.
 
-[![Version](https://img.shields.io/badge/version-1.0.3-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.1.0-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -48,7 +48,7 @@ rather than being buried in the minor comments.
 - Screening someone else's submission for a lab, journal, or review committee
 
 Hands off afterwards: [`journal-advisor`](../journal-advisor) for venue choice,
-[`research-paper-writing`](../research-paper-writing) for drafting and rebuttals,
+[`manuscript-writing`](../manuscript-writing) for drafting and rebuttals,
 [`prose-naturalizer`](../prose-naturalizer) for de-AI-ing text,
 [`ml-eval-statistics`](../ml-eval-statistics) when a fix needs a significance
 test or a confidence interval,
@@ -117,6 +117,7 @@ an 85.
 
 ## Changelog
 
+- **1.1.0**: The report ends with a machine-readable fix list (id, severity, location, problem, fix, evidence, effort) that `manuscript-editor`'s `make_checklist.py --from-review` turns into the revision checklist, so the review and the revision share ids. The description names "external review", "adversarial review", "score out of 100", and re-running a pass on an updated manuscript.
 - **1.0.3**: Hand off to `manuscript-editor` once real reviews are in hand; this
   skill scores a paper, it does not run the revision round.
 - **1.0.2**: Hand off to `manuscript-figures` when a figure is what needs fixing.

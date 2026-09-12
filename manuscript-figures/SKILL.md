@@ -15,9 +15,13 @@ description: >-
   conference; wants a graphical abstract, architecture diagram, or pipeline
   figure; or asks why a figure was rejected. Also use when converting
   exploratory plots into final manuscript figures and when reviewing figures
-  before submission.
+  before submission, and for "plot", "chart", "matplotlib figure for the
+  paper", "make the figures publishable", or "the figures are too bad to look
+  at". For print figures this skill takes precedence over any general
+  charting or dataviz skill, whose palettes and interaction rules are for
+  screens.
 summary: "Publication-grade figures: styled matplotlib, hand-authored SVG schematics, generative art."
-version: "1.1.2"
+version: "1.1.3"
 author: anayy09
 license: MIT
 metadata:
@@ -50,7 +54,7 @@ This skill makes the artwork. It does not:
   the caption has to name a config or a manifest hash, so the figure traces
   back to something reproducible.
 - Write the prose. Captions get a draft here, but the paragraph that cites the
-  figure belongs to `research-paper-writing`.
+  figure belongs to `manuscript-writing`.
 - Place figures in a venue's template or convert the manuscript around them.
   Hand off to `submission-formatter`; this skill supplies the files it embeds.
 
@@ -202,3 +206,12 @@ file, map the failures to the venue's requirements in
   PDF/EPS/SVG/PNG/TIFF outputs.
 - `assets/manuscript.mplstyle` — the same style as a matplotlib style sheet,
   for users who prefer `plt.style.use()`.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

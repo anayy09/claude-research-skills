@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite both the paper and the archive below."
+type: software
+title: "[Repository name]"
+version: "v1.0.0"
+date-released: "YYYY-MM-DD"
+license: MIT
+repository-code: "https://github.com/ORG/REPO"
+doi: 10.5281/zenodo.NNNNNNN
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.NNNNNNN
+    description: "Concept DOI; resolves to the newest version"
+authors:
+  # from AUTHORS.yaml, same order as the paper
+  - family-names: "[Family]"
+    given-names: "[Given]"
+    affiliation: "[Affiliation]"
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+preferred-citation:
+  type: article
+  title: "[Paper title]"
+  authors:
+    - family-names: "[Family]"
+      given-names: "[Given]"
+  journal: "[Venue]"
+  year: 2026
+  doi: "[paper DOI]"

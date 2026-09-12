@@ -5,17 +5,22 @@ description: >-
   of reputable Q1 journals: what belongs in the manuscript versus the response
   to reviewers versus internal notes, how to make the smallest complete
   change, and how to keep a paper coherent across many revision rounds
-  instead of letting it decay into patches. Use whenever the user is revising
-  a paper after peer review, addressing reviewer or editor comments,
-  integrating a batch of edits, drafting a response-to-reviewers letter,
-  preparing a resubmission or camera-ready, asking whether something belongs
-  in the paper, saying the manuscript reads like patches, repeats itself, or
-  has grown too long, or wanting a whole-manuscript consistency, redundancy,
+  instead of letting it decay into patches. Use whenever the user pastes or
+  points at reviewer, editor, or external-review comments (a decision letter,
+  "Reviewer 2 says", an "External Review" report with a score), asks for a
+  consolidated reviewer checklist before revising, is integrating a batch of
+  edits, drafting or building the response-to-reviewers letter (including
+  "format the response letter as a PDF"), preparing a resubmission or
+  camera-ready, working a manuscript that lives in Word, asking whether
+  something belongs in the paper, saying the manuscript reads like patches,
+  repeats itself, or "is horrendously long", asking to "cut it to N pages" or
+  "cut 3,000 words", or wanting a whole-manuscript consistency, redundancy,
   or structure check. Also use when drafting a full manuscript so structure
   and section content match the target venue and article type. Pairs with
-  research-paper-writing, which owns sentence and paragraph quality.
-summary: "Keeps manuscripts coherent through revision: right content in the right document, minimal changes, whole-paper consistency."
-version: "1.1.1"
+  manuscript-writing, which owns sentence and paragraph quality, and with
+  build-check, which measures the page count the cuts are aimed at.
+summary: "Keeps manuscripts coherent through revision: checklist, right content in the right document, minimal changes, cuts to a budget, the letter."
+version: "1.2.0"
 author: anayy09
 license: MIT
 metadata:
@@ -47,7 +52,7 @@ editing process, the authors' own conduct, and the reader's presumed
 suspicions as belonging somewhere else. The check is a paragraph-by-paragraph
 editorial read (`references/editorial-read.md`); the audit script is an
 instrument that points the read at likely trouble, not a substitute for it.
-This skill does not replace `research-paper-writing`; that skill makes each
+This skill does not replace `manuscript-writing`; that skill makes each
 paragraph argue well. This one decides what goes where, how much to say, how
 often, and whether the whole still holds together afterwards.
 
@@ -57,7 +62,7 @@ This skill owns placement, scope of change, coherence, and the boundary
 between manuscript and revision commentary. It does not:
 
 - Rewrite prose for argument, tone, or AI-sounding register. That is
-  `research-paper-writing`; read it alongside this skill for any change that
+  `manuscript-writing`; read it alongside this skill for any change that
   produces new sentences.
 - Score or review the science. `submission-reviewer`.
 - Typeset into a venue template or verify format compliance.
@@ -135,13 +140,42 @@ Identify which one applies before starting; each has a different entry point.
   author has seen the list. Then steps 6 and 7.
 - **Initial drafting.** Writing a manuscript or a section from results and
   notes. Read `references/journal-conventions.md` for the venue, build the
-  section plan, then write with `research-paper-writing`. Start the ledger on
+  section plan, then write with `manuscript-writing`. Start the ledger on
   day one so terminology and standing decisions are recorded before the
   first review.
 - **Response letter only.** The manuscript is already revised and the user
   wants the response document. Use `references/response-to-reviewers.md` and
   the ledger; do not touch the manuscript except to fix mismatches between
-  what the letter claims and what the paper says.
+  what the letter claims and what the paper says. Build it with
+  `scripts/build_letter.py`, which checks every cited section, table, and
+  figure number against the manuscript's `.aux`, every quoted passage
+  against the manuscript text, and refuses to build while a placeholder
+  remains.
+- **Revision checklist.** The first deliverable of a review round, and the
+  only point at which the round stops for approval. `scripts/make_checklist.py`
+  splits each reviewer and editor file into atomic comments with stable ids
+  (R1.1, E.2), takes the fix list from a `submission-reviewer` report as
+  further items (F1, F2), and carries statuses forward from the previous
+  round's checklist. Fill the columns it leaves as `(fill)`: the affected
+  section, figure, table, experiment, or supplement; the change type; the
+  evidence, citation, analysis, or experiment the item needs; dependencies
+  and open questions; a projected time with its basis in earlier rounds.
+  Present it, wait for the ruling on every "needs author input" and
+  "declined" item, then run the workflow below without stopping again.
+- **Budget.** A page cap or word guidance to meet ("IEEE must fit 16 pages",
+  "cut 3,000 words from sections 2 and 5"). Measure with `build-check`,
+  rank the cuts by `references/cutting-to-a-budget.md` (supplement moves,
+  reference diet, surplus summaries, the six families, duplicated
+  justifications, limitations that re-explain methods, captions that repeat
+  the body), apply one class at a time, re-measure after each, and stop at
+  the cap. A cut that removes evidence is the owner's decision, listed with
+  its cost, never made by rule.
+- **Word manuscript.** The manuscript is a `.docx`. Same discipline;
+  `references/docx-revision.md` says what can be scripted (audit, markers,
+  extraction, the letter) and what cannot (tracked changes, which come from
+  Word's Compare of the submitted and revised files). `scripts/docx_markers.py`
+  lists, adds, and clears the red `[AUTHOR ACTION]` markers and extracts the
+  text for the audit.
 
 ## Workflow for a revision round
 
@@ -224,7 +258,7 @@ Write the new text as if it had always been there. Concretely:
   because a reviewer was enthusiastic or hedge it into vagueness because one
   was hostile. If the evidence changed, the claim changes to match.
 
-Apply `research-paper-writing` to the sentences themselves.
+Apply `manuscript-writing` to the sentences themselves.
 
 ### 5. Record every decision in the ledger
 
@@ -470,6 +504,30 @@ section-by-section content rules and how to derive conventions for an
 unfamiliar venue from its recent published articles. Consult it in initial
 drafting mode and whenever a revision changes structure.
 
+## Identity and front matter
+
+Author names, affiliations, emails, ORCIDs, CRediT roles, funding, ethics,
+and competing-interest text come only from the owner or the project's
+`AUTHORS.yaml`, never from session context, a login identity, a memory, or
+another paper. A value that was not supplied is `[AUTHOR INPUT: ...]`.
+`build-check` fails a build whose front matter carries an email or ORCID
+that is not in `AUTHORS.yaml`; run it before any package is called ready.
+
+## Scripts
+
+```bash
+python scripts/audit_manuscript.py paper.md --report audit_before.md          # the instrument for the editorial read
+python scripts/make_checklist.py reviews/Reviewer1.txt reviews/Editor.txt \
+    --from-review reviews/external-review-02.md --out docs/REVISION_CHECKLIST.md
+python scripts/build_letter.py letter/response.md --out letter/response.pdf \
+    --aux paper/main.aux --manuscript paper/main.tex                          # checks, then builds
+python scripts/docx_markers.py list working/manuscript.docx                    # exit 1 while author-action markers remain
+```
+
+All four are standard library; `docx_markers.py` needs python-docx and
+`build_letter.py` needs pandoc and a TeX engine to build (its checks run
+without them).
+
 ## Before returning
 
 Confirm, without narrating the check to the user:
@@ -495,3 +553,12 @@ Confirm, without narrating the check to the user:
 
 Then hand over the package. Do not describe the workflow in the reply; the
 change summary is the account of what was done.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

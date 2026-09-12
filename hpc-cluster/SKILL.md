@@ -13,14 +13,17 @@ description: >-
   evaluation. Also use for "run this on the cluster", "how many GPU hours will
   this take", "my job is pending forever", or any request whose deliverable is a
   job script or a cluster diagnosis. Trigger even when the user only pastes an
-  error from a scheduler or a job log.
+  error from a scheduler or a job log. A long job on a local machine rather
+  than a cluster (stop and resume, progress polling, memory limits, handing
+  the command to the owner) is project-ledger's runbook discipline; this
+  skill is for schedulers.
 summary: "Write, debug, and monitor cluster batch jobs, and serve models on compute nodes."
-version: "2.0.0"
+version: "2.0.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-08-02"
+  last_updated: "2026-09-12"
 ---
 
 # HPC Cluster
@@ -273,3 +276,12 @@ in `references/storage-and-scratch.md`.
 - `references/troubleshooting.md`: symptom to cause to fix table.
 - `references/scheduler-portability.md`: SLURM to PBS/Torque, LSF, and SGE:
   directives, commands, environment variables, arrays, and dependencies.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

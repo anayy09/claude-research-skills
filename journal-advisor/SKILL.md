@@ -13,15 +13,20 @@ description: >-
   asks where to submit a paper, which journal fits a manuscript, whether a target
   venue is a good match, how to shortlist venues, what the desk-reject risk is,
   or asks to compare candidate journals. Also use when a manuscript or abstract
-  is supplied with a question about placement. Never recommend a journal outside
-  the bundled lists.
+  is supplied with a question about placement, and when the question is
+  "which journal", "APC", "read-and-publish", or "is the fee covered". Never
+  recommend a journal outside the bundled lists, and say what the lists are:
+  five publisher exports, which may be an institution's read-and-publish
+  eligibility lists rather than full catalogs, so a journal absent from them
+  is not thereby a poor fit, and fee coverage depends on the author's
+  institution. Load once per session; a second call re-injects nothing new.
 summary: "Match a manuscript to the right journal, with desk-reject risk, from five publisher catalogs."
-version: "1.0.1"
+version: "1.0.2"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-08-04"
+  last_updated: "2026-09-12"
 ---
 
 # Journal Advisor
@@ -178,3 +183,12 @@ saying so is enough.
   submission.
 - `references/report-format.md` — the required output structure with a worked
   example.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

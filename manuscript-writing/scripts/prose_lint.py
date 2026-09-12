@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 prose_lint.py - Count the mechanical tells of machine-written prose in a
-manuscript, per section, so the tell sweep in research-paper-writing has
+manuscript, per section, so the tell sweep in manuscript-writing has
 numbers instead of impressions.
 
 It reads .md, .tex, and .txt, strips code, math, tables, citations, and

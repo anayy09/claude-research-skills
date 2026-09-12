@@ -4,7 +4,7 @@
 
 <sub>Formerly `humanizer`.</sub>
 
-[![Version](https://img.shields.io/badge/version-3.0.1-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.0.2-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -26,7 +26,7 @@ rule for when not to act.
 - "Humanize this paragraph" / "remove the AI tells"
 - Reviewing or editing documentation, essays, or announcements for naturalness
 
-**Not for manuscripts.** [`research-paper-writing`](../research-paper-writing)
+**Not for manuscripts.** [`manuscript-writing`](../manuscript-writing)
 carries the manuscript subset of these patterns as its tell sweep, with a
 lint script, and the two skills give conflicting instructions on voice and
 on what to return. Load one or the other.
@@ -42,9 +42,10 @@ The skill declares `compatibility: claude-code opencode`.
 
 ## Changelog
 
+- **3.0.2**: Points at `manuscript-writing` (renamed from `research-paper-writing`); the loading-discipline section.
 - **3.0.1**: Scope boundary. The description names the prose this skill is
   for (blog posts, essays, documentation, email) and says not to load it for
-  a manuscript, thesis, or response letter, which `research-paper-writing`
+  a manuscript, thesis, or response letter, which `manuscript-writing`
   now covers. No pattern changed.
 - **3.0.0**: Rewritten around why the tells exist. Opens with the five
   structural habits of model prose (staging, rhythm by rule, inflation,

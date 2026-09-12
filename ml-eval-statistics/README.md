@@ -2,7 +2,7 @@
 
 > The right statistics for model evaluation: significance, CIs, calibration, selective prediction.
 
-[![Version](https://img.shields.io/badge/version-1.0.1-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.2-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -54,6 +54,7 @@ subcommands and expected input format.
 
 ## Changelog
 
+- **1.0.2**: The description insists on `eval_stats.py` for every interval, paired test, and minimum detectable effect rather than hand-written bootstrap code; the loading-discipline section.
 - **1.0.1**: Hand off to `manuscript-figures` for drawing reliability diagrams,
   risk-coverage curves, and interval plots once the numbers exist.
 - **1.0.0**: Initial release.

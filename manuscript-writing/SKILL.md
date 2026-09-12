@@ -1,5 +1,5 @@
 ---
-name: research-paper-writing
+name: manuscript-writing
 description: >
   Use this skill whenever the user asks you to write, rewrite, edit, or extend
   academic research prose: paper sections (introduction, related work, method,
@@ -18,7 +18,7 @@ description: >
   manuscript-editor, which decides what belongs in the manuscript versus the
   response and how much to change; this skill writes the sentences.
 summary: "Scholarly prose that reads like a working researcher wrote it, with the tell sweep built in."
-version: "3.0.0"
+version: "4.0.0"
 author: anayy09
 license: MIT
 metadata:
@@ -360,3 +360,12 @@ limitation buried? Does the reading of prior work commit to a position? If
 the prose feels generic, the fix is upstream in the argument, not in the word
 choice. Repair the substance, run the sweep, then hand it over without
 commentary about your process.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

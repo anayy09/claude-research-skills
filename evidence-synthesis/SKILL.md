@@ -17,7 +17,7 @@ description: >-
   investigating-sources, which also owns the citation checker this skill
   calls.
 summary: "Formal evidence syntheses as research designs: protocol, PRISMA-S search, screening log, RoB, GRADE."
-version: "2.0.0"
+version: "2.0.1"
 author: anayy09
 license: MIT
 metadata:
@@ -311,3 +311,12 @@ Cochrane/Campbell/JBI/CEE position statement on AI use in evidence synthesis
 (2025). Verify current versions before citing: reporting guidelines are revised,
 and a partial update of PRISMA 2020 covering AI tool use was in development as
 of mid-2026.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

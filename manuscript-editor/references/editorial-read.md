@@ -161,7 +161,7 @@ once. Narrating it converts a strength into a tic.
 | Caption that argues | Move the argument to text (once); caption describes |
 | Aphoristic opener on every paragraph | Keep at most one per section; rewrite the rest to connect |
 
-Apply `research-paper-writing` to whatever sentences are rewritten.
+Apply `manuscript-writing` to whatever sentences are rewritten.
 
 ## 6. The editorial report
 

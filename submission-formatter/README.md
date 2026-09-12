@@ -2,7 +2,7 @@
 
 > Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word.
 
-[![Version](https://img.shields.io/badge/version-1.1.2-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.1.4-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -53,7 +53,7 @@ submitted.
 
 Hands off elsewhere: [`journal-advisor`](../journal-advisor) when the venue is not
 chosen yet, [`submission-reviewer`](../submission-reviewer) for a quality read,
-[`research-paper-writing`](../research-paper-writing) when the template requires a
+[`manuscript-writing`](../manuscript-writing) when the template requires a
 section that has to be written, [`prose-naturalizer`](../prose-naturalizer) for
 de-AI-ing text, [`ml-eval-statistics`](../ml-eval-statistics) when a table has
 to be regenerated rather than moved, and
@@ -142,6 +142,7 @@ required declaration sections.
 
 ## Changelog
 
+- **1.1.4**: The description names venue technical-check bounces (nested folders, file naming, editable source, missing declarations, the author block) and multi-venue packaging, and states that author identity comes only from `AUTHORS.yaml`; the loading-discipline section.
 - **1.1.3**: After a successful compile, hand the built package to
   `build-check`, which renders and inspects the pages; the log alone no longer
   counts as a finished build.

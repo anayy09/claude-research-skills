@@ -2,7 +2,7 @@
 
 > Build, review, and debug data pipelines, SQL, and schemas, whatever the stack.
 
-[![Version](https://img.shields.io/badge/version-1.0.1-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.2-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -50,6 +50,7 @@ distributions before designing the load. Run with `--help` for options.
 
 ## Changelog
 
+- **1.0.2**: The description names the research-repository work this skill governs (cohort builder, feature pipeline, schema contract, leakage guard); the loading-discipline section.
 - **1.0.0**: Initial release.
 
 ---

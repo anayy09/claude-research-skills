@@ -12,11 +12,15 @@ description: >-
   camera-ready", "convert my DOCX to LaTeX", "reformat to the journal
   guidelines", "does this comply with the author instructions", or "build the
   submission package". Also use when moving a paper from one venue's format to
-  another after a rejection, and for pre-submission template compliance checks.
-  Never rewrites, condenses, paraphrases, or invents content: missing items are
-  marked for the author, never filled in.
+  another after a rejection, for pre-submission template compliance checks,
+  when a venue's technical check bounces a package ("nested folders", "file
+  naming", "editable source", "missing declarations", "the author block"),
+  and when one manuscript needs packages for several venues at once. Never
+  rewrites, condenses, paraphrases, or invents content: missing items are
+  marked for the author, never filled in, and author identity comes only from
+  AUTHORS.yaml or the owner.
 summary: "Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word."
-version: "1.1.3"
+version: "1.1.4"
 author: anayy09
 license: MIT
 metadata:
@@ -46,7 +50,7 @@ This skill converts and typesets. It does not:
 - Judge the science. Hand off to `submission-reviewer` for a quality read.
 - Write or rewrite prose. If the manuscript is over a length limit, or a
   required section (data availability, author contributions) does not exist yet,
-  report it and hand off to `research-paper-writing`. Do not compose it here.
+  report it and hand off to `manuscript-writing`. Do not compose it here.
 - Revise content in response to reviewers, or decide what a revision round
   should change. Hand off to `manuscript-editor`, and come back when the
   content is final. The marked-up copy a venue asks for is built here, from a
@@ -346,3 +350,12 @@ prints what it could not do.
 | `scripts/fidelity_check.py` | Sentence, number, citation, and structure drift between source and output |
 
 Run any of them with `--help` for exact arguments.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.

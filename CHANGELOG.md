@@ -7,6 +7,83 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-09-12
+
+The second release from the usage audit: the P1 items. A new skill for the
+release-and-archive workflow, an identity gate against fabricated front
+matter, the four revision chores that had been done by hand, a rename, the
+prompts that used to bypass each skill written into its description, one
+loading rule for the whole collection, and a fix for the runtime mirror
+Codex reads.
+
+### Added
+- `release-archive` (1.0.0): from an internal research repository to a
+  public reproducibility release with a DOI. `release_audit.py` fails a tree
+  on secrets, restricted-data names, and a missing README or LICENSE, and
+  warns on internal ids, milestone nomenclature, local paths, placeholders,
+  ledger documents, large files, and a missing CITATION.cff.
+  `zenodo_deposit.py` creates, versions, inspects, and validates deposits
+  with the token from the environment only and creators from `AUTHORS.yaml`.
+  `doi_writeback.py` puts the concept DOI into every waiting site and
+  reports what is still a placeholder. References cover curation, Zenodo
+  (concept versus version DOI, the GitHub integration), and availability
+  statements by venue family including restricted data.
+- `build-check` (1.0.0 to 1.1.0): identity and placeholder checks. Every
+  email and ORCID in the front matter is checked against `AUTHORS.yaml`
+  (`--authors`, or found automatically) and every listed author must appear;
+  the PDF text is searched for author-input markers, TODO, TBD, DOI
+  placeholders, and unresolved `??` references. Added after a fabricated
+  author block derived from a login email reached a compiled PDF and a
+  submission form.
+- `manuscript-editor` (1.1.1 to 1.2.0): four modes and three scripts.
+  Revision checklist (`make_checklist.py`: atomic items with stable ids from
+  reviewer files and from a `submission-reviewer` fix list, statuses carried
+  forward across rounds; the only approval stop in a round), budget (a page
+  cap or word guidance met by ranked cut classes with re-measurement through
+  `build-check`, `references/cutting-to-a-budget.md`), letter build
+  (`build_letter.py`: cited section, table, and figure numbers checked
+  against the `.aux`, quoted passages against the manuscript, no
+  placeholders, no reviewer narration in the manuscript, then pandoc), and
+  Word manuscripts (`docx_markers.py` for the red author-action markers and
+  text extraction, `references/docx-revision.md` for what needs Word's
+  Compare). Adds the identity rule for front matter.
+- `submission-reviewer` (1.0.3 to 1.1.0): the report ends with a
+  machine-readable fix list that `manuscript-editor` turns into the
+  revision checklist, so the review and the revision share ids.
+- `project-ledger` (1.0.0 to 1.1.0): `AUTHORS.yaml` template as the only
+  source of author identity, scaffolded by `init`, with a P0 gate that it
+  is filled and a submission gate that runs `build-check` with `--authors`.
+- `scripts/sync_runtimes.py`: replaces stale copies of this repository's
+  skills under other runtimes' roots (Codex reads `~/.agents/skills`) with
+  directory junctions or symlinks to the folders here, leaves third-party
+  skills alone, and retires renamed or deleted names. The Codex mirror had
+  been seven commits behind main.
+
+### Changed
+- `research-paper-writing` renamed to `manuscript-writing` (3.0.0 to 4.0.0,
+  breaking): the folder and name now match `manuscript-editor` and
+  `manuscript-figures`. Every reference in the collection is updated; a
+  `/research-paper-writing` invocation and a project routing file that names
+  the old folder need the new name.
+- Every skill: a loading-discipline section (load once per session, before
+  the step it governs, never twice in one session; follow the repository's
+  `docs/SKILL-ROUTING.md` when there is one; a brief that names several
+  skills loads each at its step). PATCH bumps across the collection.
+- Descriptions rewritten to match the prompts that used to bypass the
+  skills: `manuscript-editor` (a pasted decision letter or external review,
+  "cut it to N pages", "format the response letter as a PDF", Word
+  manuscripts), `submission-reviewer` ("external review", "adversarial
+  review", "score out of 100", re-running a pass), `manuscript-figures`
+  ("plot", "chart", "make the figures publishable", precedence over general
+  dataviz skills for print), `submission-formatter` (technical-check bounces,
+  multi-venue packaging, identity from `AUTHORS.yaml`), `ml-eval-statistics`
+  (use `eval_stats.py`, never hand-written bootstrap code),
+  `data-engineering` (cohort builder, feature pipeline, leakage guard),
+  `hpc-cluster` (local long jobs are `project-ledger`'s), `journal-advisor`
+  (what the bundled lists are; fee coverage depends on the institution).
+- Root README: usage example for `release-archive`; issue template gains the
+  new skill.
+
 ## [0.8.0] - 2026-09-12
 
 The first release shaped by a usage audit: 130 Claude Code sessions and 20

@@ -16,12 +16,12 @@ description: >-
   Prefer this over free-form brainstorming: ideas must be grounded in the user's
   real assets and checked against real prior work.
 summary: "Turn existing research assets into ranked, publishable directions with a plan to submission."
-version: "1.0.2"
+version: "1.0.3"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-08-30"
+  last_updated: "2026-09-12"
 ---
 
 # Research Ideation
@@ -50,7 +50,7 @@ not:
 - Score a finished manuscript. That is `submission-reviewer`.
 - Compute the statistics. Specify what test or interval is required, then hand
   off to `ml-eval-statistics`.
-- Write the paper. Hand off to `research-paper-writing`, then
+- Write the paper. Hand off to `manuscript-writing`, then
   `manuscript-figures` for the figures the evidence set needs, then
   `submission-formatter` for the venue's template.
 - Design the run tracking. Hand off to `experiment-ledger` once the experiment
@@ -249,3 +249,12 @@ survives the strongest objection listed against it. Do not put a direction above
   asset overlap, and portfolio selection.
 - `scripts/plan_timeline.py`: backward schedule from a deadline with phase
   gates, buffer, and slack.
+
+## Loading discipline
+
+Load this skill once per session, before the step it governs, and do not
+invoke it again when it is already in context; a second load re-injects the
+same text and nothing else. When a repository carries `docs/SKILL-ROUTING.md`
+(`project-ledger`), it names the skill for each step and file; follow it, and
+record the skill in that step's progress entry. When a brief names several
+skills, each is loaded at the step it governs, not all at the start.
