@@ -2,7 +2,7 @@
 
 > Compile, render, and inspect the built PDF: overflow, floats, page cap, fonts, stale derived files.
 
-[![Version](https://img.shields.io/badge/version-1.1.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.1.1-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -100,6 +100,7 @@ reported as SKIP with its reason.
 
 ## Changelog
 
+- **1.1.1**: The description is trimmed below the 1024-character cap that skill portals enforce on the `description` field, by compressing the prose and dropping trigger phrases that duplicated others. Behavior is unchanged.
 - **1.1.0**: Identity and placeholder checks. `--authors AUTHORS.yaml`
   (found automatically next to the target or up to two directories above):
   an email or ORCID in the front matter that is not in the file fails the

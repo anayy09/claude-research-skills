@@ -3,30 +3,25 @@ name: journal-advisor
 description: >-
   Recommend academic journals for a manuscript using only the five bundled
   publisher lists (IEEE, Springer Nature, Elsevier, ACM, Taylor & Francis).
-  Reads the title, abstract, keywords, and full text, then produces one overall
-  best recommendation plus a ranked list of three to five journals per
-  publisher, each with topical fit, review-speed evidence, Scopus/SCImago
-  indexing and quartile, matching article type, submission constraints (APC,
-  page limits, template, novelty expectations), and a low/medium/high
-  desk-reject risk assessment. Priorities are weighted in this order: likelihood
-  of acceptance, review speed, then quartile and indexing. Use whenever the user
-  asks where to submit a paper, which journal fits a manuscript, whether a target
-  venue is a good match, how to shortlist venues, what the desk-reject risk is,
-  or asks to compare candidate journals. Also use when a manuscript or abstract
-  is supplied with a question about placement, and when the question is
-  "which journal", "APC", "read-and-publish", or "is the fee covered". Never
-  recommend a journal outside the bundled lists, and say what the lists are:
-  five publisher exports, which may be an institution's read-and-publish
-  eligibility lists rather than full catalogs, so a journal absent from them
-  is not thereby a poor fit, and fee coverage depends on the author's
-  institution. Load once per session; a second call re-injects nothing new.
+  Reads the full text and gives one overall best recommendation plus three to
+  five ranked journals per publisher, each with topical fit, review-speed
+  evidence, Scopus/SCImago indexing and quartile, matching article type,
+  submission constraints (APC, page limits, template), and a low/medium/high
+  desk-reject risk. Weighted by likelihood of acceptance, then review speed,
+  then quartile and indexing. Use whenever the user asks where to submit a
+  paper, which journal fits a manuscript, how to shortlist or compare venues,
+  what the desk-reject risk is, or asks "which journal", "APC",
+  "read-and-publish", or "is the fee covered", and when a manuscript or
+  abstract is supplied with a question about placement. Never recommend a
+  journal outside the bundled lists, which may be read-and-publish eligibility
+  exports rather than full catalogs.
 summary: "Match a manuscript to the right journal, with desk-reject risk, from five publisher catalogs."
-version: "1.1.0"
+version: "1.1.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-12"
+  last_updated: "2026-09-13"
 ---
 
 # Journal Advisor

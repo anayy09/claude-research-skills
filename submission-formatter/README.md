@@ -2,7 +2,7 @@
 
 > Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word.
 
-[![Version](https://img.shields.io/badge/version-1.1.4-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.2.1-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -156,6 +156,7 @@ required declaration sections.
 
 ## Changelog
 
+- **1.2.1**: The description is trimmed below the 1024-character cap that skill portals enforce on the `description` field, by compressing the prose and dropping trigger phrases that duplicated others. Behavior is unchanged.
 - **1.2.0**: `scripts/build_targets.py`, `references/multi-venue-build.md`, and `assets/targets.example.yaml`: one body, several venue packages from a spec, with the author block per class from `AUTHORS.yaml`, per-target drop regions, citation command rewriting, a guard against overwriting a hand-edited `main.tex`, and `--check` running `build-check` on every package. SKILL.md gains a section on keeping several venues from one body.
 - **1.1.4**: The description names venue technical-check bounces (nested folders, file naming, editable source, missing declarations, the author block) and multi-venue packaging, and states that author identity comes only from `AUTHORS.yaml`; the loading-discipline section.
 - **1.1.3**: After a successful compile, hand the built package to

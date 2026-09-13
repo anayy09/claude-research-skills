@@ -2,7 +2,7 @@
 
 > Scholarly prose that reads like a working researcher wrote it, with the tell sweep built in.
 
-[![Version](https://img.shields.io/badge/version-4.0.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.0.1-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -75,6 +75,7 @@ a table or a `\cite{a--b}` key is not a dash.
 
 ## Changelog
 
+- **4.0.1**: The description is trimmed below the 1024-character cap that skill portals enforce on the `description` field, by compressing the prose and dropping trigger phrases that duplicated others. Behavior is unchanged.
 - **4.0.0**: Renamed from `research-paper-writing` to `manuscript-writing`, matching `manuscript-editor` and `manuscript-figures` (breaking: the folder and name changed; `/research-paper-writing` no longer resolves). No pattern changed. Adds the loading-discipline section.
 - **3.0.0**: Absorbs the manuscript subset of `prose-naturalizer` (behavior
   change: the skill now ends with a tell sweep and treats em and en dashes,

@@ -1,29 +1,27 @@
 ---
 name: manuscript-writing
-description: >
-  Use this skill whenever the user asks you to write, rewrite, edit, or extend
-  academic research prose: paper sections (introduction, related work, method,
-  results, discussion, conclusion), thesis chapters, rebuttals and response
-  letters, conference or journal submissions, and technical reports. Also use
-  it for "make this sound less like AI wrote it", "remove the em dashes",
-  "there are AI-like sentences in the manuscript", "tighten this paragraph",
-  "write the related work", "help me phrase this contribution", a tell sweep
-  before submission, and any request to produce or repair scholarly writing
-  that has to read as if a working researcher wrote it. This skill carries the
+description: >-
+  Use whenever the user asks you to write, rewrite, edit, or extend academic
+  research prose: paper sections (introduction, related work, method, results,
+  discussion, conclusion), thesis chapters, rebuttals and response letters,
+  conference or journal submissions, and technical reports. Also use it for
+  "make this sound less like AI wrote it", "remove the em dashes", "there are
+  AI-like sentences in the manuscript", "tighten this paragraph", "write the
+  related work", "help me phrase this contribution", a tell sweep before
+  submission, and any request to produce or repair scholarly writing that has
+  to read as if a working researcher wrote it. This skill carries the
   manuscript subset of prose-naturalizer's patterns, so do not load that skill
-  for a manuscript; it is for non-academic prose. Do not use for casual
-  summaries, blog posts, marketing copy, slide bullet text, or code. For
-  revision rounds driven by reviewer comments, response-to-reviewers documents,
-  and whole-manuscript coherence or redundancy checks, use this together with
-  manuscript-editor, which decides what belongs in the manuscript versus the
-  response and how much to change; this skill writes the sentences.
+  for a manuscript. Do not use for casual summaries, blog posts, marketing
+  copy, or code. For revision rounds and whole-manuscript coherence checks,
+  pair it with manuscript-editor, which decides what changes; this skill
+  writes the sentences.
 summary: "Scholarly prose that reads like a working researcher wrote it, with the tell sweep built in."
-version: "4.0.0"
+version: "4.0.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-12"
+  last_updated: "2026-09-13"
 ---
 
 # Research Paper Writing

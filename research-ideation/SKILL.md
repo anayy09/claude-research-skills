@@ -6,22 +6,22 @@ description: >-
   questions) and produce ranked research directions, each with a verified
   novelty delta, a falsifiable claim, the minimum evidence set that makes it
   publishable, an experiment plan from the current state to a submission-ready
-  paper, and honest risks. Use whenever the user asks what to work on next, what
-  the paper should claim, how to turn a project, prototype, side result,
-  surprising finding, or failed experiment into a publication, how to get a
-  paper out of existing results, what is novel enough to publish, how to plan a
-  thesis or multi-paper agenda, whether an idea is worth doing, or how to
-  strengthen an idea they have. Also use when someone shares a repo or results
-  table and asks where to take it, or plans the next paper against a deadline.
-  Prefer this over free-form brainstorming: ideas must be grounded in the user's
-  real assets and checked against real prior work.
+  paper, and honest risks. Use whenever the user asks what to work on next,
+  what the paper should claim, how to turn a project, prototype, side result,
+  or failed experiment into a publication, how to get a paper out of existing
+  results, what is novel enough to publish, how to plan a thesis or
+  multi-paper agenda, whether an idea is worth doing, or how to strengthen an
+  idea they have. Also use when someone shares a repo or results table and
+  asks where to take it, or plans the next paper against a deadline. Prefer
+  this over free-form brainstorming: ideas must be grounded in real assets and
+  checked against real prior work.
 summary: "Turn existing research assets into ranked, publishable directions with a plan to submission."
-version: "1.0.3"
+version: "1.0.4"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-12"
+  last_updated: "2026-09-13"
 ---
 
 # Research Ideation

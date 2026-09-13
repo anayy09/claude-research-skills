@@ -2,7 +2,7 @@
 
 > Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score.
 
-[![Version](https://img.shields.io/badge/version-1.1.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.1.1-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -117,6 +117,7 @@ an 85.
 
 ## Changelog
 
+- **1.1.1**: The description is trimmed below the 1024-character cap that skill portals enforce on the `description` field, by compressing the prose and dropping trigger phrases that duplicated others. Behavior is unchanged.
 - **1.1.0**: The report ends with a machine-readable fix list (id, severity, location, problem, fix, evidence, effort) that `manuscript-editor`'s `make_checklist.py --from-review` turns into the revision checklist, so the review and the revision share ids. The description names "external review", "adversarial review", "score out of 100", and re-running a pass on an updated manuscript.
 - **1.0.3**: Hand off to `manuscript-editor` once real reviews are in hand; this
   skill scores a paper, it does not run the revision round.

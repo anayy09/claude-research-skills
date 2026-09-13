@@ -2,26 +2,26 @@
 name: build-check
 description: >-
   Build a LaTeX manuscript or submission package and inspect the result the
-  way a human would before saying it is done: compile every target, triage
-  the log, render every page, measure tables, figures, and lines against the
-  text block, map every float to the page it landed on, count pages against
-  the venue cap and words against the guidance, confirm fonts are embedded,
-  and check that derived PDFs (response letter, marked-up copy, supplement)
-  are newer than their sources. Use whenever a PDF is about to be reported as
-  built, rebuilt, compiled, or ready; whenever the user says "compile",
-  "rebuild the PDF", "check the PDF", "tables are going out of bound", "the
-  figure text exceeds the outline", "tables are in the middle of the
-  references", "use [H]", "cut it to N pages", "does it fit the page limit",
-  or "did you check the PDF"; and at the end of any submission-formatter,
-  manuscript-editor, or manuscript-figures pass that ends in a build. Never
-  report a build as clean without this report and a look at the flagged pages.
+  way a human would: compile every target, triage the log, render every page,
+  measure tables, figures, and lines against the text block, map every float
+  to the page it landed on, count pages against the venue cap and words
+  against the guidance, confirm fonts are embedded, and check that derived
+  PDFs (response letter, marked-up copy, supplement) are newer than their
+  sources. Use whenever a PDF is about to be reported as built, rebuilt,
+  compiled, or ready; whenever the user says "compile", "rebuild the PDF",
+  "check the PDF", "tables are going out of bound", "the figure text exceeds
+  the outline", "tables are in the middle of the references", "use [H]", "cut
+  it to N pages", "does it fit the page limit", or "did you check the PDF";
+  and at the end of any submission-formatter, manuscript-editor, or
+  manuscript-figures pass that ends in a build. Never report a build as clean
+  without this report.
 summary: "Compile, render, and inspect the built PDF: overflow, floats, page cap, fonts, stale derived files."
-version: "1.1.0"
+version: "1.1.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-12"
+  last_updated: "2026-09-13"
 ---
 
 # Build Check

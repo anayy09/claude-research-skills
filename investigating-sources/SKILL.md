@@ -1,33 +1,27 @@
 ---
 name: investigating-sources
 description: >-
-  Rigorous, citation-honest research assistant for producing evidence-backed
-  work: research reports, literature reviews, annotated bibliographies,
-  fact-checks, source-verification audits, and PRISMA-style systematic reviews.
-  Every factual claim is traced to a real, verifiable source, and fabricated or
-  unconfirmable citations are caught rather than emitted. Use whenever the user
-  asks to research a topic, review the literature, synthesize evidence, verify
-  or fact-check claims, check whether sources or DOIs are real, build a
-  bibliography, or run a systematic review or meta-analysis. Searches the
-  peer-reviewed literature first (IEEE, Nature and Springer, Elsevier, ACM,
+  Citation-honest research assistant: research reports, literature reviews,
+  annotated bibliographies, fact-checks, and source-verification audits. Every
+  factual claim is traced to a real, verifiable source, and fabricated or
+  unconfirmable citations are caught rather than emitted. Use whenever the
+  user asks to research a topic, review the literature, synthesize evidence,
+  verify or fact-check claims, check whether sources or DOIs are real, build a
+  bibliography, wants a report "with citations", wants sources graded for
+  quality, or wants a vague question scoped into an answerable one. Searches
+  the peer-reviewed literature first (IEEE, Springer Nature, Elsevier, ACM,
   Wiley, PubMed) and cites the published version of record rather than a
-  preprint whenever one exists. Also use when a user wants a report "with
-  citations," wants existing sources graded for quality, or wants help scoping a
-  vague research question into an answerable one. Also use for the two
-  reference chores that recur before submission: "add a summary table of
-  related work" (rendered from the verified source log) and "trim the
-  references to N, preprints first" or "replace the arXiv citations with the
-  published versions" (the reference diet). This skill owns the collection's
-  citation checker; evidence-synthesis is only for a formal review design with
-  a protocol, a screening log, and appraisal. Prefer this skill over answering
-  research questions from memory alone.
+  preprint. Also use for "add a summary table of related work" and "trim the
+  references to N, preprints first". Owns the collection's citation checker; a
+  formal review with a protocol, screening log, and appraisal is
+  evidence-synthesis.
 summary: "Citation-honest research: verified sources, version of record, related-work tables, reference diets."
-version: "1.2.1"
+version: "1.2.2"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-12"
+  last_updated: "2026-09-13"
 ---
 
 # Investigating Sources

@@ -2,7 +2,7 @@
 
 > Publication-grade figures: styled matplotlib, hand-authored SVG schematics, generative art.
 
-[![Version](https://img.shields.io/badge/version-1.1.3-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.2.1-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -99,6 +99,7 @@ python manuscript-figures/scripts/check_figure.py --self-test
 
 ## Changelog
 
+- **1.2.1**: The description is trimmed below the 1024-character cap that skill portals enforce on the `description` field, by compressing the prose and dropping trigger phrases that duplicated others. Behavior is unchanged.
 - **1.2.0**: `check_figure.py` reads the placed text: every label's box against the figure frame, every label's size at the target width (`--min-font-pt`, default 6), and label collisions, from poppler or PyMuPDF for PDFs and from `<text>` elements for SVGs; `--no-text` skips it, `--self-test` exercises it. On a real schematic it confirms the labels survive scaling to a double column.
 - **1.1.3**: The description names "plot", "chart", "make the figures publishable", and states precedence over general charting or dataviz skills for print figures; the loading-discipline section.
 - **1.1.2**: Hand off to `build-check` once a figure is placed: it renders

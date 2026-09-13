@@ -1,32 +1,27 @@
 ---
 name: manuscript-figures
 description: >-
-  Produce publication-quality, journal-compliant manuscript figures end to end:
-  data figures with matplotlib in a consistent house style, vector schematics
-  (model architectures, pipelines, flowcharts, study designs) authored directly
-  as SVG, and generative images for conceptual
-  art via a local Codex CLI or the OpenAI Images API. Covers venue sizing
-  (single/double column, mm-exact), typography, colorblind-safe palettes,
-  multi-panel assembly, export (PDF/EPS/TIFF/PNG at correct DPI with embedded
-  fonts), and an automated pre-submission compliance check. Use whenever the
-  user asks to make, restyle, polish, or fix a figure for a paper, poster,
-  thesis, or camera-ready version; mentions publication quality, column width,
-  DPI, figure guidelines for Nature, Elsevier, IEEE, Springer, or an ML
-  conference; wants a graphical abstract, architecture diagram, or pipeline
-  figure; or asks why a figure was rejected. Also use when converting
-  exploratory plots into final manuscript figures and when reviewing figures
-  before submission, and for "plot", "chart", "matplotlib figure for the
-  paper", "make the figures publishable", or "the figures are too bad to look
-  at". For print figures this skill takes precedence over any general
-  charting or dataviz skill, whose palettes and interaction rules are for
-  screens.
+  Produce publication-quality, journal-compliant manuscript figures end to
+  end: data figures with matplotlib in a consistent house style, vector
+  schematics (architectures, pipelines, flowcharts, study designs) authored as
+  SVG, and generative images for conceptual art. Covers venue sizing
+  (single/double column, mm-exact), colorblind-safe palettes, multi-panel
+  assembly, export (PDF/EPS/TIFF/PNG at correct DPI with embedded fonts), and
+  a pre-submission compliance check. Use whenever the user asks to make,
+  restyle, polish, or fix a figure for a paper, poster, thesis, or
+  camera-ready; mentions publication quality, column width, DPI, or figure
+  guidelines for Nature, Elsevier, IEEE, or Springer; wants a graphical
+  abstract, architecture diagram, or pipeline figure; or asks why a figure was
+  rejected. Also for turning exploratory plots into final figures and for
+  "plot", "chart", or "make the figures publishable". For print figures this
+  takes precedence over any general dataviz skill.
 summary: "Publication-grade figures: styled matplotlib, hand-authored SVG schematics, generative art."
-version: "1.2.0"
+version: "1.2.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-12"
+  last_updated: "2026-09-13"
 ---
 
 # Manuscript Figures

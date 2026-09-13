@@ -3,29 +3,24 @@ name: submission-formatter
 description: >-
   Reformat a finished manuscript into a specific journal or conference
   submission template, in LaTeX or Word, preserving every word, number, table,
-  figure, and citation exactly as written. Accepts PDF, DOCX, LaTeX source,
-  Markdown, ODT, and RTF input, asks once for the publisher template, and
-  locates and downloads the official one when none is supplied. Use whenever a
-  manuscript has to be put into a venue's format: "format this for IEEE
-  Access", "convert my Word paper to the Elsevier LaTeX template", "prepare
-  this for Springer, MDPI, Wiley, ACM, or PLOS submission", "make the
-  camera-ready", "convert my DOCX to LaTeX", "reformat to the journal
-  guidelines", "does this comply with the author instructions", or "build the
-  submission package". Also use when moving a paper from one venue's format to
-  another after a rejection, for pre-submission template compliance checks,
-  when a venue's technical check bounces a package ("nested folders", "file
-  naming", "editable source", "missing declarations", "the author block"),
+  figure, and citation exactly. Accepts PDF, DOCX, LaTeX, Markdown, ODT, and
+  RTF input, asks once for the publisher template, and downloads the official
+  one when none is supplied. Use whenever a manuscript has to be put into a
+  venue's format: "format this for IEEE Access", "convert my Word paper to the
+  Elsevier LaTeX template", "prepare this for Springer, MDPI, Wiley, ACM, or
+  PLOS submission", "make the camera-ready", "does this comply with the author
+  instructions", or "build the submission package". Also when moving a paper
+  to another venue after a rejection, when a venue's technical check bounces a
+  package (nested folders, file naming, editable source, the author block),
   and when one manuscript needs packages for several venues at once. Never
-  rewrites, condenses, paraphrases, or invents content: missing items are
-  marked for the author, never filled in, and author identity comes only from
-  AUTHORS.yaml or the owner.
+  rewrites or invents content; missing items are marked for the author.
 summary: "Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word."
-version: "1.2.0"
+version: "1.2.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-12"
+  last_updated: "2026-09-13"
 ---
 
 # Submission Formatter

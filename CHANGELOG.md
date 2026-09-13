@@ -7,6 +7,30 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+## [0.10.1] - 2026-09-13
+
+### Fixed
+- Twelve skills carried a `description` longer than the 1024 characters a
+  skill portal allows, so uploading them failed with "field 'description' in
+  SKILL.md must be at most 1024 characters". Each is rewritten under the cap,
+  between 918 and 992 characters, by compressing the prose and dropping
+  trigger phrases that duplicated others: `build-check` (1.1.0 to 1.1.1),
+  `evidence-synthesis` (2.0.1 to 2.0.2), `hpc-cluster` (2.0.2 to 2.0.3),
+  `investigating-sources` (1.2.1 to 1.2.2), `journal-advisor` (1.1.0 to
+  1.1.1), `manuscript-editor` (1.2.1 to 1.2.2), `manuscript-figures` (1.2.0 to
+  1.2.1), `manuscript-writing` (4.0.0 to 4.0.1), `ml-eval-statistics` (1.1.0
+  to 1.1.1), `research-ideation` (1.0.3 to 1.0.4), `submission-formatter`
+  (1.2.0 to 1.2.1), and `submission-reviewer` (1.1.0 to 1.1.1). What each
+  skill does is unchanged.
+- `scripts/validate_skills.py` now fails a description over the cap, and one
+  in which a hyphenated word was split across lines of a folded block scalar:
+  YAML folds that back as "read-and- publish", which corrupts the routing text
+  without showing up in the source.
+- Seven per-skill README version badges left behind by earlier releases now
+  match their `SKILL.md`: `data-engineering`, `hpc-cluster`,
+  `journal-advisor`, `manuscript-editor`, `manuscript-figures`,
+  `ml-eval-statistics`, and `submission-formatter`.
+
 ## [0.10.0] - 2026-09-12
 
 The third release from the usage audit: the P2 items. Each one closes a gap
@@ -621,7 +645,11 @@ First public release of the collection.
 - Standardized every skill's frontmatter: added `summary`, semantic `version`,
   `author`, `license`, and a consistent `metadata` block.
 
-[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.10.1...HEAD
+[0.10.1]: https://github.com/anayy09/claude-research-skills/compare/v0.10.0...v0.10.1
+[0.10.0]: https://github.com/anayy09/claude-research-skills/compare/v0.9.0...v0.10.0
+[0.9.0]: https://github.com/anayy09/claude-research-skills/compare/v0.8.0...v0.9.0
+[0.8.0]: https://github.com/anayy09/claude-research-skills/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/anayy09/claude-research-skills/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/anayy09/claude-research-skills/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/anayy09/claude-research-skills/compare/v0.5.2...v0.6.0

@@ -2,7 +2,7 @@
 
 > Turn existing research assets into ranked, publishable directions with a plan to submission.
 
-[![Version](https://img.shields.io/badge/version-1.0.3-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.4-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -143,6 +143,7 @@ template.
 
 ## Changelog
 
+- **1.0.4**: The description is trimmed below the 1024-character cap that skill portals enforce on the `description` field, by compressing the prose and dropping trigger phrases that duplicated others. Behavior is unchanged.
 - **1.0.3**: The loading-discipline section.
 - **1.0.2**: Name `manuscript-figures` in the path from an evidence set to a paper.
 - **1.0.1**: Point to `submission-formatter` for the venue template step.

@@ -2,7 +2,7 @@
 
 > The right statistics for model evaluation: significance, CIs, calibration, selective prediction.
 
-[![Version](https://img.shields.io/badge/version-1.0.2-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.1.1-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -69,6 +69,7 @@ script.
 
 ## Changelog
 
+- **1.1.1**: The description is trimmed below the 1024-character cap that skill portals enforce on the `description` field, by compressing the prose and dropping trigger phrases that duplicated others. Behavior is unchanged.
 - **1.1.0**: `mde` subcommand: the minimum detectable effect for a paired comparison, standard error from the paired difference under one shared resample, with a marginal fallback when only one arm is given. `--self-test` checks the estimators on synthetic data (interval brackets the point, identical arms give zero, a real gap excludes zero, MDE equals the z-sum times the SE, McNemar, ECE, Holm, the normal quantile).
 - **1.0.2**: The description insists on `eval_stats.py` for every interval, paired test, and minimum detectable effect rather than hand-written bootstrap code; the loading-discipline section.
 - **1.0.1**: Hand off to `manuscript-figures` for drawing reliability diagrams,

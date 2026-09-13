@@ -2,7 +2,7 @@
 
 > Keeps manuscripts coherent through revision: checklist, right content in the right document, minimal changes, cuts to a budget, the letter.
 
-[![Version](https://img.shields.io/badge/version-1.2.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.2.2-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -135,6 +135,7 @@ them). All are pattern-based by design and say so; the editorial read decides.
 
 ## Changelog
 
+- **1.2.2**: The description is trimmed below the 1024-character cap that skill portals enforce on the `description` field, by compressing the prose and dropping trigger phrases that duplicated others. Behavior is unchanged.
 - **1.2.1**: The nine worked examples in SKILL.md are cut to three; `references/manuscript-boundary.md` carries the full set by section and family. The skill file is back under its pre-1.2.0 size.
 - **1.2.0**: Four modes and three scripts for the parts of a revision round
   that kept being done by hand. Revision checklist (`make_checklist.py`:

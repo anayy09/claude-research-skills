@@ -1,29 +1,27 @@
 ---
 name: ml-eval-statistics
 description: >-
-  Choose and compute the right statistics for evaluating and comparing your own
-  models: paired significance tests, clustered and patient-level bootstrap
-  confidence intervals, calibration (ECE, reliability, temperature scaling),
-  selective prediction and triage metrics (risk-coverage, AURC, coverage at
-  fixed risk), and multiplicity control across ablation arms. Use whenever the
-  user asks whether a difference is significant, which metric to report, how to
-  compute a confidence interval, whether two models differ, how to show
-  calibration, how to evaluate a triage or deferral system, or how to handle
-  patches, slides, or repeated measures from the same patient. Also use when
-  reviewing a results table, when a reviewer has raised a statistics objection,
-  and whenever an accuracy number is about to be reported without an interval.
-  Distinct from meta-analysis of published literature: this is for statistics on
-  experiments the user ran. Use the bundled eval_stats.py for every interval,
-  paired test, and minimum detectable effect rather than writing bootstrap
-  code by hand; a hand-written estimator once measured tie-break variance
-  instead of sampling variance for a week before anyone noticed.
+  The right statistics for evaluating and comparing your own models: paired
+  significance tests, clustered and patient-level bootstrap confidence
+  intervals, calibration (ECE, reliability, temperature scaling), selective
+  prediction and triage metrics (risk-coverage, AURC), and multiplicity
+  control across ablation arms. Use whenever the user asks whether a
+  difference is significant, which metric to report, how to compute a
+  confidence interval, how to evaluate a triage or deferral system, or how to
+  handle patches, slides, or repeated measures from the same patient. Also use
+  when reviewing a results table, when a reviewer has raised a statistics
+  objection, and whenever an accuracy number is about to be reported without
+  an interval. This is for statistics on experiments the user ran, not
+  meta-analysis of published literature. Use the bundled eval_stats.py for
+  every interval, paired test, and minimum detectable effect rather than
+  hand-written bootstrap code.
 summary: "The right statistics for model evaluation: significance, CIs, calibration, selective prediction."
-version: "1.1.0"
+version: "1.1.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-12"
+  last_updated: "2026-09-13"
 ---
 
 # ML Evaluation Statistics

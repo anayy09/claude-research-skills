@@ -2,7 +2,7 @@
 
 > Write, debug, and monitor cluster batch jobs, and serve models on compute nodes.
 
-[![Version](https://img.shields.io/badge/version-2.0.1-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.0.3-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -117,6 +117,7 @@ place.
 
 ## Changelog
 
+- **2.0.3**: The description is trimmed below the 1024-character cap that skill portals enforce on the `description` field, by compressing the prose and dropping trigger phrases that duplicated others. Behavior is unchanged.
 - **2.0.2**: A "not on a cluster?" section: local long jobs go to `project-ledger`'s runbook discipline, with the `STOP` file, `progress.json`, and `RUNBOOK.md` conventions named, and a note that the job-script patterns here (idempotence guards, checkpoint cadence, `set -euo pipefail`) transfer unchanged.
 - **2.0.1**: The description hands local long-running jobs to `project-ledger`'s runbook discipline; the loading-discipline section.
 - **2.0.0**: Generalized to any HPC cluster. Site-specific paths, accounts, QoS names, and wrapper

@@ -24,6 +24,8 @@ NON_SKILL_DIRS = {"scripts", "docs", "assets", ".github", ".git"}
 REQUIRED_TOP_LEVEL = ["name", "description", "summary", "version", "author", "license"]
 SEMVER = re.compile(r"^\d+\.\d+\.\d+([-+].+)?$")
 
+MAX_DESCRIPTION = 1024
+
 
 def parse_frontmatter(path: Path) -> dict:
     text = path.read_text(encoding="utf-8")
@@ -54,6 +56,18 @@ def validate_skill(skill_dir: Path) -> list[str]:
     for field in REQUIRED_TOP_LEVEL:
         if not fm.get(field):
             errors.append(f"{name}: SKILL.md frontmatter missing '{field}'")
+
+    description = str(fm.get("description") or "").strip()
+    if len(description) > MAX_DESCRIPTION:
+        errors.append(
+            f"{name}: description is {len(description)} characters "
+            f"(limit {MAX_DESCRIPTION}); portals reject the upload"
+        )
+
+    # A hyphenated word broken across lines of a folded block scalar folds back
+    # as "read-and- publish", which silently corrupts the routing text.
+    if re.search(r"\w- \w", description):
+        errors.append(f"{name}: description contains a hyphen followed by a space (broken line wrap)")
 
     if fm.get("name") and fm["name"] != name:
         errors.append(f"{name}: frontmatter name '{fm['name']}' does not match folder name")

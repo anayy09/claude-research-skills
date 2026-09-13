@@ -1,31 +1,27 @@
 ---
 name: submission-reviewer
 description: >-
-  Act as a fair, constructive peer reviewer for a research paper or a patent
-  submission. Reads the full text, judges novelty, technical rigor, practical
-  application, authenticity of the claimed contribution, and publication or
-  filing readiness against a weighted rubric, then returns a score out of 100
-  with a band, ranked actionable fixes, and a projected score if those fixes
-  land. Use whenever a manuscript, preprint, thesis chapter, abstract, invention
-  disclosure, or patent draft is supplied and the user asks for a review,
-  evaluation, score, rating, feedback, second opinion, pre-submission check, or
-  asks whether the work is novel enough, good enough, publishable, patentable,
-  ready to submit, what a reviewer would say, or how to improve it before
-  submitting. Also use when screening someone else's submission for a lab,
-  journal, conference, or review committee, when the user asks for an
-  "adversarial review", an "external review", or "a score out of 100", and
-  when a previous review report is pasted and the user asks to "re-run the
-  reviewer pass on the updated manuscript". Judge honestly, including a
-  blocking flaw when there is one, but never give a verdict without a repair
-  path; the report ends with a machine-readable fix list that
-  manuscript-editor turns into the revision checklist.
+  Act as a fair, constructive peer reviewer for a research paper or patent
+  submission. Reads the full text, judges novelty, rigor, practical
+  application, and publication or filing readiness against a weighted rubric,
+  then returns a score out of 100, ranked actionable fixes, and a projected
+  score if those fixes land. Use whenever a manuscript, preprint, thesis
+  chapter, abstract, invention disclosure, or patent draft is supplied and the
+  user asks for a review, score, feedback, second opinion, or pre-submission
+  check, or asks whether the work is novel enough, publishable, patentable,
+  ready to submit, what a reviewer would say, or how to improve it. Also when
+  screening someone else's submission for a lab, journal, or committee, when
+  the user asks for an "adversarial review", an "external review", or "a score
+  out of 100", and when a previous report is pasted with "re-run the reviewer
+  pass". Judge honestly, including a blocking flaw, but never without a repair
+  path.
 summary: "Peer-review a paper or patent against a weighted rubric: score out of 100, ranked fixes, projected score."
-version: "1.1.0"
+version: "1.1.1"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-12"
+  last_updated: "2026-09-13"
 ---
 
 # Submission Reviewer

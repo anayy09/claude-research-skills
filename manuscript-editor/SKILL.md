@@ -1,31 +1,27 @@
 ---
 name: manuscript-editor
 description: >-
-  Manuscript-level editorial discipline for research papers at the standard
-  of reputable Q1 journals: what belongs in the manuscript versus the response
-  to reviewers versus internal notes, how to make the smallest complete
-  change, and how to keep a paper coherent across many revision rounds
-  instead of letting it decay into patches. Use whenever the user pastes or
-  points at reviewer, editor, or external-review comments (a decision letter,
-  "Reviewer 2 says", an "External Review" report with a score), asks for a
-  consolidated reviewer checklist before revising, is integrating a batch of
-  edits, drafting or building the response-to-reviewers letter (including
-  "format the response letter as a PDF"), preparing a resubmission or
-  camera-ready, working a manuscript that lives in Word, asking whether
-  something belongs in the paper, saying the manuscript reads like patches,
-  repeats itself, or "is horrendously long", asking to "cut it to N pages" or
-  "cut 3,000 words", or wanting a whole-manuscript consistency, redundancy,
-  or structure check. Also use when drafting a full manuscript so structure
-  and section content match the target venue and article type. Pairs with
-  manuscript-writing, which owns sentence and paragraph quality, and with
-  build-check, which measures the page count the cuts are aimed at.
+  Manuscript-level editorial discipline for research papers: what belongs in
+  the manuscript versus the response to reviewers versus internal notes, how
+  to make the smallest complete change, and how to keep a paper coherent
+  across revision rounds. Use whenever the user pastes or points at reviewer,
+  editor, or external-review comments (a decision letter, "Reviewer 2 says",
+  an "External Review"), asks for a consolidated reviewer checklist, is
+  drafting the response-to-reviewers letter (including "format the response
+  letter as a PDF"), preparing a resubmission or camera-ready, working a
+  manuscript that lives in Word, saying the manuscript reads like patches,
+  repeats itself, or "is horrendously long", asking to "cut it to N pages", or
+  wanting a whole-manuscript consistency, redundancy, or structure check. Also
+  when drafting a full manuscript, so structure matches the venue and article
+  type. Pairs with manuscript-writing (sentences) and build-check (page
+  count).
 summary: "Keeps manuscripts coherent through revision: checklist, right content in the right document, minimal changes, cuts to a budget, the letter."
-version: "1.2.1"
+version: "1.2.2"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-12"
+  last_updated: "2026-09-13"
 ---
 
 # Manuscript Editor

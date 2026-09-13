@@ -2,7 +2,7 @@
 
 > Citation-honest research: verified sources, version of record, related-work tables, reference diets.
 
-[![Version](https://img.shields.io/badge/version-1.2.1-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.2.2-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -121,6 +121,7 @@ without that fallback every arXiv citation reads as a fabrication.
 
 ## Changelog
 
+- **1.2.2**: The description is trimmed below the 1024-character cap that skill portals enforce on the `description` field, by compressing the prose and dropping trigger phrases that duplicated others. Behavior is unchanged.
 - **1.2.1**: The loading-discipline section.
 - **1.2.0**: Two chore modes. `related-work-table` renders the comparative
   table that closes a related-work section from the verified source log

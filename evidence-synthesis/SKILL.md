@@ -9,20 +9,19 @@ description: >-
   ROBINS-I, QUADAS-2, PROBAST+AI, AMSTAR 2, ROBIS), synthesis with or without
   meta-analysis, GRADE certainty rating, and RAISE-compliant disclosure of AI
   use. Use when the deliverable is a review with a protocol, a screening log,
-  appraisal, and a reporting guideline: "systematic review", "scoping
-  review", "meta-analysis", "PRISMA flow diagram", "risk of bias", "GRADE",
-  "how do I report the search", or a reviewer's methods objection about a
-  review. Do not use for a related-work section, a literature sweep, a brief
-  or report with citations, a reference audit, or a reference diet; those are
-  investigating-sources, which also owns the citation checker this skill
-  calls.
+  appraisal, and a reporting guideline: "systematic review", "scoping review",
+  "meta-analysis", "PRISMA flow diagram", "risk of bias", "GRADE", "how do I
+  report the search", or a reviewer's methods objection about a review. Do not
+  use for a related-work section, a literature sweep, a reference audit, or a
+  reference diet; those are investigating-sources, which owns the citation
+  checker.
 summary: "Formal evidence syntheses as research designs: protocol, PRISMA-S search, screening log, RoB, GRADE."
-version: "2.0.1"
+version: "2.0.2"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-12"
+  last_updated: "2026-09-13"
   related_skills:
     - investigating-sources
 ---

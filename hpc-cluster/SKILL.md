@@ -3,27 +3,24 @@ name: hpc-cluster
 description: >-
   Write, submit, debug, and monitor batch jobs on a shared HPC cluster, and
   serve models on compute nodes as OpenAI-compatible endpoints. SLURM is the
-  default; PBS/Torque, LSF, and SGE are covered by a translation reference. Use
-  whenever the user mentions a cluster, a scheduler, sbatch, srun, squeue, sacct,
-  seff, qsub, qstat, bsub, a job script, a partition or queue, GPU allocation, an
-  account or QoS error, a project or scratch filesystem, group permissions on a
-  shared research directory, job arrays, checkpointing against a wall clock, a
-  job that was killed or ran out of memory, containers on a cluster
-  (apptainer/singularity), or launching an inference server for batch model
-  evaluation. Also use for "run this on the cluster", "how many GPU hours will
-  this take", "my job is pending forever", or any request whose deliverable is a
-  job script or a cluster diagnosis. Trigger even when the user only pastes an
-  error from a scheduler or a job log. A long job on a local machine rather
-  than a cluster (stop and resume, progress polling, memory limits, handing
-  the command to the owner) is project-ledger's runbook discipline; this
+  default; PBS/Torque, LSF, and SGE are covered by a translation reference.
+  Use whenever the user mentions a cluster, a scheduler, sbatch, srun, squeue,
+  sacct, seff, qsub, qstat, bsub, a job script, a partition or queue, GPU
+  allocation, an account or QoS error, a project or scratch filesystem, job
+  arrays, checkpointing against a wall clock, a job that was killed or ran out
+  of memory, or containers (apptainer/singularity). Also for "run this on the
+  cluster", "how many GPU hours will this take", "my job is pending forever",
+  or any request whose deliverable is a job script or a cluster diagnosis.
+  Trigger even when the user only pastes a scheduler error or a job log. A
+  long job on a local machine is project-ledger's runbook discipline; this
   skill is for schedulers.
 summary: "Write, debug, and monitor cluster batch jobs, and serve models on compute nodes."
-version: "2.0.2"
+version: "2.0.3"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-12"
+  last_updated: "2026-09-13"
 ---
 
 # HPC Cluster
