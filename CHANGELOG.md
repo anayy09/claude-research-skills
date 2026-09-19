@@ -7,6 +7,65 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-09-19
+
+`journal-advisor` goes from "which of these 1,848 titles fits" to "which venue
+fits, and what will publishing there cost the author".
+
+### Added
+- `journal-advisor` (1.1.1 to 2.0.0): four fee routes, modeled separately and
+  never merged. `institutional_oa` (an agreement covers the APC),
+  `no_apc_oa` (the journal charges none), `s2o` (Subscribe to Open funded that
+  year), and `subscription_no_apc` (the author publishes non-OA). Each route
+  carries its own eligibility, term, cap, ancillary-fee flag, evidence level
+  and source links, because a journal reachable two ways is two different
+  offers. Four researched CSVs join the five bundled workbooks: UF full-APC
+  coverage, DOAJ `APC=No`, Subscribe to Open, and no-APC subscription
+  publication. The catalog becomes 20,262 route records across 19,533
+  journals, one row per journal, route and source.
+- `find_journals.py` gains `--institution`, `--route`, `--open-access-only`,
+  `--no-other-fees`, `--as-of` and `--include-inactive`. Expired, future,
+  closed and superseded records leave ordinary search; a waiver never moves
+  between institutions or routes; results group by journal and list every
+  route that passed.
+- `references/evidence-rules.md` gains the per-institution exceptions that a
+  title list alone would get wrong: IOP's 40-article annual cap, Cambridge's
+  acceptance-date and article-type terms, the Microbiology Society's six-title
+  scope, Portland Press's 2026 S2O outcome and its closed title, and the UF
+  discounts (Elsevier 15%, BMC 15%, MDPI 10%, ACS) that are excluded from the
+  full-coverage records because a discount is not a waiver.
+
+### Changed
+- `journal-advisor`'s hard constraint is no longer "only the bundled lists". A
+  title absent from the snapshot may be recommended on the same primary-source
+  evidence, with its route recorded; absence is a gap in the research, not a
+  quality judgment. The constraints that replace it are about cost: name the
+  route behind every fee claim, never turn a discount or an `unknown` into
+  coverage, and never transfer eligibility between institutions.
+- `references/report-format.md` keeps its required structure, per-journal field
+  block and worked example, now organized by fee route and with an open
+  eligibility checks section, so the conditions a recommendation rests on are
+  in the report rather than implied by it.
+
+### Fixed
+- `find_journals.py` printed a broken table on the wider catalog: the publisher
+  column was sized for five short publisher names and 13,401 of the 20,262
+  records overflow it, shifting every column after it. All columns are now
+  truncated, and the near-always-empty index column moved to the detail line.
+- `find_journals.py` tokenized all 20,262 records before applying any filter,
+  and `--check` compared dictionaries against a list for every row. Filtering
+  now precedes tokenization and `--check` indexes by position, halving a routed
+  search. Piping into `head` no longer prints a `BrokenPipeError` traceback.
+- `build_catalog.py` described each bundled workbook twice, once in a
+  `LIST_CONTEXT` dict and again in `assets/list-provenance.yaml`, which had
+  drifted apart. The YAML is now the only description, and it regains the
+  per-list facts a regeneration had flattened into boilerplate (that the
+  Springer list is an agreement list, that the T&F list omits hybrid titles).
+- `references/evidence-rules.md` claimed the catalog supplies a quartile for
+  most titles and that only ACM and Springer lack one. It carries a quartile
+  for about one record in twenty, and the fallback guidance for offline
+  sessions said so incorrectly.
+
 ## [0.10.1] - 2026-09-13
 
 ### Fixed
@@ -645,7 +704,8 @@ First public release of the collection.
 - Standardized every skill's frontmatter: added `summary`, semantic `version`,
   `author`, `license`, and a consistent `metadata` block.
 
-[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.10.1...HEAD
+[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/anayy09/claude-research-skills/compare/v0.10.1...v0.11.0
 [0.10.1]: https://github.com/anayy09/claude-research-skills/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/anayy09/claude-research-skills/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/anayy09/claude-research-skills/compare/v0.8.0...v0.9.0

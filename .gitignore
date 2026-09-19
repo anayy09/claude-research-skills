@@ -42,3 +42,6 @@ secrets.*
 credentials.*
 *.pem
 *.key
+
+# --- Harness-managed skill sync cache (not part of this collection) ---
+synced/

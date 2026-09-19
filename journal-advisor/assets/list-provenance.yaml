@@ -1,50 +1,57 @@
-# Provenance of the five bundled lists. build_catalog.py reads this file and
-# writes `list_kind` and `coverage_note` into every row of journals.csv; the
-# report quotes them. Edit this file when a list is replaced, and say who
-# exported it and when, because three of the five are eligibility lists tied
-# to an institution's agreement rather than complete publisher catalogs.
+# Provenance of the five bundled institution workbooks. build_catalog.py reads
+# this file and writes `list_kind`, `coverage_note` and `fee_note` into every
+# row those workbooks produce; the report quotes them. Edit it when a list is
+# replaced, and say what the list is and when it was exported, because a title
+# missing from an eligibility list is a statement about an agreement, not about
+# the journal.
+#
+# `institution` and `agreement` record the sponsorship the user identified on
+# 2026-09-19. No contract was supplied with that mapping, so every row built
+# from these workbooks carries evidence_status=user_confirmed_mapping. The
+# researched fee-route CSVs in sources/ carry their own provenance per row and
+# are not described here.
 
 IEEE:
   file: IEEE.xlsx
   kind: publisher title list
-  scope: IEEE journals with open-access type and 2024 metrics; not scoped to any institution
-  institution: ""
-  agreement: ""
+  scope: IEEE journals with open-access type and 2024 JCR/CiteScore metrics, stated accurate as of 1 January 2026; not itself scoped to an institution
+  institution: Manipal University Jaipur (MUJ)
+  agreement: MUJ sponsorship as reported by the user; current contract not independently verified
   exported: "2026-01-01"
-  fee_note: "APC applies for OA in hybrid titles; check the author's institution for a read-and-publish agreement"
+  fee_note: "Conditional MUJ APC coverage; verify corresponding author, article type, current term, allocation and ancillary fees."
 
 Springer Nature:
   file: Springer_Nature.xlsx
   kind: agreement eligibility list
-  scope: journals eligible under a fully-open-access agreement; a Springer journal absent here may be a fine fit but its APC is not covered by that agreement
-  institution: "[AUTHOR INPUT: institution whose agreement this list belongs to]"
-  agreement: "Springer Nature fully open access agreement"
+  scope: journals eligible under a Springer Nature fully-open-access agreement, with discipline and imprint only and no citation metrics; a Springer title absent here may still fit, but is outside that agreement
+  institution: Manipal University Jaipur (MUJ)
+  agreement: MUJ sponsorship as reported by the user; current contract not independently verified
   exported: ""
-  fee_note: "APC covered under the agreement for eligible corresponding authors; not covered otherwise"
+  fee_note: "Conditional MUJ APC coverage; verify corresponding author, article type, current term, allocation and ancillary fees."
 
 Elsevier:
   file: Elsevier.xlsx
   kind: institutional eligibility list
-  scope: hybrid titles eligible under an institutional publishing agreement (sheet named MUJ 2025); an Elsevier journal absent here is not thereby a poor fit
-  institution: "Manipal University Jaipur (per the sheet name; confirm)"
-  agreement: "Elsevier read-and-publish, 2025"
+  scope: hybrid titles on the sheet named MUJ 2025, with a CiteScore 2024 quartile only; an Elsevier title absent here is not thereby a poor fit
+  institution: Manipal University Jaipur (MUJ)
+  agreement: MUJ sponsorship as reported by the user; current contract not independently verified
   exported: ""
-  fee_note: "OA fee covered for corresponding authors at the listed institution; a UF author pays or publishes subscription-only"
+  fee_note: "Conditional MUJ APC coverage; verify corresponding author, article type, current term, allocation and ancillary fees. The sheet is 2025, and UF's Elsevier agreement is a 15% discount rather than coverage."
 
 ACM:
   file: ACM.xlsx
-  kind: publisher list
-  scope: ACM journals; all open access as of 1 January 2026 per the workbook notes
-  institution: ""
-  agreement: ""
+  kind: publisher title list
+  scope: ACM journals, all open access as of 1 January 2026 per the publications overview cited in the workbook Notes sheet
+  institution: JK Lakshmipat University (JKLU)
+  agreement: JKLU sponsorship as reported by the user; current contract not independently verified
   exported: "2026-01-01"
-  fee_note: "ACM Open covers members' institutions; otherwise an APC applies"
+  fee_note: "Conditional JKLU APC coverage; verify corresponding author, article type, current term, allocation and ancillary fees. Do not infer a subscription route for 2026 ACM journals."
 
 Taylor & Francis:
   file: T_F.xlsx
-  kind: publisher open-access list
-  scope: fully open-access titles with 2024 metrics; hybrid T&F titles are not listed
-  institution: ""
-  agreement: ""
+  kind: publisher open-access title list
+  scope: fully open-access titles with 2024 JCR, CiteScore, SNIP and SJR metrics; hybrid T&F titles are not listed
+  institution: Manipal University Jaipur (MUJ)
+  agreement: MUJ sponsorship as reported by the user; current contract not independently verified
   exported: ""
-  fee_note: "APC applies unless the author's institution has a T&F agreement"
+  fee_note: "Conditional MUJ APC coverage; verify corresponding author, article type, current term, allocation and ancillary fees."

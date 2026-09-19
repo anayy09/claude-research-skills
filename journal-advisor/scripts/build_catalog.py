@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Normalize the five publisher spreadsheets into a single catalog CSV.
+"""Combine original institution workbooks and researched fee-route CSVs.
 
-Run this only when a source spreadsheet is replaced with a newer edition. The
-shipped assets/journals.csv is the output of this script against the bundled
-sources, so the catalog is always reconstructible and every row keeps a pointer
-back to the file, sheet, and row it came from.
+Read the workbooks and CSVs in assets/sources. The master keeps separate
+funding-route evidence linked by journal identity; its rows are not unique
+journals. Every record retains its source locator and policy links.
 
     python scripts/build_catalog.py                     # rebuild in place
     python scripts/build_catalog.py --out /tmp/new.csv  # rebuild elsewhere
@@ -18,6 +17,9 @@ filled from another metric or from memory.
 from __future__ import annotations
 
 import argparse
+import csv
+import hashlib
+import json
 import re
 from pathlib import Path
 
@@ -39,6 +41,31 @@ COLUMNS = [
 
 PROVENANCE_FILE = HERE.parent / "assets" / "list-provenance.yaml"
 
+# The fee-route CSVs in assets/sources share this header. Every route carries
+# its own cost terms, its own eligibility, and its own provenance, because a
+# journal reached by two routes is two different offers to the author.
+ROUTE_COLUMNS = [
+    "publisher", "journal_title", "issn", "eissn", "journal_url",
+    "subject_area", "scope", "oa_model",
+    "fee_route", "institution", "apc_payable", "other_fees", "eligibility",
+    "agreement_start", "agreement_end", "annual_cap", "article_types",
+    "evidence_status", "record_status",
+    "source_url", "policy_url", "checked_on", "source_updated",
+    "source_file", "source_row", "source_record_id",
+    "license", "languages", "country",
+    "doaj_url", "instructions_url", "apc_information_url", "other_fees_url",
+    "notes",
+]
+COLUMNS += [c for c in ROUTE_COLUMNS if c not in COLUMNS] + ["journal_id", "route_id"]
+
+# The researched fee-route CSVs, in the order they enter the master.
+ROUTE_SOURCES = [
+    ("uf_100_percent_apc.csv", "UF agreements stating full APC coverage"),
+    ("no_apc_open_access.csv", "DOAJ APC=No declarations plus checked publisher policies"),
+    ("subscribe_to_open.csv", "Subscribe to Open titles with their funded year"),
+    ("subscription_no_apc.csv", "non-OA publication carrying no OA APC"),
+]
+
 
 def load_provenance() -> dict:
     """Per-publisher kind, scope, institution, agreement, and fee note from
@@ -47,27 +74,44 @@ def load_provenance() -> dict:
     institution's agreement."""
     if not PROVENANCE_FILE.exists():
         return {}
-    try:
-        import yaml  # type: ignore
-        return yaml.safe_load(PROVENANCE_FILE.read_text(encoding="utf-8")) or {}
-    except ImportError:
-        return {}
+    import yaml  # type: ignore
+    return yaml.safe_load(PROVENANCE_FILE.read_text(encoding="utf-8")) or {}
 
-# What each uploaded list actually is. This matters: none of them is "every
-# journal the publisher owns", so a title's absence is not evidence that the
-# journal does not exist, only that it is outside the permitted set.
-LIST_CONTEXT = {
-    "IEEE": "IEEE title list with open-access type and 2024 JCR/CiteScore metrics; "
-            "data stated accurate as of 1 January 2026",
-    "Springer Nature": "Journals eligible under a Springer Nature fully-open-access "
-                       "agreement; discipline and imprint only, no citation metrics",
-    "Elsevier": "Institutional eligible publication list (MUJ 2025); hybrid titles "
-                "with CiteScore 2024 quartile only",
-    "ACM": "ACM journal list; ACM journals are open access as of 1 January 2026 per "
-           "the ACM publications overview cited in the workbook Notes sheet",
-    "Taylor & Francis": "Taylor & Francis open-access title list with 2024 JCR, "
-                        "CiteScore, SNIP and SJR metrics",
-}
+
+def assign_ids(rows):
+    """Link p/e-ISSNs transitively; retain each independent fee route."""
+    parent = list(range(len(rows)))
+    def root(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+    def union(a, b):
+        parent[root(b)] = root(a)
+    issns, titles = {}, {}
+    for i, r in enumerate(rows):
+        ids = [re.sub(r"[^0-9X]", "", r.get(k, "").upper()) for k in ("issn", "eissn")]
+        for ident in filter(None, ids):
+            if ident in issns:
+                union(i, issns[ident])
+            issns[ident] = i
+        title = re.sub(r"\W+", "", r["journal_title"].casefold())
+        # Avoid joining different journals with a generic title and distinct ISSNs.
+        for j, has_issn in titles.get(title, []):
+            if not any(ids) or not has_issn:
+                union(i, j)
+        titles.setdefault(title, []).append((i, any(ids)))
+    groups = {}
+    for i, r in enumerate(rows):
+        groups.setdefault(root(i), []).append(r)
+    for group in groups.values():
+        ids = sorted({re.sub(r"[^0-9X]", "", r.get(k, "").upper()) for r in group for k in ("issn", "eissn")} - {""})
+        key = ids[0] if ids else min(r["publisher"] + ":" + r["journal_title"] for r in group).casefold()
+        jid = "j-" + hashlib.sha256(key.encode()).hexdigest()[:16]
+        for r in group:
+            r["journal_id"] = jid
+            key = "|".join(str(r.get(k, "")) for k in ("journal_id", "fee_route", "institution", "source_file", "source_row", "source_record_id"))
+            r["route_id"] = "r-" + hashlib.sha256(key.encode()).hexdigest()[:16]
 
 
 def clean(v) -> str:
@@ -118,7 +162,7 @@ def row(**kw) -> dict:
 
 
 # --------------------------------------------------------------------------
-# per-publisher parsers
+# institution workbook parsers: one per bundled .xlsx
 # --------------------------------------------------------------------------
 
 def parse_ieee() -> list[dict]:
@@ -147,7 +191,6 @@ def parse_ieee() -> list[dict]:
             citescore_2024=num(r.get("CiteScore")),
             sjr_2024="",
             best_quartile=bq, quartile_basis=basis,
-            list_context=LIST_CONTEXT["IEEE"],
             source_file="IEEE.xlsx", source_sheet="Title List", source_row=i + 3,
         ))
     return out
@@ -171,7 +214,6 @@ def parse_springer() -> list[dict]:
             subject_area=clean(r.get("Main Discipline")),
             imprint=clean(r.get("Imprint")),
             best_quartile="", quartile_basis="not stated in source list",
-            list_context=LIST_CONTEXT["Springer Nature"],
             source_file="Springer_Nature.xlsx",
             source_sheet="FOA Agreement Journals List", source_row=i + 8,
         ))
@@ -199,7 +241,6 @@ def parse_elsevier() -> list[dict]:
             oa_model=clean(r.get(oa_col)),
             citescore_quartile=cq,
             best_quartile=bq, quartile_basis=basis,
-            list_context=LIST_CONTEXT["Elsevier"],
             source_file="Elsevier.xlsx",
             source_sheet="MUJ 2025 eligible pub list", source_row=i + 2,
         ))
@@ -226,7 +267,6 @@ def parse_acm() -> list[dict]:
             scope=clean(r.get("Description / Scope")),
             journal_url=clean(r.get("Journal URL")),
             best_quartile="", quartile_basis="not stated in source list",
-            list_context=LIST_CONTEXT["ACM"],
             source_file="ACM.xlsx", source_sheet="ACM Journals", source_row=i + 2,
         ))
     return out
@@ -261,10 +301,60 @@ def parse_tf() -> list[dict]:
             citescore_2024=num(r.get("2024 CiteScore")), citescore_quartile=cq,
             sjr_2024=num(r.get("2024 SJR")), sjr_quartile=sq,
             best_quartile=bq, quartile_basis=basis,
-            list_context=LIST_CONTEXT["Taylor & Francis"],
             source_file="T_F.xlsx", source_sheet="Open Access", source_row=i + 2,
         ))
     return out
+
+
+# --------------------------------------------------------------------------
+# researched fee-route CSVs: already in ROUTE_COLUMNS shape
+# --------------------------------------------------------------------------
+
+def parse_route_csv(name: str) -> list[dict]:
+    """Read one researched fee-route CSV as written.
+
+    These files are the research record, so nothing is recomputed here. The
+    three display fields the report quotes are mirrored from the route's own
+    evidence, and the quartile basis says plainly that no metric was supplied.
+    """
+    out = []
+    with (SRC / name).open(encoding="utf-8", newline="") as f:
+        for r in csv.DictReader(f):
+            r.update(list_kind=r["evidence_status"], coverage_note=r["eligibility"],
+                     fee_note=r["notes"],
+                     quartile_basis="not stated in source list")
+            out.append(r)
+    return out
+
+
+def apply_institution_routes(rows: list[dict], prov: dict) -> None:
+    """Turn the bundled workbook titles into `institutional_oa` route records.
+
+    The MUJ and JKLU mapping came from the user on 2026-09-19 and no contract
+    was supplied with it, so every row says `user_confirmed_mapping` and keeps
+    the conditions in `eligibility`. Zero APC here describes the route if its
+    conditions hold, never an approval for a particular author.
+    """
+    for r in rows:
+        pv = prov.get(r["publisher"], {})
+        inst = pv.get("institution", "")
+        named = inst and not inst.startswith("[AUTHOR")
+        r["list_kind"] = pv.get("kind", "")
+        r["list_context"] = pv.get("scope", "")
+        r["coverage_note"] = (r["list_context"] + (f" [{inst}]" if named else "")).strip()
+        r["fee_note"] = pv.get("fee_note", "")
+        r.update(
+            fee_route="institutional_oa",
+            institution="JKLU" if r["publisher"] == "ACM" else "MUJ",
+            apc_payable="0", other_fees="unknown",
+            evidence_status="user_confirmed_mapping", record_status="listed",
+            checked_on="2026-09-19", source_updated=pv.get("exported", ""),
+            eligibility="User identifies this bundled list as institution-sponsored. "
+                        "Confirm corresponding-author eligibility, current term, "
+                        "article type and allocation.",
+            notes="Institution mapping confirmed by user 2026-09-19; current contract "
+                  "and per-author approval not independently established.",
+        )
 
 
 def main() -> None:
@@ -282,29 +372,31 @@ def main() -> None:
         rows.extend(got)
 
     prov = load_provenance()
-    for r in rows:
-        pv = prov.get(r["publisher"], {})
-        r["list_kind"] = pv.get("kind", "")
-        inst = pv.get("institution", "")
-        r["coverage_note"] = (pv.get("scope", "") + (f" [{inst}]" if inst and not inst.startswith("[AUTHOR") else "")).strip()
-        r["fee_note"] = pv.get("fee_note", "")
     if prov:
-        print("provenance: " + "; ".join(f"{k}: {v.get('kind', '?')}" for k, v in prov.items()))
+        print("provenance: " + "; ".join(f"{k}: {v.get('kind', '?')}"
+                                         for k, v in prov.items()))
     else:
-        print("note: assets/list-provenance.yaml not read (missing or no PyYAML); list_kind left empty")
+        print("note: assets/list-provenance.yaml not read (missing or no PyYAML); "
+              "list_kind left empty")
+    apply_institution_routes(rows, prov)
 
-    df = pd.DataFrame(rows, columns=COLUMNS)
+    for name, what in ROUTE_SOURCES:
+        got = parse_route_csv(name)
+        print(f"{name:<26} {len(got):>5} routes  ({what})")
+        rows.extend(got)
+
+    assign_ids(rows)
+    df = pd.DataFrame(rows, columns=COLUMNS).fillna("")
     dupes = df.duplicated(subset=["publisher", "journal_title"]).sum()
     if dupes:
-        print(f"note: {dupes} duplicate publisher+title rows retained "
-              f"(they exist in the source lists)")
+        print(f"note: {dupes} repeated publisher+title rows retained as separate fee routes/evidence")
     df.to_csv(a.out, index=False)
     print(f"\nwrote {len(df)} rows to {a.out}")
-    print("\nquartile coverage by publisher:")
-    cov = df.groupby("publisher").apply(
-        lambda g: f"{(g.best_quartile != '').sum()}/{len(g)}", include_groups=False)
-    for k, v in cov.items():
-        print(f"  {k:<18} {v}")
+    summary = {"built_from_snapshot": "2026-09-19", "route_rows": len(df),
+               "distinct_journal_ids": df.journal_id.nunique(),
+               "routes": df.fee_route.value_counts().to_dict(),
+               "record_status": df.record_status.value_counts().to_dict()}
+    print(json.dumps(summary, indent=2))
 
 
 if __name__ == "__main__":

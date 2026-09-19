@@ -1,108 +1,158 @@
 # Catalog schema and provenance
 
-## What each bundled list actually is
+The master `assets/journals.csv` contains one row per journal, fee route, and
+source. Multiple routes for the same journal remain distinct and share a
+`journal_id`. The 2026-09-19 catalog has 20,262 route records linked to 19,533
+journal IDs. It is a research snapshot, not an exhaustive global directory.
 
-Three of the five are eligibility or agreement lists, not complete publisher
-catalogs. This matters when a user asks why a well-known journal is missing.
+## Source files
 
-| File | Sheet used | Titles | What it is |
-|---|---|---|---|
-| `IEEE.xlsx` | Title List | 224 | IEEE title list with open-access type and 2024 JCR/CiteScore metrics. The workbook states data is accurate as of 1 January 2026. Header sits on the second row; the last eight rows are footnotes. |
-| `Springer_Nature.xlsx` | FOA Agreement Journals List | 620 | Journals eligible under a Springer Nature fully-open-access agreement. Discipline and imprint only, no citation metrics. Header sits on row 7. A second sheet holds a pivot count by subject. |
-| `Elsevier.xlsx` | MUJ 2025 eligible pub list | 650 | An institutional eligible publication list. All entries are hybrid. Four columns: ISSN, title, OA type, CiteScore 2024 quartile. |
-| `ACM.xlsx` | ACM Journals | 70 | ACM journal list. The Notes sheet records that ACM journals are open access as of 1 January 2026 and that blank fields were absent from the source, not omitted. Scope text present for 18 of 70. |
-| `T_F.xlsx` | Open Access | 284 | Taylor & Francis open-access titles with WoS/Scopus coverage and 2024 JIF, CiteScore, SNIP and SJR values and quartiles. |
+All inputs live in `assets/sources/`:
 
-Total: 1,848 permitted titles.
-
-Because the Elsevier and Springer lists are agreement-scoped, a strong Elsevier
-journal outside the institutional list is not recommendable here. Say that
-explicitly rather than substituting a weaker in-list title without explanation.
-
-## Normalized fields in `assets/journals.csv`
-
-| Column | Meaning | Populated for |
-|---|---|---|
-| `publisher` | one of the five | all |
-| `journal_title` | title as printed in the source, newlines collapsed | all |
-| `acronym` | publisher acronym | IEEE, ACM, T&F |
-| `issn`, `eissn` | identifiers as given | varies |
-| `oa_model` | hybrid, full/fully open access, open access | all |
-| `subject_area` | publisher's own discipline label | Springer, T&F |
-| `imprint` | Springer/BioMed Central; T&F/FSG | Springer, T&F |
-| `scope` | scope paragraph | 18 ACM rows only |
-| `journal_url` | official page | ACM only |
-| `index_wos` | SCIE / ESCI / SSCI, or Yes/No | IEEE, T&F |
-| `scopus_covered` | Yes/No | T&F only |
-| `jif_2024`, `jif_quartile` | JCR 2024 | IEEE, T&F |
-| `citescore_2024`, `citescore_quartile` | CiteScore 2024 | Elsevier (quartile), IEEE (value), T&F |
-| `sjr_2024`, `sjr_quartile` | SJR 2024 | T&F |
-| `best_quartile` | best available among JIF, CiteScore, SJR | see below |
-| `quartile_basis` | which metric produced `best_quartile` | all |
-| `list_context` | one line describing the source list | all |
-| `source_file`, `source_sheet`, `source_row` | provenance back to the spreadsheet | all |
-
-## Quartile coverage, and the rule that follows from it
-
-| Publisher | Titles with a quartile |
+| Input | Contents |
 |---|---|
-| Elsevier | 641 / 650 (CiteScore 2024) |
-| Taylor & Francis | 226 / 284 (best of JIF, CiteScore, SJR) |
-| IEEE | 189 / 224 (JIF 2024) |
-| ACM | 0 / 70 |
-| Springer Nature | 0 / 620 |
+| `IEEE.xlsx`, `Springer_Nature.xlsx`, `Elsevier.xlsx`, `ACM.xlsx`, `T_F.xlsx` | 1,848 MUJ/JKLU sponsored entries; the bundled workbooks, unchanged |
+| `uf_100_percent_apc.csv` | 686 conditional UF full-APC coverage records |
+| `no_apc_open_access.csv` | 14,645 DOAJ no-APC declarations and three publisher-policy records |
+| `subscribe_to_open.csv` | 78 routes with year/volume and other-fee conditions |
+| `subscription_no_apc.csv` | 3,002 non-OA routes without an OA APC |
 
-`quartile_basis` always names the metric. Never present a CiteScore quartile as
-a JIF quartile, and never compare them as though they were the same scale: a
-journal can be Q1 on CiteScore and Q2 on JIF, and both statements are true.
+CSV records retain source and policy URLs, research dates, eligibility, and
+other-fee flags. `source_file` and `source_row` locate the input in this folder;
+CSV row numbers include the header. Institution workbook provenance remains in
+`assets/list-provenance.yaml`. See `evidence-rules.md` for funding conditions.
 
-For ACM and Springer titles, `best_quartile` is empty and `quartile_basis` reads
-"not stated in source list". Two acceptable responses:
+## Fields
 
-1. Report it as not stated in the provided list.
-2. Look it up from SCImago or the journal page at recommendation time and cite
-   that source explicitly.
+| Field | Interpretation |
+|---|---|
+| `journal_id` | Derived ID linking matching print/electronic ISSNs; title-only fallback for missing identifiers |
+| `route_id` | Derived ID for this source and funding route |
+| `publisher`, `journal_title`, `issn`, `eissn` | Source identifiers; some ASME/S2O entries lack ISSNs |
+| `journal_url`, `subject_area`, `scope` | Discovery metadata; keywords are not verified aims-and-scope prose |
+| `oa_model` | Journal's source-reported publishing model; may lag a model change |
+| `fee_route` | `institutional_oa`, `no_apc_oa`, `s2o`, or `subscription_no_apc` |
+| `institution` | `UF`, `MUJ`, `JKLU`, or `any`; no implicit transfer of eligibility |
+| `apc_payable` | `0` under the stated route's conditions; not total publication cost |
+| `other_fees` | `no`, `yes`, `possible`, or `unknown`; only `no` passes the strict filter |
+| `eligibility`, `article_types` | Conditions requiring verification for the manuscript |
+| `agreement_start`, `agreement_end` | ISO date when explicitly available; blank means unknown, not perpetual |
+| `annual_cap` | Published allocation (IOP UF: 40); blank is not unlimited |
+| `evidence_status` | Source level, listed below; not author-level funding approval |
+| `record_status` | `listed`, `superseded`, or `excluded`; listed does not independently prove active submissions |
+| `source_url`, `policy_url`, `checked_on` | Discovery/policy provenance and retrieval/research date |
+| `source_updated` | Source-reported update date; can precede retrieval by years |
+| `source_file`, `source_sheet`, `source_row`, `source_record_id` | Exact input locator where available |
+| `doaj_url`, `instructions_url`, `apc_information_url`, `other_fees_url` | Original fee/author-policy links |
+| `license`, `languages`, `country` | Source journal metadata; journal article license is distinct from dataset license |
+| `notes` | Limits, corrections, and unresolved conditions |
 
-Not acceptable: inferring a quartile from the publisher's other journals, from
-the journal's apparent prestige, or from an impact factor recalled from training
-data.
+`evidence_status` values:
 
-## Fields deliberately absent from every list
+- `user_confirmed_mapping`: original lists mapped to MUJ/JKLU by the user;
+  contracts and renewals have not been independently established.
+- `institution_title_list`: UF finder or UF S2O title listing; current author
+  and journal eligibility still needs verification.
+- `publisher_title_list`: IOP current title lists combined with its UF terms.
+- `publisher_catalog_plus_institution_policy`: ASME catalog plus UF agreement
+  statement; not a title-by-title contract export.
+- `source_reported`: DOAJ journal declaration; policies not individually fetched.
+- `publisher_policy`: specific publisher fee statement checked in this research.
+- `publisher_catalog_plus_policy`: Springer 2026 model plus subscription policy.
+- `legacy_title_list_plus_current_policy`: Elsevier 2025 models plus current
+  general subscription policy; verify the journal has not flipped to full OA.
 
-Acceptance rate, time to first decision, time to publication, APC, page or word
-limits, accepted article types, template requirements, and special-issue status.
-All of these are user priorities and none are in the data. See
-`evidence-rules.md` for how to source them.
+Four fields describe the list a row came from rather than the journal:
 
-## Rebuilding
+| Field | Workbook rows | Fee-route CSV rows |
+|---|---|---|
+| `list_kind` | the workbook's `kind` from `list-provenance.yaml` | the route's `evidence_status` |
+| `list_context` | the workbook's `scope` from the same file | blank |
+| `coverage_note` | that scope plus the sponsoring institution | the route's `eligibility` |
+| `fee_note` | the workbook's `fee_note` | the route's `notes` |
+
+`assets/list-provenance.yaml` is the only place the five workbooks are
+described; edit it there when a workbook is replaced.
+
+Metric fields are populated only where a source supplied them: `index_wos`,
+`scopus_covered`, `jif_2024`, `jif_quartile`, `citescore_2024`,
+`citescore_quartile`, `sjr_2024`, `sjr_quartile`, `best_quartile` and
+`quartile_basis` come from the IEEE, Elsevier and T&F workbooks, and are blank
+for roughly 95% of records. `acronym` and `imprint` are similarly sparse. Do not
+interpret 2024 metrics as current. `best_quartile` is the numerically best
+available metric, with ties preferring JIF then CiteScore then SJR; it is not a
+common ranking scale across those systems. Missing metrics stay blank. A route
+without a metric can be cross-referenced to a matching ISSN's workbook record,
+but never inherits its institution or fee terms.
+
+## Rebuilding and refreshing
+
+Searching uses Python's standard library. Rebuilding requires pandas, openpyxl
+and PyYAML. From the skill directory, run:
 
 ```bash
-python scripts/build_catalog.py                     # regenerate assets/journals.csv
-python scripts/build_catalog.py --out /tmp/test.csv  # dry run elsewhere
+python scripts/build_catalog.py
 ```
 
-The script prints per-publisher counts and quartile coverage, which is the
-quickest check that a replaced spreadsheet parsed correctly. If a publisher's
-count changes unexpectedly after a source update, the header row probably moved:
-IEEE and Springer both carry banner rows above their headers, and the parsers
-hardcode those offsets with a comment explaining why.
+The builder reads the nine source files and writes only `assets/journals.csv`.
+Use `--out PATH` to write elsewhere. It prints route and journal counts.
 
-Known parsing decisions worth preserving on any update:
+Update the source CSVs after checking the cited institution and publisher
+policies. Record the actual research and source-update dates; confirm title
+packages, dates, article types, caps, closures, and other fees. DOAJ's export is
+available at <https://doaj.org/csv>: retain only explicit `APC=No`, preserve
+other-fee declarations and continuation flags, and record its export date.
+UF discovery starts at <https://guides.uflib.ufl.edu/openaccess/ufinvests> and its
+linked <https://search.scifree.se/uflib> finder. Verify finder results against
+current publisher terms. Do not convert discounts into full coverage or unknown
+fees into zero. Keep URLs and limitations in each row, then rebuild the master.
 
-- IEEE footnote rows are dropped by testing for a missing title, not by row
-  index, so they stay dropped if the footnote count changes.
-- Elsevier quartile cells containing `-` become empty, not Q4.
-- Springer cells contain hard newlines inside titles and disciplines; these are
-  collapsed to single spaces or titles will not match.
-- Duplicate publisher+title pairs are retained if the source contains them, with
-  a count printed, because silently deduplicating hides a source problem.
+## Identity limits
 
-## Provenance columns
+ISSNs are linked transitively across print/electronic values. An exact normalized
+title bridges rows only where at least one lacks ISSNs. The search returns one
+candidate with all matching routes. Derived IDs are deterministic for a fixed
+input, but may change when identifiers are corrected; they are not external
+persistent identifiers. Different title spellings without shared ISSNs can
+remain separate. Counts are linked-record counts, not an independent serials
+registry audit. Consult exact ISSNs before merging ambiguous titles.
 
-Every row also carries `list_kind`, `coverage_note`, and `fee_note`,
-filled from `assets/list-provenance.yaml` by the publisher key. `list_kind`
-is the yaml's `kind` (a publisher title list, an institutional eligibility
-list, an agreement eligibility list); `coverage_note` is its scope plus the
-institution when one is named; `fee_note` is the fee statement the report
-quotes. A publisher with no provenance entry gets empty values, and the
-report says the fee position could not be established.
+## Data attribution and reuse
+
+The repository's MIT license applies to the original skill instructions and
+scripts. It does **not** relicense third-party metadata or source documents.
+
+### DOAJ
+
+The DOAJ rows in `sources/no_apc_open_access.csv` are a filtered and normalized
+adaptation of the Directory of Open Access Journals journal CSV, downloaded from
+<https://doaj.org/csv> on 2026-09-19. The delivered export filename was
+`doaj_journalcsv_20260819_2320_utf8.csv`, a 2026-08-19 snapshot.
+
+Journal metadata is licensed **Creative Commons Attribution-ShareAlike 4.0
+International (CC BY-SA 4.0)**. Attribution: Directory of Open Access Journals
+(DOAJ), <https://doaj.org/>. License:
+<https://creativecommons.org/licenses/by-sa/4.0/>. Source terms:
+<https://doaj.org/terms/>. DOAJ article metadata's CC0 license does not apply to
+this journal dataset.
+
+Changes: select `APC=No`; retain other-fee declarations, identifiers and policy
+links; normalize whitespace; add provenance and route labels; flag continuation
+records and known closures; join matching journal identifiers in the master.
+The DOAJ-derived CSV and the adapted DOAJ material in `journals.csv` are supplied
+under CC BY-SA 4.0. When redistributing the combined catalog, preserve attribution
+and comply with ShareAlike for that adapted material. Do not label the entire
+combined data export MIT.
+
+### Other sources
+
+UF and publisher lists are cited row by row. Their original text, webpages,
+workbooks, journal names, and trademarks remain subject to their respective
+owners' terms. No additional license grant over their source documents is
+asserted. The five institution workbooks were supplied with the skill and are
+preserved without changing their licensing status.
+
+Three additional publisher-policy rows in `sources/no_apc_open_access.csv`
+retain their URLs and checked dates. Dagstuhl separately releases its supplied
+metadata under CC0 on the cited TGDK page; journal articles carry their own
+stated licenses.
