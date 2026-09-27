@@ -7,6 +7,9 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+### Changed
+- `manuscript-figures` (1.2.1 to 1.3.0): the Codex image route runs from an empty staging directory instead of the project repository, and `generative-images.md` opens with what may be sent to the image model. A paper repository can hold patient-level data, and Codex's sandbox reads its whole working directory.
+
 ## [0.11.0] - 2026-09-19
 
 `journal-advisor` goes from "which of these 1,848 titles fits" to "which venue

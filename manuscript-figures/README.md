@@ -99,6 +99,7 @@ python manuscript-figures/scripts/check_figure.py --self-test
 
 ## Changelog
 
+- **1.3.0**: Generative images gain a section on what may leave the machine: prompts describe concepts, not data; no attached image of an individual patient's record from a restricted dataset; borderline cases go to the user. The Codex route now runs `codex exec -C` on an empty staging directory and copies the verified PNG back, because run from the repository its sandbox could read cohort files and per-record outputs.
 - **1.2.1**: The description is trimmed below the 1024-character cap that skill portals enforce on the `description` field, by compressing the prose and dropping trigger phrases that duplicated others. Behavior is unchanged.
 - **1.2.0**: `check_figure.py` reads the placed text: every label's box against the figure frame, every label's size at the target width (`--min-font-pt`, default 6), and label collisions, from poppler or PyMuPDF for PDFs and from `<text>` elements for SVGs; `--no-text` skips it, `--self-test` exercises it. On a real schematic it confirms the labels survive scaling to a double column.
 - **1.1.3**: The description names "plot", "chart", "make the figures publishable", and states precedence over general charting or dataviz skills for print figures; the loading-discipline section.

@@ -16,7 +16,7 @@ description: >-
   "plot", "chart", or "make the figures publishable". For print figures this
   takes precedence over any general dataviz skill.
 summary: "Publication-grade figures: styled matplotlib, hand-authored SVG schematics, generative art."
-version: "1.2.1"
+version: "1.3.0"
 author: anayy09
 license: MIT
 metadata:
@@ -182,8 +182,9 @@ to PDF → check → deliver SVG source + PDF.
 **"Make a graphical abstract."** Check the venue's generative-AI policy first
 and tell the user what it says. If prohibited: build it as an SVG composition
 instead. If allowed with disclosure: follow `references/generative-images.md`
-(Codex/API invocation, prompt patterns, in-image versus overlaid text,
-disclosure line for the manuscript).
+(what may be sent to the image model, Codex/API invocation from an empty
+staging directory, prompt patterns, in-image versus overlaid text, disclosure
+line for the manuscript).
 
 **"Why did the journal bounce my figures?"** Run `check_figure.py` on each
 file, map the failures to the venue's requirements in

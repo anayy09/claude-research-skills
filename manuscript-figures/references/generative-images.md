@@ -3,6 +3,29 @@
 Image-generation models produce striking conceptual art and are genuinely
 useful for graphical abstracts and illustrative figures.
 
+## What may leave the machine
+
+Both routes send the prompt, and any image attached to it, to OpenAI. If the
+project or the user's instructions carry a data-governance rule, that rule
+governs. Absent one, apply these defaults:
+
+- **The prompt describes objects and concepts, not data.** No patient-level
+  values, identifiers, or dates of service; no numbers taken from run outputs,
+  results logs, or tables not yet in the manuscript. Results already reported
+  in the manuscript may be named, though a conceptual figure rarely needs them.
+- **Never attach (`-i`) an image of an individual patient's record** from a
+  restricted or credentialed dataset (an ECG trace from MIMIC-IV-ECG, a slide
+  from a credentialed cohort, a DICOM frame), and never one with burned-in
+  identifiers. Restyling an existing figure is fine when it is already in the
+  manuscript and shows aggregates or public data.
+- **Codex never runs inside the project repository.** Its sandbox can read the
+  whole working directory, and a paper repository can hold cohort files,
+  feature tables, and per-record predictions. Route B below gives it an empty
+  staging directory instead.
+- **Borderline means ask.** A figure that plots one patient's record, small
+  cell counts, or aggregate results from a credentialed dataset that are not
+  yet in the manuscript: stop and ask the user before anything is sent.
+
 ## Invocation
 
 Two routes, in order of preference. Route B needs only an authenticated
@@ -42,26 +65,37 @@ piping the prompt on stdin to avoid quoting problems:
 
 ```bash
 command -v codex >/dev/null || { echo "codex CLI not found"; }
-mkdir -p figures/raw
-codex exec --sandbox workspace-write --skip-git-repo-check <<'PROMPT'
+# An empty staging directory is Codex's whole world: it never sees the repository.
+STAGE="$(mktemp -d "${TMPDIR:-/tmp}/codex-image-XXXXXX")"
+codex exec --sandbox workspace-write --skip-git-repo-check -C "$STAGE" <<'PROMPT'
 Generate an image with OpenAI image generation (the current image model).
 
 Prompt: "<prompt built per the section below>"
 
 Requirements:
 - Largest available size, high quality, landscape.
-- Save the PNG to figures/raw/concept_v1.png relative to your working
-  directory and print the absolute path.
+- Save the PNG as concept_v1.png in your working directory and print the
+  absolute path.
+- Do not read or list anything outside your working directory.
 - If a direct image-generation tool is unavailable to you, print exactly
   UNAVAILABLE: <reason>. Do not substitute a hand-drawn SVG, a matplotlib
   render, or a placeholder image.
 PROMPT
-test -s figures/raw/concept_v1.png && echo OK || echo "generation failed"
+mkdir -p figures/raw
+if test -s "$STAGE/concept_v1.png"; then
+  cp "$STAGE/concept_v1.png" figures/raw/ && echo OK
+else
+  echo "generation failed"
+fi
 ```
 
-`--sandbox workspace-write` is what permits the write; the default run is
-read-only and the file never lands. `--skip-git-repo-check` is only needed
-outside a git repo.
+`-C "$STAGE"` is the containment: run from the repository, Codex could read
+anything in it. `--sandbox workspace-write` is what permits the write inside
+the staging directory; the default run is read-only and the file never lands.
+`--skip-git-repo-check` is needed because the staging directory is not a git
+repo. To restyle an existing figure, copy only that file into `$STAGE` and pass
+it with `-i`, after checking it against the section above. Leave the staging
+directory in place until the image has been inspected, then delete it.
 
 That last requirement is not boilerplate. Told to produce an image with no
 image tool available, a coding agent will cheerfully draw a matplotlib
