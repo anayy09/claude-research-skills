@@ -15,12 +15,12 @@ description: >-
   and when one manuscript needs packages for several venues at once. Never
   rewrites or invents content; missing items are marked for the author.
 summary: "Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word."
-version: "1.2.1"
+version: "1.3.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-13"
+  last_updated: "2026-11-14"
 ---
 
 # Submission Formatter
@@ -339,8 +339,21 @@ loop.
 | Math was rendered as images in the source | Flag every instance with its location. Do not transcribe equations by sight into LaTeX. |
 | Two venues' requirements conflict with an author instruction | The author instruction page wins over the template file. Note the conflict. |
 
+## After the package: the portal
+
+A built package is not a submission. When the user is about to upload, or a
+portal has bounced a file, read `references/portal-submission.md`: the flat
+upload folder per venue, the form-answers sheet written from the repository,
+the checks that prevent the usual technical-check bounces, double-anonymous
+preparation, what the user does personally in the browser, and the
+comparison of the portal's PDF with ours.
+
 ## Reference files
 
+- `references/portal-submission.md` - the step between a built package and a
+  submitted manuscript. Read before any upload or when a technical check
+  returns the submission.
+- `references/multi-venue-build.md` - one body, several venue packages.
 - `references/template-sources.md` - where the official template for each major
   publisher lives, class names, options, and per-venue quirks. Read before
   fetching anything.

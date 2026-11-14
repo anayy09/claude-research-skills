@@ -2,7 +2,7 @@
 
 > Reformat a finished manuscript into a venue's LaTeX or Word template without changing a word.
 
-[![Version](https://img.shields.io/badge/version-1.2.1-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.3.0-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)

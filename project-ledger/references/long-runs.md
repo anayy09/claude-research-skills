@@ -17,6 +17,16 @@ is never logged.
    Windows that is PowerShell, with paths quoted and no Bash-isms.
 3. **Register the run** with `experiment-ledger` so the output directory has
    a manifest before the first result lands.
+4. **Give the estimate before being asked, with its basis.** "About 7 hours
+   per seed, from 650 s per epoch over 40 epochs on this GPU." Take the
+   basis from the durations recorded in `RUNBOOK.md` when a comparable run
+   exists, and from a timed unit otherwise. The same applies to any step
+   of your own that will take more than a few minutes: say how long and
+   why before starting it.
+5. **Test the command you hand over.** Run it far enough to see it start
+   (a dry run, one step, or `--help` with the real arguments) in the shell
+   it is written for. A command with a broken quote or a stale data path
+   costs the owner a session.
 
 ## Every long job implements
 
@@ -43,6 +53,11 @@ is never logged.
   record where it stopped in `RUNBOOK.md`, and append a `PROGRESS.md` entry
   with the resume command. "Peacefully" means the checkpoint is intact and
   the resume is one command.
+- When it finishes, record the actual wall-clock, rate, and machine beside
+  the launch command in `RUNBOOK.md`. The next estimate is read from there.
+- When the user reports that they started a run themselves, set a monitor
+  on its progress file or output and pick the work up when it lands,
+  without being asked a second time.
 
 ## Handing a command to the owner
 

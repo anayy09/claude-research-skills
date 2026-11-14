@@ -15,12 +15,12 @@ description: >-
   long job on a local machine is project-ledger's runbook discipline; this
   skill is for schedulers.
 summary: "Write, debug, and monitor cluster batch jobs, and serve models on compute nodes."
-version: "2.0.3"
+version: "2.1.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-13"
+  last_updated: "2026-11-14"
 ---
 
 # HPC Cluster

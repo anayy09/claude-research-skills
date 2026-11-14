@@ -11,14 +11,15 @@ description: >-
   or compare venues, what the desk-reject risk is, or says "which journal", "APC",
   "read-and-publish", "is the fee covered", "free to publish", or "no APC"; and
   whenever a manuscript or abstract arrives with a question about placement.
-  Fee coverage is always reported as conditional until eligibility is verified.
+  Reads the corresponding author's institution from AUTHORS.yaml and states plainly
+  which bundled list covers the fee.
 summary: "Match manuscripts to journals with verified fee routes, institutional eligibility, and desk-reject risk."
-version: "2.0.0"
+version: "2.1.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-19"
+  last_updated: "2026-11-14"
 ---
 
 # Journal Advisor
@@ -61,8 +62,16 @@ the user's funder requires before offering either.
 Establish the corresponding-author affiliation, article type, expected
 submission and acceptance dates, OA requirement, indexing requirement, budget,
 and deadline. Infer what the manuscript already provides rather than asking for
-it again. While the affiliation is unknown, shortlist the universal routes and
-show institutional routes as conditional.
+it again. Read the corresponding author's institution from the project's
+`AUTHORS.yaml` before asking; in this user's papers the corresponding author is
+usually at MUJ or JKLU, which is why those lists are bundled. Search the bundled
+lists for that institution first (`find_journals.py --institution`), before any
+open-web venue search. When the corresponding author's institution matches a
+list and the title is on it, say so as a fact, for example "covered under MUJ's
+Elsevier list (2025 list)", followed by the one item still to confirm, if any
+(list year, article type, cap). Do not write "may cover" for a route that the
+list and the author block already settle. While the affiliation is unknown,
+shortlist the universal routes and show institutional routes as conditional.
 
 ## Workflow
 
@@ -149,8 +158,11 @@ checks, and the data notes. Group by publisher only when asked.
 - **No invented numbers.** Acceptance rates, review times, APCs, quotas and
   impact metrics are quoted with a source or marked as not stated.
 - **No manufactured coverage.** A discount is not a waiver, a title list is not
-  an approval, and `unknown` is not `no`. Every institutional and S2O route is
-  reported as conditional, with its conditions named.
+  an approval, and `unknown` is not `no`. An institutional or S2O route is
+  stated plainly when the corresponding author's institution and the title
+  both match a bundled list, with the remaining condition named once. It is
+  reported as conditional only when the institution, the title, or the
+  list year is unknown.
 - **No transferred eligibility.** MUJ funding never applies to a UF or JKLU
   author, and a route's terms never migrate to another route for the same title.
 - **No fee claim without its route.** "No APC" alone is not actionable; name

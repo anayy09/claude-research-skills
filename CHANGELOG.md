@@ -7,7 +7,20 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+Changes drawn from a review of every session on the Windows laptop (517 transcripts) and on HiPerGator (66) through 2026-11-14.
+
 ### Changed
+- `prose-naturalizer` (3.0.2 to 4.0.0): mirrors `blader/humanizer` 4.0.0, including section F on replies that re-explain what the reader knows, the file-mode read rule, and the reworked examples. `scripts/sync_upstream.py` rebuilds `SKILL.md` from an upstream checkout and re-attaches `local-additions.md`, which holds three local rules: details in text sent under the user's name come only from the source, the user, or project files (upstream 4.0.0 otherwise allows added specifics); a manuscript gets `manuscript-writing`'s lint without a reply about scope; and rules for emails, chat replies, and posts taken from corrections to drafted messages.
+- `manuscript-editor` (1.2.2 to 1.3.0): what counts as a limitation, with a size for the section and the rule that a concession in a response letter is not automatically a limitation in the paper; simple display items; answer the narrow ask. The Word reference now points to scripted tracked changes instead of saying they cannot be done.
+- `manuscript-writing` (4.0.1 to 4.1.0): limitations in proportion, the simplest true account, and no scope reply when a request names `prose-naturalizer` as well.
+- `journal-advisor` (2.0.0 to 2.1.0): reads the corresponding author's institution from `AUTHORS.yaml`, searches the bundled lists for it first, and states coverage as a fact when the list and the author block settle it.
+- `build-check` (1.1.1 to 1.2.0): `compare_portal_pdf.py` and a section on checking the PDF a submission portal builds against the local build.
+- `submission-formatter` (1.2.1 to 1.3.0): `references/portal-submission.md` covers the flat upload folder, the form-answers sheet, the checks that prevent technical-check returns, double-anonymous preparation, and what the author does personally in the portal.
+- `project-ledger` (1.1.0 to 1.2.0): the brief is delivered in the conversation as the whole final message after memory notes are updated; long runs get an estimate with its basis up front, a tested hand-over command, recorded actual durations, and a monitor when the owner starts the run.
+- `release-archive` (1.0.0 to 1.1.0): the public release is always a new repository; publishing steps wait for a yes; the record is read back after publishing.
+- `hpc-cluster` (2.0.3 to 2.1.0): troubleshooting entries for login-node-local state, group QoS limits, accounting that misses containerized processes, HTTPS git authentication, and local port binds.
+- `manuscript-figures` (1.3.0 to 1.4.0): the generative route is used when the user asks for it; sizing and legibility rules for posters, notebooks, and READMEs.
+- `scripts/generate_catalog.py` leaves skills with `metadata.status: private` out of the README table.
 - `manuscript-figures` (1.2.1 to 1.3.0): the Codex image route runs from an empty staging directory instead of the project repository, and `generative-images.md` opens with what may be sent to the image model. A paper repository can hold patient-level data, and Codex's sandbox reads its whole working directory.
 
 ## [0.11.0] - 2026-09-19

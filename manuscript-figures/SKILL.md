@@ -16,12 +16,12 @@ description: >-
   "plot", "chart", or "make the figures publishable". For print figures this
   takes precedence over any general dataviz skill.
 summary: "Publication-grade figures: styled matplotlib, hand-authored SVG schematics, generative art."
-version: "1.3.0"
+version: "1.4.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-13"
+  last_updated: "2026-11-14"
 ---
 
 # Manuscript Figures
@@ -97,6 +97,31 @@ Hard boundaries between the paths:
   the venue allows it.
 - **Data figures are code.** The script that produces a figure is part of the
   figure. Save it, and regenerate rather than retouch.
+- **When the user asks for the generative route, use it.** A request that
+  names Codex image generation, or says the SVG looks mechanical, robotic,
+  or cartoonish, is the explicit request the first boundary waits for. Do
+  not answer it with another SVG. Give the image model the real terms the
+  figure must carry (table names, stage names, counts), because a handsome
+  figure with too little domain text is the usual second complaint.
+
+**Figures that are not for a journal page.** A poster, a slide, a notebook,
+and a README are read at a different size, so build for that size:
+
+- Poster: set type for reading at about a metre. Nothing in a figure below
+  roughly 24 pt at print size, screenshots included; a screenshot whose text
+  cannot reach that is cropped to the part that matters or replaced by a
+  redrawn panel. Check the effective resolution of every raster at print
+  size (150 dpi is the floor for a poster) and say which ones fall short.
+- Notebook or README: export at twice the displayed pixel size and let the
+  page scale it down. Shrinking an already small export is what makes an
+  embedded figure blurry. Keep the displayed widths of sibling figures equal.
+- A set of figures in one document shares type and line weights. Whether
+  they share one palette is the author's choice: ask once when a poster or
+  deck has several, since "all the same colours" and "all different" have
+  both been asked for.
+- After placing any figure, look at the render at the size it will be seen.
+  Text that crosses a box, a label that collides with an arrow, and uneven
+  gaps are found by looking, not by the exporter.
 
 ## Step 2: apply the non-negotiables
 

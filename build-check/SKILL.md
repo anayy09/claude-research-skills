@@ -16,12 +16,12 @@ description: >-
   manuscript-figures pass that ends in a build. Never report a build as clean
   without this report.
 summary: "Compile, render, and inspect the built PDF: overflow, floats, page cap, fonts, stale derived files."
-version: "1.1.1"
+version: "1.2.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-13"
+  last_updated: "2026-11-14"
 ---
 
 # Build Check
@@ -128,6 +128,29 @@ the float check result, fonts, words, and the path to the report. It names
 every remaining WARN with its reason. It does not say "compiles clean",
 "builds without errors", or "zero undefined references" as if those were the
 result; those are inputs to the result.
+
+## The portal's PDF
+
+A submission system rebuilds the PDF from the uploaded files, and that copy
+is the one editors and reviewers read. When the user says "check the
+journal-generated PDF", "verify the reviewer PDF", or points at a PDF the
+portal produced, compare it with the local build:
+
+```bash
+python scripts/compare_portal_pdf.py paper/main.pdf path/to/portal.pdf
+```
+
+It reports page counts, numbers and words present in one file and absent
+from the other, unresolved-reference marks, image counts per file, and the
+first page of each side by side. Then look at the portal copy's pages: the
+usual defects are a figure dropped or replaced by its filename, a table
+reflowed past the margin, fonts substituted, the supplement merged into or
+missing from the main file, a portal cover page that changes the count, and
+an author block the portal built from the form instead of the file. Check
+which uploaded file went to which field (main document, figure, supplement,
+response letter, marked copy) against the venue's list. Report differences
+that change content first, then cosmetic ones; a portal cover page or line
+numbers are expected and are said to be expected.
 
 ## What the checker cannot see
 

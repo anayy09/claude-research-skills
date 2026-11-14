@@ -121,6 +121,8 @@ def build_deprecated_table(skills: list[dict]) -> str:
 
 
 def render(readme_text: str, skills: list[dict]) -> str:
+    # Skills marked private are local to this machine and never listed publicly.
+    skills = [s for s in skills if s["status"] != "private"]
     active = [s for s in skills if s["status"] != "deprecated"]
     deprecated = [s for s in skills if s["status"] == "deprecated"]
 
@@ -152,8 +154,8 @@ def main() -> int:
     original = README.read_text(encoding="utf-8")
     updated = render(original, skills)
 
-    active = sum(1 for s in skills if s["status"] != "deprecated")
-    deprecated = len(skills) - active
+    active = sum(1 for s in skills if s["status"] not in ("deprecated", "private"))
+    deprecated = sum(1 for s in skills if s["status"] == "deprecated")
     label = f"{active} active" + (f", {deprecated} deprecated" if deprecated else "")
 
     if args.check:

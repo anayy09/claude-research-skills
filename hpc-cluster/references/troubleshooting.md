@@ -144,6 +144,34 @@ revision string changed, and whether temperature was actually zero. Then measure
 the run-to-run variation directly before attributing any difference to the
 condition under test.
 
+**A container or service that worked yesterday is "not found" today**
+Login nodes are separate machines behind one hostname. Rootless container
+images, running containers, tmux sessions, Unix sockets, and anything under
+`/tmp` or the node-local container store exist only on the node that made
+them. Run `hostname` first, compare it with the node recorded when the
+service was started, and `ssh` to that node. Record the node name wherever
+the start command is recorded.
+
+**The job is pending on a group limit (`QOSGrpMemLimit`, `QOSGrpCpuLimit`)**
+The group's allowance is in use by other members' jobs. Nothing is wrong
+with the script. Request less memory if the peak allows it, use the burst
+QoS for restartable work, or wait; report the reason instead of resubmitting.
+
+**`sacct` shows a tiny MaxRSS or CPU time for a job that ran a database or a container**
+Processes started inside a container instance or by a daemon the batch step
+launched can fall outside the step's accounting. Do not report those numbers
+as the job's footprint. Measure inside the workload (the database's own
+statistics, `ps` in the instance) or say the figure is unavailable.
+
+**`git pull` fails with "Password authentication is not supported"**
+The remote is HTTPS and no credential helper holds a token on this machine.
+Hand the user the command to run in their own shell, or use an SSH remote
+or deploy key they have set up. Do not ask for a token in the conversation.
+
+**An SSH port forward fails with "bind: Permission denied"**
+The local port is reserved or in use on the user's machine. Pick another
+local port above 20000; the remote side does not change.
+
 ---
 
 ## Diagnostic commands worth running first

@@ -16,12 +16,12 @@ description: >-
   pair it with manuscript-editor, which decides what changes; this skill
   writes the sentences.
 summary: "Scholarly prose that reads like a working researcher wrote it, with the tell sweep built in."
-version: "4.0.1"
+version: "4.1.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-13"
+  last_updated: "2026-11-14"
 ---
 
 # Research Paper Writing
@@ -60,6 +60,8 @@ does not:
 - Rewrite non-academic prose. `prose-naturalizer` covers blog posts, essays,
   documentation, and the rest, with the general pattern list. A manuscript
   never needs both skills loaded; this one carries the manuscript subset.
+  When a request names both for a manuscript, apply this skill's rules and
+  lint and carry on. No reply about scope is needed.
 
 ## The one thing that matters most: have a real claim per paragraph
 
@@ -92,6 +94,15 @@ This is what separates credible research writing from the rest.
 - When something fails or is limited, name it plainly. Do not hedge a real
   limitation into invisibility. A results section with no failure modes reads
   as either naive or dishonest, and reviewers notice.
+- Keep limitations in proportion. A limitation bounds a claim the paper
+  makes; something that was not done is not one by default. State each
+  once, at the size it deserves, with what the result still supports, and
+  do not volunteer one that no claim depends on. A paper that argues
+  against itself for a page reads as weak work. That is a different failure
+  from hiding a real limit, and it costs as much.
+- Write the simplest true account. When the author asks for a number or a
+  plainer table, give that and stop; the story of how the number came
+  about belongs in the methods, once, or nowhere.
 - Match confidence to evidence. If the data support a conclusion, state it
   without armor. If they only suggest it, use "suggests", "appears to", "is
   consistent with", and mean it. The failure mode to avoid is uniform hedging,

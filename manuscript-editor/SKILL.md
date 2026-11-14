@@ -16,12 +16,12 @@ description: >-
   type. Pairs with manuscript-writing (sentences) and build-check (page
   count).
 summary: "Keeps manuscripts coherent through revision: checklist, right content in the right document, minimal changes, cuts to a budget, the letter."
-version: "1.2.2"
+version: "1.3.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-13"
+  last_updated: "2026-11-14"
 ---
 
 # Manuscript Editor
@@ -168,8 +168,9 @@ Identify which one applies before starting; each has a different entry point.
   its cost, never made by rule.
 - **Word manuscript.** The manuscript is a `.docx`. Same discipline;
   `references/docx-revision.md` says what can be scripted (audit, markers,
-  extraction, the letter) and what cannot (tracked changes, which come from
-  Word's Compare of the submitted and revised files). `scripts/docx_markers.py`
+  extraction, the letter). Tracked changes and margin comments authored in
+  the user's name, co-authors' edits merged into one file, and a main file
+  kept consistent with its supplement are `word-review-rounds`. `scripts/docx_markers.py`
   lists, adds, and clears the red `[AUTHOR ACTION]` markers and extracts the
   text for the audit.
 
@@ -347,6 +348,33 @@ These apply in every mode, including initial drafting.
   to three sentences. Hedges scattered through Results to pre-empt criticism
   are cut. A Limitations section that re-explains Methods is cut back to the
   limitation itself plus a cross-reference.
+- **What counts as a limitation.** A limitation bounds a claim the paper
+  makes: a reader who ignored it would over-read a result. An analysis that
+  was not run, a model or endpoint that was not available, a detail the
+  infrastructure did not expose, and a choice already justified in Methods
+  are not limitations unless a stated claim depends on them. Do not add one
+  that no reviewer raised and no claim needs. The whole set fits one
+  paragraph or a short subsection, about 150 to 250 words in a journal
+  article unless the venue asks for more, and each item says what the
+  result still supports. Revision rounds are where this section grows:
+  each concession in a response letter tends to arrive in the manuscript
+  as a new limitation. The concession belongs in the letter; the
+  manuscript takes it only when it bounds a claim. The same holds for a
+  thesis answering examiners. When the author rules that something is not
+  a limitation, remove it everywhere and do not bring it back in a later
+  pass. The one case to raise, once, is a removal that leaves a headline
+  claim overstated: name the claim, then follow the author's decision.
+- **Simple display items.** A table answers one question a reader would
+  ask, with one kind of number per column and a caption that needs no
+  second reading. Counts read "n of N". When a co-author or reviewer asks
+  for a number, add the number; do not add the account of how each case
+  reached it, a new comparison, or a second table unless asked. If a
+  reader has to study a table to find its point, drop columns or split it
+  before explaining it in the caption. Keep one term for one thing across
+  the main file and the supplement.
+- **Answer the narrow ask.** A comment that asks for one change gets that
+  change. Report anything else you noticed as a short list for the author
+  instead of editing it in.
 - **No summaries of what was just said.** End-of-section recaps,
   "in summary" sentences inside a section, and Conclusion paragraphs that
   restate the Discussion are removed.

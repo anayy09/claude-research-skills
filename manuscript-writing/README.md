@@ -2,7 +2,7 @@
 
 > Scholarly prose that reads like a working researcher wrote it, with the tell sweep built in.
 
-[![Version](https://img.shields.io/badge/version-4.0.1-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.1.0-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)

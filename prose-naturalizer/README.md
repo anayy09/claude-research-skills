@@ -1,10 +1,10 @@
 # prose-naturalizer
 
-> Strip the tells of AI-generated writing from non-academic prose, based on Wikipedia's Signs of AI writing.
+> Rewrite AI-sounding prose so it reads like the writer; mirrors blader/humanizer.
 
 <sub>Formerly `humanizer`.</sub>
 
-[![Version](https://img.shields.io/badge/version-3.0.2-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.0.0-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -65,3 +65,16 @@ The skill declares `compatibility: claude-code opencode`.
 
 Part of the **[claude-research-skills](../)** collection.
 [Report an issue »](https://github.com/anayy09/claude-research-skills/issues/new/choose)
+
+## Upstream
+
+`SKILL.md` mirrors [`blader/humanizer`](https://github.com/blader/humanizer) (MIT), currently 4.0.0. The
+body is upstream's text unchanged. This repository's own rules (facts in text sent under the user's name,
+manuscripts, messages) live in `local-additions.md` and are re-attached on every sync:
+
+```bash
+git clone --depth 1 https://github.com/blader/humanizer /tmp/humanizer
+python scripts/sync_upstream.py /tmp/humanizer
+```
+
+On a manuscript the skill applies `manuscript-writing`'s lint and rules instead of declining.

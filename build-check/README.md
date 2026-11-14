@@ -2,7 +2,7 @@
 
 > Compile, render, and inspect the built PDF: overflow, floats, page cap, fonts, stale derived files.
 
-[![Version](https://img.shields.io/badge/version-1.1.1-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.2.0-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)

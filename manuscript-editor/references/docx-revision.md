@@ -23,11 +23,14 @@ the same; the mechanics differ, and some of them cannot be automated.
 
 ## What cannot be done from here, and what to do instead
 
-- **Tracked changes.** python-docx cannot author Word revisions. The marked
-  copy a venue asks for is produced by Word's Compare (Review, Compare, the
-  submitted file against the clean revised file) or by LibreOffice's
-  Compare Document. Say this in the hand-back and leave the two clean files
-  ready: the submitted `.docx` untouched, the revised `.docx` finished.
+- **Tracked changes with python-docx.** python-docx cannot author Word
+  revisions. Two routes exist. For the marked copy a venue asks for, use
+  Word's Compare (Review, Compare, the submitted file against the clean
+  revised file) and leave the two clean files ready. For a live co-author
+  round, where each edit must appear as a tracked change with a comment
+  under the user's name, edit the document XML directly: that workflow,
+  its integrity checks, and the Word Online corruption traps are in the
+  `word-review-rounds` skill.
 - **Equations and fields.** Equation objects, cross-reference fields, and
   citation-manager fields are opaque to python-docx. Do not touch a
   paragraph that contains one from a script; edit it in Word, or ask the

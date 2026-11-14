@@ -16,12 +16,12 @@ description: >-
   files; and at the end of every session, to write the hand-off. Composes
   with experiment-ledger, which owns runs and manifests.
 summary: "Decision, progress, results, and gate ledgers for multi-session research projects, plus the session hand-off."
-version: "1.1.0"
+version: "1.2.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-12"
+  last_updated: "2026-11-14"
 ---
 
 # Project Ledger
@@ -151,6 +151,11 @@ the record and the working tree disagree.
    the recorded next step, next ids, read order, and the standing rules.
    **It is never committed.** A brief is for a person to paste once; the
    repository holds the record it was generated from.
+5. Deliver it in the conversation, not as a file, and make it the whole of
+   the final message so it can be copied in one piece. Update the project's
+   memory notes before writing it. In a project without ledger files, or
+   when the `handoff` skill is installed, that skill writes the brief and
+   this one supplies the record it points to.
 
 `references/session-handoff.md` covers what to add by hand (a defect the
 next session inherits, a decision the owner has to make first) and what a

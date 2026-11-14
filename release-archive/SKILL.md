@@ -16,12 +16,12 @@ description: >-
   public repo"; and before any manuscript that promises archived code is
   submitted. Never mints a DOI while the manuscript carries a placeholder.
 summary: "Public reproducibility release: audit, curate, tag, Zenodo deposit with a DOI, write-back."
-version: "1.0.0"
+version: "1.1.0"
 author: anayy09
 license: MIT
 metadata:
   status: active
-  last_updated: "2026-09-12"
+  last_updated: "2026-11-14"
 ---
 
 # Release Archive
@@ -141,6 +141,20 @@ write-back missed.
 
 ## Rules
 
+- **The public release is a new repository.** The internal repository stays
+  private and is never switched to public, because its history carries the
+  ledgers and the milestone vocabulary even after the files are removed.
+  Build the public tree in a separate directory with a fresh history, and
+  push it to a separate remote. The paper, the response letters, and the
+  project documents do not go in it.
+- **Publishing waits for a yes.** Making a repository public, pushing a
+  tag, and publishing a deposit are each confirmed with the owner at the
+  time, unless the request already said to do that step.
+- **Verify after publishing.** Read the record back: the version string
+  matches the tag, the related identifiers point at the right repository
+  and paper, the concept DOI resolves to the new version, and the files
+  listed are the ones intended. Fix metadata through the API before
+  reporting the release as done.
 - **No DOI while a placeholder remains.** `doi_writeback.py --check` and
   `build_check.py` both refuse. A minted DOI cannot be unminted.
 - **Creators and affiliations come from `AUTHORS.yaml`** or the owner. A
