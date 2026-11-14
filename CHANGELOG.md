@@ -7,6 +7,8 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-11-14
+
 Changes drawn from a review of every session on the Windows laptop (517 transcripts) and on HiPerGator (66) through 2026-11-14.
 
 ### Changed
@@ -720,7 +722,8 @@ First public release of the collection.
 - Standardized every skill's frontmatter: added `summary`, semantic `version`,
   `author`, `license`, and a consistent `metadata` block.
 
-[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/anayy09/claude-research-skills/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/anayy09/claude-research-skills/compare/v0.10.1...v0.11.0
 [0.10.1]: https://github.com/anayy09/claude-research-skills/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/anayy09/claude-research-skills/compare/v0.9.0...v0.10.0
