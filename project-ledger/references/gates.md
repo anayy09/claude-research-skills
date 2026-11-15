@@ -23,7 +23,11 @@ is.
 - **CHECK** is one command, run from the repository root, deterministic,
   and fast enough to run before every commit. A check that takes an hour
   belongs in the runbook with its own gate that reads the artifact it
-  produced.
+  produced. The script runs it through the system shell, which is
+  `cmd.exe` on Windows and `/bin/sh` elsewhere, not PowerShell: write a
+  `python` command or call a script, and quote arguments with double
+  quotes. `{skills}` stands for the installed skills folder, so another
+  skill's script is `python "{skills}/build-check/scripts/build_check.py"`.
 - **EXPECT** is a string the output must contain, ideally the last line the
   check prints on success. A check that exits 0 and prints nothing
   distinctive can pass by accident; make it print its verdict.
@@ -37,7 +41,7 @@ is.
 `project_ledger.py gates --run --record` writes:
 
 ```
-  EVIDENCE: shell=powershell cwd=C:\...\repo exit=0; run 2026-09-12; stdout ended 'LEAKAGE GUARD OK'
+  EVIDENCE: shell=cmd cwd=C:\...\repo exit=0; run 2026-09-12; stdout ended 'LEAKAGE GUARD OK'
 ```
 
 That is evidence: it names the shell, the working directory, the exit code,
@@ -61,7 +65,7 @@ reverted by the next `verify`-minded reader, and rightly.
 
 | Claim | Why |
 |---|---|
-| the pre-registration commit predates every run manifest | proves the comparison was declared first |
+| the pre-registration commit predates every run manifest (`project_ledger.py prereg`) | proves the comparison was declared first |
 | the ledger verifies clean (`project_ledger.py verify --git`) | append-only history holds |
 | every manuscript number has a results-log entry | no number without a run |
 | no credentialed, derived, or row-level data is tracked | data hygiene, with a positive control |

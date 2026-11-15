@@ -16,7 +16,7 @@ description: >-
   files; and at the end of every session, to write the hand-off. Composes
   with experiment-ledger, which owns runs and manifests.
 summary: "Decision, progress, results, and gate ledgers for multi-session research projects, plus the session hand-off."
-version: "1.2.1"
+version: "1.3.0"
 author: anayy09
 license: MIT
 metadata:
@@ -83,6 +83,7 @@ python scripts/project_ledger.py append progress --type RUN --role R4 --phase P2
 python scripts/project_ledger.py append result --run-id <experiment-ledger id> \
     --metric AAUC --value 0.4123 --interval "[0.3987, 0.4251]" --method "paired-bootstrap(B=2000)"
 python scripts/project_ledger.py verify --git                   # gate for every commit
+python scripts/project_ledger.py prereg --manifests "runs/*/manifest.json"   # prereg-v1 predates every run
 python scripts/project_ledger.py state                          # one screen, session start
 python scripts/project_ledger.py gates --run --record           # run every CHECK, write EVIDENCE
 python scripts/project_ledger.py handoff                        # the next session's brief, to stdout
@@ -100,6 +101,14 @@ project's `scripts/`. `init` looks for templates beside the script first,
 then in the installed skill (`~/.claude/skills/project-ledger/templates`,
 then `~/.agents/skills/project-ledger/templates`), so that copy can scaffold
 too; it skips any folder that lacks one of the templates.
+
+`prereg` is the templates' `P0G1`: it fails unless `PREREGISTRATION.md` is
+committed, the commit that froze it carries the `prereg-v1` tag and is in
+the branch's history, and every run manifest was committed after that
+commit and created after it (`created_utc` from `experiment-ledger`, or the
+file time). `gates --run` executes each `CHECK` through `cmd.exe` on Windows
+and `/bin/sh` elsewhere, and replaces `{skills}` with the installed skills
+folder, which is how `SG1` reaches `build-check`.
 
 ## Modes
 

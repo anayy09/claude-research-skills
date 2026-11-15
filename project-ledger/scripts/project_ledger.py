@@ -29,9 +29,13 @@ Commands:
     append     add an entry with the fields validated: append decision|progress|result ...
     verify     append-only against git HEAD, id monotonicity, dangling references,
                results without intervals, open decisions
+    prereg     the pre-registration is committed and tagged (prereg-v1), and every
+               run manifest was committed after the tagged commit and created after it
     state      one screen: counts, open decisions, blocked steps, last steps, gates
-    gates      list gates; --run executes each CHECK and compares with EXPECT;
-               --record writes the EVIDENCE line and ticks the box on success
+    gates      list gates; --run executes each CHECK through the system shell (cmd.exe
+               on Windows, /bin/sh elsewhere) and compares with EXPECT; {skills} in a
+               CHECK is replaced by the installed skills folder; --record writes the
+               EVIDENCE line and ticks the box on success
     handoff    print the continuation brief for the next session, built from the
                record (git state, open decisions, last steps, next ids, read order)
 
@@ -46,6 +50,7 @@ Usage:
     python project_ledger.py append result --run-id P2-D5-val1800-20260901-a3f19c4e21b7 \\
         --metric AAUC --value 0.4123 --interval "[0.3987, 0.4251]" --method "paired-bootstrap(B=2000)"
     python project_ledger.py verify --git
+    python project_ledger.py prereg --manifests "runs/*/manifest.json"
     python project_ledger.py gates --run --record
     python project_ledger.py handoff > /dev/null   # print it; paste it into the new session
     python project_ledger.py --self-test
@@ -58,6 +63,7 @@ import argparse
 import contextlib
 import datetime as dt
 import io
+import json
 import os
 import re
 import shlex
@@ -115,6 +121,21 @@ def find_templates(here: Path = HERE, home: Optional[Path] = None) -> Optional[P
         if all((d / name).is_file() for name in DOCS):
             return d
     return None
+
+
+def skills_root(here: Path = HERE, home: Optional[Path] = None) -> Optional[Path]:
+    """The folder that holds the installed skills (the parent of project-ledger/),
+    which a gate's CHECK names as {skills}."""
+    t = find_templates(here, home)
+    return t.parent.parent if t else None
+
+
+def shell_name() -> str:
+    """The shell subprocess.run(shell=True) uses: COMSPEC (cmd.exe) on Windows,
+    /bin/sh elsewhere. Not PowerShell, whatever the terminal is."""
+    if os.name == "nt":
+        return Path(os.environ.get("COMSPEC", "cmd.exe")).stem.lower()
+    return "sh"
 
 
 def git(args: List[str], cwd: Path) -> Tuple[int, str]:
@@ -444,6 +465,80 @@ def cmd_verify(a: argparse.Namespace) -> int:
 
 
 # ---------------------------------------------------------------------------
+# prereg: the pre-registration is tagged and predates every run
+# ---------------------------------------------------------------------------
+
+def manifest_time(path: Path) -> Tuple[Optional[float], str]:
+    """When a run started: experiment-ledger's created_utc if the manifest has
+    one, otherwise the file's modification time."""
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8")).get("created_utc", "")
+        if raw:
+            return dt.datetime.fromisoformat(str(raw).replace("Z", "+00:00")).timestamp(), "created_utc"
+    except (ValueError, OSError, AttributeError):
+        pass
+    try:
+        return path.stat().st_mtime, "file time"
+    except OSError:
+        return None, "unknown"
+
+
+def prereg_check(docs: Path, tag: str, patterns: List[str]) -> Tuple[List[str], List[str]]:
+    """The claim behind the templates' P0G1: PREREGISTRATION.md is committed,
+    the commit that froze it is tagged and in this branch's history, and every
+    run manifest was committed after that commit and created after its time."""
+    notes: List[str] = []
+    fails: List[str] = []
+    rc, top = git(["rev-parse", "--show-toplevel"], docs if docs.exists() else Path.cwd())
+    if rc != 0:
+        return notes, ["not a git repository, so nothing proves when the pre-registration was written"]
+    root = Path(top.strip()).resolve()
+    try:
+        rel = (docs / "PREREGISTRATION.md").resolve().relative_to(root).as_posix()
+    except ValueError:
+        return notes, [f"{docs / 'PREREGISTRATION.md'} is outside the repository at {root}"]
+    _, log = git(["log", "--format=%h", "--", rel], root)
+    if not log.strip():
+        fails.append(f"{rel} has never been committed")
+    rc, sha = git(["rev-parse", "--verify", "-q", tag + "^{commit}"], root)
+    if rc != 0:
+        fails.append(f"no tag {tag}; tag the commit that froze the pre-registration (git tag {tag})")
+        return notes, fails
+    sha = sha.strip()
+    if git(["cat-file", "-e", f"{sha}:{rel}"], root)[0] != 0:
+        fails.append(f"the commit tagged {tag} ({sha[:12]}) has no {rel}")
+    if git(["merge-base", "--is-ancestor", sha, "HEAD"], root)[0] != 0:
+        fails.append(f"{tag} ({sha[:12]}) is not in the history of HEAD")
+    _, ct = git(["log", "-1", "--format=%ct", sha], root)
+    tag_time = float(ct.strip()) if ct.strip().isdigit() else None
+    tag_iso = dt.datetime.fromtimestamp(tag_time, dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ") if tag_time else "?"
+    notes.append(f"{tag} is {sha[:12]}, committed {tag_iso}")
+    manifests = sorted({p for pat in patterns for p in root.glob(pat) if p.is_file()})
+    for m in manifests:
+        relm = m.resolve().relative_to(root).as_posix()
+        _, added = git(["log", "--diff-filter=A", "--format=%H", "--", relm], root)
+        added = added.strip().splitlines()[-1] if added.strip() else ""
+        if added and (added == sha or git(["merge-base", "--is-ancestor", sha, added], root)[0] != 0):
+            fails.append(f"{relm} was committed in {added[:12]}, which does not come after {tag}")
+        when, source = manifest_time(m)
+        if when is not None and tag_time is not None and when <= tag_time:
+            iso = dt.datetime.fromtimestamp(when, dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            fails.append(f"{relm} was created {iso} ({source}), before {tag} ({tag_iso})")
+    notes.append(f"{len(manifests)} run manifest(s) matched " + ", ".join(patterns))
+    return notes, fails
+
+
+def cmd_prereg(a: argparse.Namespace) -> int:
+    notes, fails = prereg_check(Path(a.dir), a.tag, a.manifests or ["runs/*/manifest.json"])
+    for n in notes:
+        print(f"note {n}")
+    for f in fails:
+        print(f"FAIL {f}")
+    print("PREREG FAIL" if fails else "PREREG OK")
+    return 1 if fails else 0
+
+
+# ---------------------------------------------------------------------------
 # state / gates / handoff
 # ---------------------------------------------------------------------------
 
@@ -528,8 +623,16 @@ def cmd_gates(a: argparse.Namespace) -> int:
         if not g["check"]:
             print(f"[skip] {g['id']}: no CHECK line")
             continue
+        check = g["check"]
+        if "{skills}" in check:
+            sroot = skills_root()
+            if sroot is None:
+                print(f"[FAIL] {g['id']}: {g['claim']}\n       CHECK names {{skills}}, but no installed skills folder was found")
+                failed += 1
+                continue
+            check = check.replace("{skills}", sroot.as_posix())
         try:
-            p = subprocess.run(g["check"], shell=True, cwd=str(cwd), capture_output=True, text=True,
+            p = subprocess.run(check, shell=True, cwd=str(cwd), capture_output=True, text=True,
                                encoding="utf-8", errors="replace", timeout=a.timeout)
             out = (p.stdout or "") + (p.stderr or "")
             rc = p.returncode
@@ -537,11 +640,11 @@ def cmd_gates(a: argparse.Namespace) -> int:
             out, rc = "timed out", 124
         tail = out.strip().splitlines()[-1] if out.strip() else ""
         ok = rc == 0 and (not g["expect"] or g["expect"] in out)
-        print(f"[{'pass' if ok else 'FAIL'}] {g['id']}: {g['claim']}\n       ran: {g['check']}\n       exit {rc}, last line: {tail[:120]}")
+        print(f"[{'pass' if ok else 'FAIL'}] {g['id']}: {g['claim']}\n       ran: {check}\n       exit {rc}, last line: {tail[:120]}")
         if not ok:
             failed += 1
         if ok and a.record:
-            ev = f"EVIDENCE: shell={'powershell' if os.name == 'nt' else 'sh'} cwd={cwd} exit={rc}; run {today()}; stdout ended '{tail[:100]}'"
+            ev = f"EVIDENCE: shell={shell_name()} cwd={cwd} exit={rc}; run {today()}; stdout ended '{tail[:100]}'"
             edits.append((g, ev))
     if edits:
         for g, ev in sorted(edits, key=lambda e: -e[0]["line_start"]):
@@ -675,6 +778,8 @@ def self_test() -> int:
         check("gate run: P0G1 recorded, SG1 failed", rc == 1 and G2[0]["done"] and bool(G2[0]["evidence"]) and not G2[1]["done"])
         check("evidence is written under its gate, above the next heading",
               "EVIDENCE:" in gt and gt.index("EVIDENCE:") < gt.index("## Submission"))
+        check(f"evidence names the shell the check ran in ({shell_name()}), not PowerShell",
+              f"shell={shell_name()} " in gt and "powershell" not in gt and (shell_name() != "powershell"))
         with contextlib.redirect_stdout(io.StringIO()):
             cmd_gates(ns3)
         check("a second --record replaces the EVIDENCE line", read(docs / "GATES.md").count("EVIDENCE:") == 1)
@@ -720,6 +825,16 @@ def self_test() -> int:
             check("every gate in templates/GATES.md is parsed (" + ", ".join(want) + ")",
                   bool(want) and [g["id"] for g in TG] == want)
             check("every template gate has CHECK and EXPECT", bool(TG) and all(g["check"] and g["expect"] for g in TG))
+            check("no template CHECK carries a <placeholder>", bool(TG) and not any(re.search(r"<[^>\s]+>", g["check"]) for g in TG))
+            sdocs = Path(td) / "sk" / "docs"
+            sdocs.mkdir(parents=True)
+            (sdocs / "GATES.md").write_text(
+                "- [ ] G1: {skills} names the installed skills folder\n"
+                "  CHECK: python -c \"import os,sys; print('SKILLS OK' if os.path.isdir(os.path.join(sys.argv[1], 'project-ledger')) else 'SKILLS MISSING')\" \"{skills}\"\n"
+                "  EXPECT: SKILLS OK\n", encoding="utf-8")
+            with contextlib.redirect_stdout(io.StringIO()):
+                rc = cmd_gates(argparse.Namespace(dir=str(sdocs), run=True, record=False, timeout=60))
+            check("{skills} in a CHECK is replaced by the installed skills folder", rc == 0)
 
     # where init finds templates when the script is not the skill's own copy
     with tempfile.TemporaryDirectory() as td:
@@ -746,6 +861,46 @@ def self_test() -> int:
               find_templates(proj / "scripts", claude_home) == installed)
         check("and to the Codex install when that is the only one", find_templates(proj / "scripts", codex_home) == codex)
         check("no templates anywhere is reported, not scaffolded empty", find_templates(proj / "scripts", root / "nohome") is None)
+
+    # prereg: the pre-registration is committed, tagged, and predates every run manifest
+    if shutil.which("git"):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            pdocs = root / "docs"
+            pdocs.mkdir()
+            for args in (["init", "-q"], ["config", "user.email", "t@t"], ["config", "user.name", "t"]):
+                git(args, root)
+            (pdocs / "PREREGISTRATION.md").write_text("# PREREGISTRATION\n", encoding="utf-8")
+
+            def manifest(name: str, body: dict) -> None:
+                p = root / "runs" / name / "manifest.json"
+                p.parent.mkdir(parents=True, exist_ok=True)
+                p.write_text(json.dumps(body), encoding="utf-8")
+
+            pats = ["runs/*/manifest.json"]
+            manifest("early", {"run_id": "early"})
+            git(["add", "."], root)
+            git(["commit", "-q", "-m", "prereg"], root)
+            _, f = prereg_check(pdocs, "prereg-v1", pats)
+            check("prereg: no tag is a FAIL", any("no tag prereg-v1" in x for x in f))
+            git(["tag", "prereg-v1"], root)
+            _, f = prereg_check(pdocs, "prereg-v1", pats)
+            check("prereg: a manifest committed in the tagged commit is a FAIL",
+                  any("runs/early/manifest.json was committed" in x for x in f))
+            git(["rm", "-q", "-r", "runs"], root)
+            git(["commit", "-q", "-m", "drop"], root)
+            _, f = prereg_check(pdocs, "prereg-v1", pats)
+            check("prereg: tagged, with no runs yet, passes", not f)
+            later = (dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=5)).strftime("%Y-%m-%dT%H:%M:%SZ")
+            manifest("late", {"created_utc": later})
+            git(["add", "."], root)
+            git(["commit", "-q", "-m", "run"], root)
+            _, f = prereg_check(pdocs, "prereg-v1", pats)
+            check("prereg: a run committed and created after the tag passes", not f)
+            manifest("old", {"created_utc": "2000-01-01T00:00:00Z"})
+            _, f = prereg_check(pdocs, "prereg-v1", pats)
+            check("prereg: an uncommitted manifest created before the tag is a FAIL",
+                  len(f) == 1 and "runs/old/manifest.json" in f[0] and "created_utc" in f[0])
     print("\nself-test " + ("passed" if ok else "FAILED"))
     return 0 if ok else 1
 
@@ -783,6 +938,12 @@ def main() -> int:
     s = sub.add_parser("verify", help="check the ledger's integrity")
     s.add_argument("--git", action="store_true", help="also check append-only against git HEAD")
     s.set_defaults(func=cmd_verify)
+
+    s = sub.add_parser("prereg", help="check the pre-registration is tagged and predates every run manifest")
+    s.add_argument("--tag", default="prereg-v1", help="tag on the commit that froze PREREGISTRATION.md (default: prereg-v1)")
+    s.add_argument("--manifests", action="append", metavar="GLOB",
+                   help="run manifests, relative to the repository root (default: runs/*/manifest.json); repeatable")
+    s.set_defaults(func=cmd_prereg)
 
     s = sub.add_parser("state", help="one-screen state summary")
     s.set_defaults(func=cmd_state)

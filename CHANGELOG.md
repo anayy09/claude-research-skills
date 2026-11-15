@@ -7,8 +7,11 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+### Added
+- `project-ledger` (1.2.0 to 1.3.0): `prereg` checks that `PREREGISTRATION.md` is committed, that the commit that froze it carries the `prereg-v1` tag and is in the branch's history, and that every run manifest was committed after that commit and created after it. The template's `P0G1` gate runs it; before, `P0G1` printed the last commit subject and passed only if it happened to contain the word PREREGISTRATION. `{skills}` in a gate's `CHECK` is replaced by the installed skills folder, so `SG1` reaches `build-check` instead of carrying a `<skill>` placeholder that could not run.
+
 ### Fixed
-- `project-ledger` (1.2.0 to 1.2.1): the gate parser only matched ids that begin with `G`, so `gates --run`, `--record`, `state`, and `handoff` silently skipped every gate in the template (`P0G1` to `P0G3`, `SG1`), including the one that runs `verify --git` before commits. It now accepts an optional prefix of capitals and digits, ignores format examples inside code fences, and writes evidence under its gate rather than below the next heading. `init` from a copy of the script in a project's `scripts/` falls back to the installed skill's templates. `--self-test` fails if any gate in the bundled `GATES.md` is not parsed.
+- `project-ledger` (1.3.0): the gate parser only matched ids that begin with `G`, so `gates --run`, `--record`, `state`, and `handoff` silently skipped every gate in the template (`P0G1` to `P0G3`, `SG1`), including the one that runs `verify --git` before commits. It now accepts an optional prefix of capitals and digits, ignores format examples inside code fences, and writes evidence under its gate rather than below the next heading. `init` from a copy of the script in a project's `scripts/` falls back to the installed skill's templates. The EVIDENCE line names the shell the check actually ran in (`cmd` on Windows, `sh` elsewhere) instead of `powershell`. `--self-test` fails if any gate in the bundled `GATES.md` is not parsed or a template `CHECK` still carries a placeholder.
 
 ## [0.12.0] - 2026-11-14
 

@@ -2,7 +2,7 @@
 
 > Decision, progress, results, and gate ledgers for multi-session research projects, plus the session hand-off.
 
-[![Version](https://img.shields.io/badge/version-1.2.1-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.3.0-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -74,7 +74,7 @@ project-ledger/
 │   ├── session-bootstrap.md    the first ten minutes of a session
 │   └── session-handoff.md      the last ten minutes; what the generated brief cannot know
 └── scripts/
-    └── project_ledger.py       init, next, append, verify, state, gates, handoff
+    └── project_ledger.py       init, next, append, verify, prereg, state, gates, handoff
 ```
 
 ## Scripts
@@ -85,6 +85,7 @@ python project-ledger/scripts/project_ledger.py next D
 python project-ledger/scripts/project_ledger.py append result --run-id RUN-20260901-E1-01 \
     --metric AUROC --value 0.812 --interval "[0.790, 0.833]" --method "patient-bootstrap(B=2000)"
 python project-ledger/scripts/project_ledger.py verify --git      # before every commit
+python project-ledger/scripts/project_ledger.py prereg --manifests "runs/*/manifest.json"
 python project-ledger/scripts/project_ledger.py gates --run --record
 python project-ledger/scripts/project_ledger.py state
 python project-ledger/scripts/project_ledger.py handoff           # paste into the next session; do not commit
@@ -96,7 +97,8 @@ PATH and say so when it is not.
 
 ## Changelog
 
-- **1.2.1**: The gate parser reads phase-prefixed ids (`P0G1`, `SG1`), so the template's gates are run, recorded, and counted instead of skipped; format examples inside code fences are no longer read as gates; recorded evidence stays under its gate instead of landing below the next heading. `init` from a copy of the script in a project's `scripts/` finds the installed skill's templates. `--self-test` fails if any gate in the bundled `GATES.md` is not parsed.
+- **1.3.0**: The gate parser reads phase-prefixed ids (`P0G1`, `SG1`), so the template's gates are run, recorded, and counted instead of skipped; format examples inside code fences are no longer read as gates; recorded evidence stays under its gate instead of landing below the next heading. `init` from a copy of the script in a project's `scripts/` finds the installed skill's templates. `prereg` checks that the tagged pre-registration predates every run manifest and is what `P0G1` runs. `{skills}` in a `CHECK` names the installed skills folder, which `SG1` uses to reach `build-check`. Evidence names the shell the check ran in (`cmd` or `sh`). `--self-test` fails if any template gate is not parsed or a template `CHECK` carries a placeholder.
+- **1.2.0**: The brief is delivered in the conversation as the whole final message after memory notes are updated; long runs get an estimate with its basis up front, a tested hand-over command, recorded actual durations, and a monitor when the owner starts the run.
 - **1.1.0**: `AUTHORS.yaml` joins the scaffolded documents as the only source of author identity, with a P0 gate that it is filled and a submission gate that runs `build-check` with `--authors`; the loading-discipline section.
 - **1.0.0**: Initial release.
 
