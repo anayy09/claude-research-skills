@@ -7,6 +7,10 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-11-14
+
+`project-ledger`'s gate ledger runs the gates its own template ships with, and each of them checks what it claims.
+
 ### Added
 - `project-ledger` (1.2.0 to 1.3.0): `prereg` checks that `PREREGISTRATION.md` is committed, that the commit that froze it carries the `prereg-v1` tag and is in the branch's history, and that every run manifest was committed after that commit and created after it. The template's `P0G1` gate runs it; before, `P0G1` printed the last commit subject and passed only if it happened to contain the word PREREGISTRATION. `{skills}` in a gate's `CHECK` is replaced by the installed skills folder, so `SG1` reaches `build-check` instead of carrying a `<skill>` placeholder that could not run.
 
@@ -728,7 +732,8 @@ First public release of the collection.
 - Standardized every skill's frontmatter: added `summary`, semantic `version`,
   `author`, `license`, and a consistent `metadata` block.
 
-[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/anayy09/claude-research-skills/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/anayy09/claude-research-skills/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/anayy09/claude-research-skills/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/anayy09/claude-research-skills/compare/v0.10.1...v0.11.0
 [0.10.1]: https://github.com/anayy09/claude-research-skills/compare/v0.10.0...v0.10.1
