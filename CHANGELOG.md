@@ -7,6 +7,9 @@ skills carry their own version in their `SKILL.md`; this log tracks the collecti
 
 ## [Unreleased]
 
+### Fixed
+- `project-ledger` (1.2.0 to 1.2.1): the gate parser only matched ids that begin with `G`, so `gates --run`, `--record`, `state`, and `handoff` silently skipped every gate in the template (`P0G1` to `P0G3`, `SG1`), including the one that runs `verify --git` before commits. It now accepts an optional prefix of capitals and digits, ignores format examples inside code fences, and writes evidence under its gate rather than below the next heading. `init` from a copy of the script in a project's `scripts/` falls back to the installed skill's templates. `--self-test` fails if any gate in the bundled `GATES.md` is not parsed.
+
 ## [0.12.0] - 2026-11-14
 
 Changes drawn from a review of every session on the Windows laptop (517 transcripts) and on HiPerGator (66) through 2026-11-14.

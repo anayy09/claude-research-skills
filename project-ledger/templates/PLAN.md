@@ -16,7 +16,7 @@ and the unit of analysis. The pre-registered version lives in
 | Phase | Deliverable | Gate that closes it | Depends on |
 |---|---|---|---|
 | P0 | staging, data audit, provenance, ledger wired | P0G1 to P0Gn in `GATES.md` | nothing |
-| P1 | the kill experiment: the cheapest test whose negative result ends the project | G1: the pre-declared rule in `PREREGISTRATION.md` | P0 |
+| P1 | the kill experiment: the cheapest test whose negative result ends the project | P1G1: the pre-declared rule in `PREREGISTRATION.md` | P0 |
 | P2 | ... | ... | P1 |
 
 A phase opens when its dependencies have `PHASE-CLOSE` entries in

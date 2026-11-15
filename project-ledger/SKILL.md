@@ -16,7 +16,7 @@ description: >-
   files; and at the end of every session, to write the hand-off. Composes
   with experiment-ledger, which owns runs and manifests.
 summary: "Decision, progress, results, and gate ledgers for multi-session research projects, plus the session hand-off."
-version: "1.2.0"
+version: "1.2.1"
 author: anayy09
 license: MIT
 metadata:
@@ -62,7 +62,7 @@ runbook, roles, and the session bootstrap and hand-off. It does not:
 | `DECISIONS.md` | `D-NNN` entries: decision, alternatives with their cost, rationale, consequences, revisit condition, status | append only; only the Status line may change |
 | `PROGRESS.md` | `NNNN` entries, one per step, typed; result with interval or pointer; next step | append only, gap-free; corrections are new entries |
 | `RESULTS-LOG.md` | `R-NNNN` entries, one per reported metric, with interval and method and the `experiment-ledger` run id | append only; supersessions are new entries |
-| `GATES.md` | `- [ ] G1: claim` with `CHECK`, `EXPECT`, `EVIDENCE` | the script ticks a box only after running the check |
+| `GATES.md` | `- [ ] P0G1: claim` with `CHECK`, `EXPECT`, `EVIDENCE`; the id is `G` and a number after an optional phase prefix (`P0G1`, `SG1`) | the script ticks a box only after running the check |
 | `RUNBOOK.md` | state, environment, launch, pause, resume, and check commands for long work; a do-not-run list | by hand, at every hand-off |
 | `AGENT.md` | roles with inputs, outputs, done criteria, and the ten operating rules | by hand |
 | `SKILL-ROUTING.md` | which skill governs which step and file | by hand |
@@ -95,7 +95,11 @@ set. `verify --git` fails when a committed progress or results entry was
 edited in place, when a decision entry changed beyond its Status line, when
 a sequence has a gap, or when a reference names an entry that does not
 exist. It is meant to run before every commit; the templates' `P0G2` gate
-runs it.
+runs it as `python scripts/project_ledger.py`, so copy the script into the
+project's `scripts/`. `init` looks for templates beside the script first,
+then in the installed skill (`~/.claude/skills/project-ledger/templates`,
+then `~/.agents/skills/project-ledger/templates`), so that copy can scaffold
+too; it skips any folder that lacks one of the templates.
 
 ## Modes
 

@@ -17,7 +17,9 @@ Documents it manages (under docs/ by default):
     DECISIONS.md      D-NNN entries: decision, alternatives, rationale, consequences, status
     PROGRESS.md       NNNN entries: one per step, append-only, typed
     RESULTS-LOG.md    R-NNNN entries: one per reported metric, interval required
-    GATES.md          - [ ] G1: <claim>  CHECK: <cmd>  EXPECT: <text>  EVIDENCE: <what ran>
+    GATES.md          - [ ] P0G1: <claim>  CHECK: <cmd>  EXPECT: <text>  EVIDENCE: <what ran>
+                      (gate id: optional prefix of capitals and digits, then G and the rest:
+                      G1, G0.1, P0G1, SG1; lines inside ``` fences are examples, not gates)
     RUNBOOK.md        state and resume commands for long-running work
     PREREGISTRATION.md, PLAN.md, AGENT.md, SKILL-ROUTING.md   scaffolded, hand-edited
 
@@ -53,7 +55,9 @@ Standard library only. Exit codes: 0 ok, 1 a verify or gate failure, 2 usage.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as dt
+import io
 import os
 import re
 import shlex
@@ -65,7 +69,6 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 HERE = Path(__file__).resolve().parent
-TEMPLATES = HERE.parent / "templates"
 
 DOCS = ["PLAN.md", "DECISIONS.md", "PROGRESS.md", "RESULTS-LOG.md", "PREREGISTRATION.md",
         "GATES.md", "RUNBOOK.md", "AGENT.md", "SKILL-ROUTING.md", "AUTHORS.yaml"]
@@ -73,7 +76,10 @@ DOCS = ["PLAN.md", "DECISIONS.md", "PROGRESS.md", "RESULTS-LOG.md", "PREREGISTRA
 D_HEAD = re.compile(r"^## D-(\d{3,4})\.\s*(.*)$", re.M)
 P_HEAD = re.compile(r"^### (\d{4}) \| ([^|]+) \| ([A-Z-]+) \| ([^|]+) \| ([^|\n]+)$", re.M)
 R_HEAD = re.compile(r"^### R-(\d{4}) \| (.*)$", re.M)
-G_LINE = re.compile(r"^- \[( |x)\] (G[0-9A-Za-z.]+): (.*)$", re.M)
+# A gate id is G and the rest, after an optional prefix of capitals and digits
+# that names the phase: G1, G0.1, GS1, P0G1, P1G3, SG1.
+G_LINE = re.compile(r"^- \[( |x)\] ([A-Z0-9]*G[0-9A-Za-z.]+): (.*)$", re.M)
+FENCE = re.compile(r"^(```|~~~)[^\n]*\n.*?^\1[ \t]*$", re.M | re.S)
 PROGRESS_TYPES = {"PHASE-OPEN", "PHASE-CLOSE", "SETUP", "RUN", "ANALYSIS", "GATE", "DECISION",
                   "LIT", "WRITE", "BUILD", "CORRECTION", "BLOCKED", "HANDOFF"}
 
@@ -88,6 +94,27 @@ def today() -> str:
 
 def read(p: Path) -> str:
     return p.read_text(encoding="utf-8") if p.exists() else ""
+
+
+def template_dirs(here: Path = HERE, home: Optional[Path] = None) -> List[Path]:
+    """Where init looks for templates, in order: beside this script (the skill's
+    own copy), then the installed skill for Claude Code and for Codex. A copy of
+    the script in a project's scripts/ (which the templates' P0G2 gate runs)
+    has no templates beside it and falls through to the installed skill."""
+    home = home if home is not None else Path.home()
+    return [here.parent / "templates",
+            home / ".claude" / "skills" / "project-ledger" / "templates",
+            home / ".agents" / "skills" / "project-ledger" / "templates"]
+
+
+def find_templates(here: Path = HERE, home: Optional[Path] = None) -> Optional[Path]:
+    """First candidate that holds every template. A project's own templates/
+    folder (journal or LaTeX templates, say) is skipped rather than used to
+    scaffold empty documents."""
+    for d in template_dirs(here, home):
+        if all((d / name).is_file() for name in DOCS):
+            return d
+    return None
 
 
 def git(args: List[str], cwd: Path) -> Tuple[int, str]:
@@ -149,19 +176,44 @@ def results(docs: Path) -> List[dict]:
     return out
 
 
+def mask_fences(text: str) -> str:
+    """Blank the inside of fenced code blocks, keeping every offset, so a format
+    example such as the one in the GATES.md template is not read as a gate."""
+    return FENCE.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), text)
+
+
+def gate_block_end(text: str, pos: int) -> int:
+    """End of a gate's block: its line and the indented lines under it. A blank
+    line inside the block is allowed; a heading, prose, or the next gate ends
+    it, so recorded evidence never lands under the next section's heading."""
+    if text.startswith("\n", pos):
+        pos += 1
+    end = pos
+    for line in text[pos:].splitlines(keepends=True):
+        pos += len(line)
+        if not line.strip():
+            continue
+        if line[0] not in " \t":
+            break
+        end = pos
+    return end
+
+
 def gates(docs: Path) -> List[dict]:
-    text = read(docs / "GATES.md")
+    text = mask_fences(read(docs / "GATES.md"))
     out = []
     for m in G_LINE.finditer(text):
-        start = m.end()
-        nxt = G_LINE.search(text, start)
-        block = text[start:nxt.start() if nxt else len(text)]
+        end = gate_block_end(text, m.end())
+        block = text[m.end():end]
         g = {"id": m.group(2), "done": m.group(1) == "x", "claim": m.group(3).strip(),
-             "check": "", "expect": "", "evidence": "", "line_start": m.start(), "block_end": (nxt.start() if nxt else len(text))}
+             "check": "", "expect": "", "evidence": "", "evidence_span": None,
+             "line_start": m.start(), "block_end": end}
         for key in ("CHECK", "EXPECT", "EVIDENCE"):
-            km = re.search(r"^\s+" + key + r":\s*(.*)$", block, re.M)
+            km = re.search(r"^([ \t]+)" + key + r":[ \t]*(.*)$", block, re.M)
             if km:
-                g[key.lower()] = km.group(1).strip()
+                g[key.lower()] = km.group(2).strip()
+                if key == "EVIDENCE":
+                    g["evidence_span"] = (m.end() + km.start(), m.end() + km.end(), km.group(1))
         out.append(g)
     return out
 
@@ -172,13 +224,17 @@ def gates(docs: Path) -> List[dict]:
 
 def cmd_init(a: argparse.Namespace) -> int:
     docs = Path(a.dir)
-    docs.mkdir(parents=True, exist_ok=True)
-    if not TEMPLATES.exists():
-        print(f"error: templates directory not found at {TEMPLATES}", file=sys.stderr)
+    templates = find_templates()
+    if templates is None:
+        print("error: no templates directory with every template; looked in:\n  "
+              + "\n  ".join(str(d) for d in template_dirs())
+              + "\nRun init from the skill's own copy: "
+              "python ~/.claude/skills/project-ledger/scripts/project_ledger.py init", file=sys.stderr)
         return 2
+    docs.mkdir(parents=True, exist_ok=True)
     created, kept = [], []
     for name in DOCS:
-        src = TEMPLATES / name
+        src = templates / name
         dst = docs / name
         if dst.exists():
             kept.append(name)
@@ -457,7 +513,8 @@ def cmd_gates(a: argparse.Namespace) -> int:
     docs = Path(a.dir)
     G = gates(docs)
     if not G:
-        print("no gates found in GATES.md (expected lines like '- [ ] G1: claim' with CHECK/EXPECT/EVIDENCE)")
+        print("no gates found in GATES.md (expected lines like '- [ ] P0G1: claim' outside code fences, "
+              "with CHECK/EXPECT/EVIDENCE)")
         return 0
     root_rc, top = git(["rev-parse", "--show-toplevel"], docs)
     cwd = Path(top.strip()) if root_rc == 0 else docs.parent
@@ -488,13 +545,15 @@ def cmd_gates(a: argparse.Namespace) -> int:
             edits.append((g, ev))
     if edits:
         for g, ev in sorted(edits, key=lambda e: -e[0]["line_start"]):
-            block = text[g["line_start"]:g["block_end"]]
-            block2 = re.sub(r"^- \[ \] ", "- [x] ", block, count=1)
-            if re.search(r"^\s+EVIDENCE:", block2, re.M):
-                block2 = re.sub(r"^(\s+)EVIDENCE:.*$", r"\g<1>" + ev.replace("\\", "\\\\"), block2, count=1, flags=re.M)
+            s, e = g["line_start"], g["block_end"]
+            block = text[s:e]
+            if g["evidence_span"]:
+                es, ee, indent = g["evidence_span"]
+                block = block[:es - s] + indent + ev + block[ee - s:]
             else:
-                block2 = block2.rstrip("\n") + "\n  " + ev + "\n"
-            text = text[:g["line_start"]] + block2 + text[g["block_end"]:]
+                block = block.rstrip("\n") + "\n  " + ev + "\n"
+            block = re.sub(r"^- \[ \] ", "- [x] ", block, count=1)
+            text = text[:s] + block + text[e:]
         (docs / "GATES.md").write_text(text, encoding="utf-8", newline="\n")
         print(f"\nrecorded evidence for {len(edits)} gate(s)")
     if a.run:
@@ -584,7 +643,10 @@ def self_test() -> int:
         (docs / "DECISIONS.md").write_text("# DECISIONS\n\n## D-001. First\n\n- **Date:** 2026-01-01\n- **Status:** closed\n- **Decision:** x\n\n---\n", encoding="utf-8")
         (docs / "PROGRESS.md").write_text("# PROGRESS\n\n### 0001 | 2026-01-01T00:00:00Z | SETUP | human | P0\n- What: init\n- Result: n/a\n- Artifacts: none\n- Refs: D-001\n- Status: done\n- Next: run\n", encoding="utf-8")
         (docs / "RESULTS-LOG.md").write_text("# RESULTS\n", encoding="utf-8")
-        (docs / "GATES.md").write_text("# Gates\n\n- [ ] G1: python prints ok\n  CHECK: python -c \"print('GATE OK')\"\n  EXPECT: GATE OK\n\n- [ ] G2: fails\n  CHECK: python -c \"import sys; sys.exit(3)\"\n  EXPECT: never\n", encoding="utf-8")
+        (docs / "GATES.md").write_text(
+            "# Gates\n\n```\n- [ ] G9: a format example, not a gate\n  CHECK: python -c \"import sys; sys.exit(9)\"\n```\n\n"
+            "## P0\n\n- [ ] P0G1: python prints ok\n  CHECK: python -c \"print('GATE OK')\"\n  EXPECT: GATE OK\n\n"
+            "## Submission\n\n- [ ] SG1: fails\n  CHECK: python -c \"import sys; sys.exit(3)\"\n  EXPECT: never\n", encoding="utf-8")
         check("next ids", next_id(docs, "D") == 2 and next_id(docs, "P") == 2 and next_id(docs, "R") == 1)
         ns = argparse.Namespace(dir=str(docs), what_kind="result", run_id="RUN-1", metric="AUROC", value="0.81",
                                 interval="", method="", phase="P1", n="", comparison="", notes="", supersedes="")
@@ -599,12 +661,23 @@ def self_test() -> int:
         (docs / "PROGRESS.md").write_text(read(docs / "PROGRESS.md") + "\n### 0004 | 2026-01-02T00:00:00Z | RUN | R4 | P1\n- What: gap\n- Result: n/a\n- Artifacts: none\n- Refs: D-009\n- Status: done\n- Next: x\n", encoding="utf-8")
         fails, warns = verify(docs, use_git=False)
         check("verify finds the gap and the dangling reference", any("gaps" in f for f in fails) and any("D-009" in f for f in fails))
+        forms = ["G1", "G0.1", "GS1", "P0G1", "P1G3", "SG1"]
+        parsed = [m.group(2) for m in G_LINE.finditer("".join(f"- [ ] {i}: claim\n" for i in forms))]
+        check("gate ids " + ", ".join(forms) + " all parse", parsed == forms)
         G = gates(docs)
-        check("gates parsed with CHECK/EXPECT", len(G) == 2 and G[0]["expect"] == "GATE OK")
+        check("gates parsed with CHECK/EXPECT; the fenced example is not a gate",
+              [g["id"] for g in G] == ["P0G1", "SG1"] and G[0]["expect"] == "GATE OK")
         ns3 = argparse.Namespace(dir=str(docs), run=True, record=True, timeout=60)
-        rc = cmd_gates(ns3)
+        with contextlib.redirect_stdout(io.StringIO()):
+            rc = cmd_gates(ns3)
         G2 = gates(docs)
-        check("gate run: G1 recorded, G2 failed", rc == 1 and G2[0]["done"] and "EVIDENCE" in read(docs / "GATES.md") and not G2[1]["done"])
+        gt = read(docs / "GATES.md")
+        check("gate run: P0G1 recorded, SG1 failed", rc == 1 and G2[0]["done"] and bool(G2[0]["evidence"]) and not G2[1]["done"])
+        check("evidence is written under its gate, above the next heading",
+              "EVIDENCE:" in gt and gt.index("EVIDENCE:") < gt.index("## Submission"))
+        with contextlib.redirect_stdout(io.StringIO()):
+            cmd_gates(ns3)
+        check("a second --record replaces the EVIDENCE line", read(docs / "GATES.md").count("EVIDENCE:") == 1)
         h = handoff_text(docs)
         check("handoff names next ids and rules", "D-002" in h and "append-only" in h and "Do not commit" in h)
         # append-only against git
@@ -625,6 +698,54 @@ def self_test() -> int:
             check("append-only: a DECISIONS status change is allowed", not any("DECISIONS" in f for f in fails))
         else:
             print("  skip git checks (git not on PATH)")
+
+    # the bundled templates: init scaffolds them and every gate in GATES.md is parsed
+    tdir = find_templates()
+    check("bundled templates found", tdir is not None)
+    if tdir is not None:
+        with tempfile.TemporaryDirectory() as td:
+            tdocs = Path(td) / "docs"
+            with contextlib.redirect_stdout(io.StringIO()):
+                rc = cmd_init(argparse.Namespace(dir=str(tdocs), name="t"))
+            check("init scaffolds every document", rc == 0 and all((tdocs / n).is_file() for n in DOCS))
+            want, fenced = [], False
+            for line in read(tdir / "GATES.md").splitlines():
+                if line.startswith(("```", "~~~")):
+                    fenced = not fenced
+                    continue
+                lm = re.match(r"- \[[ xX]\] (\S+?):", line)
+                if lm and not fenced:
+                    want.append(lm.group(1))
+            TG = gates(tdocs)
+            check("every gate in templates/GATES.md is parsed (" + ", ".join(want) + ")",
+                  bool(want) and [g["id"] for g in TG] == want)
+            check("every template gate has CHECK and EXPECT", bool(TG) and all(g["check"] and g["expect"] for g in TG))
+
+    # where init finds templates when the script is not the skill's own copy
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+
+        def fake_templates(d: Path) -> Path:
+            d.mkdir(parents=True)
+            for n in DOCS:
+                (d / n).write_text("x", encoding="utf-8")
+            return d
+
+        skill = root / "skill"
+        own = fake_templates(skill / "templates")
+        (skill / "scripts").mkdir()
+        claude_home, codex_home = root / "home-claude", root / "home-codex"
+        installed = fake_templates(claude_home / ".claude" / "skills" / "project-ledger" / "templates")
+        codex = fake_templates(codex_home / ".agents" / "skills" / "project-ledger" / "templates")
+        proj = root / "proj"
+        (proj / "scripts").mkdir(parents=True)
+        (proj / "templates").mkdir()  # a journal's LaTeX templates, say; not ours
+        (proj / "templates" / "elsarticle.cls").write_text("x", encoding="utf-8")
+        check("the skill's own copy uses the templates beside it", find_templates(skill / "scripts", claude_home) == own)
+        check("a copy in a project's scripts/ falls back to the installed skill, skipping the project's templates/",
+              find_templates(proj / "scripts", claude_home) == installed)
+        check("and to the Codex install when that is the only one", find_templates(proj / "scripts", codex_home) == codex)
+        check("no templates anywhere is reported, not scaffolded empty", find_templates(proj / "scripts", root / "nohome") is None)
     print("\nself-test " + ("passed" if ok else "FAILED"))
     return 0 if ok else 1
 

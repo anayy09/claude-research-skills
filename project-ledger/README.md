@@ -2,7 +2,7 @@
 
 > Decision, progress, results, and gate ledgers for multi-session research projects, plus the session hand-off.
 
-[![Version](https://img.shields.io/badge/version-1.2.0-6E56CF)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.2.1-6E56CF)](../CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 Part of **[claude-research-skills](../)** · by [@anayy09](https://github.com/anayy09)
@@ -63,7 +63,7 @@ project-ledger/
 │   ├── DECISIONS.md            D-NNN format and rules
 │   ├── PROGRESS.md             NNNN format, closed type set, rules
 │   ├── RESULTS-LOG.md          R-NNNN format, interval rule, run id rule
-│   ├── GATES.md                CHECK / EXPECT / EVIDENCE format with two starter gates
+│   ├── GATES.md                CHECK / EXPECT / EVIDENCE format with four starter gates
 │   ├── RUNBOOK.md              state, environment, long-running work, do-not-run
 │   ├── AGENT.md                ten operating rules and the orchestrator role
 │   └── SKILL-ROUTING.md        the routing table for this collection
@@ -96,6 +96,7 @@ PATH and say so when it is not.
 
 ## Changelog
 
+- **1.2.1**: The gate parser reads phase-prefixed ids (`P0G1`, `SG1`), so the template's gates are run, recorded, and counted instead of skipped; format examples inside code fences are no longer read as gates; recorded evidence stays under its gate instead of landing below the next heading. `init` from a copy of the script in a project's `scripts/` finds the installed skill's templates. `--self-test` fails if any gate in the bundled `GATES.md` is not parsed.
 - **1.1.0**: `AUTHORS.yaml` joins the scaffolded documents as the only source of author identity, with a P0 gate that it is filled and a submission gate that runs `build-check` with `--authors`; the loading-discipline section.
 - **1.0.0**: Initial release.
 

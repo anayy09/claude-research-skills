@@ -9,14 +9,19 @@ that run. A ticked box with no EVIDENCE line is not a met gate.
 `--record` writes the EVIDENCE line and ticks the box on success. Run it
 before every hand-off and before every commit that claims a phase is done.
 
-Format:
+Format (lines inside a code fence are examples; the script does not read
+them as gates):
 
 ```
-- [ ] G1: <the claim, stated so a stranger could check it>
+- [ ] P1G1: <the claim, stated so a stranger could check it>
   CHECK: <command, run from the repository root>
   EXPECT: <text the output must contain>
   EVIDENCE: <written by the script: shell, cwd, exit code, date, last line>
 ```
+
+A gate id is `G` and a number, after an optional prefix of capitals and
+digits that names the phase: `P0G1` for phase P0, `SG1` for submission.
+A line whose id does not have that shape is not a gate to the script.
 
 ## P0
 

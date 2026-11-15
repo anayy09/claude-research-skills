@@ -13,6 +13,11 @@ is.
   EXPECT: LEAKAGE GUARD OK
 ```
 
+- **The id** is `G` and a number, after an optional prefix of capitals and
+  digits that names the phase: `P0G1`, `P1G3`, `SG1` (submission). The
+  script reads only lines of the form `- [ ] <id>: <claim>` outside code
+  fences; a line in any other shape is silently not a gate, so `gates`
+  lists every gate it found and the count is worth a glance.
 - **The claim** is stated so a stranger could check it, and it is one claim.
   "Data is fine" is not a gate; "no row-level data is tracked by git" is.
 - **CHECK** is one command, run from the repository root, deterministic,
